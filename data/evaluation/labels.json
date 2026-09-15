@@ -1,0 +1,602 @@
+[
+  {
+    "caseId": "CASE-1001",
+    "split": "development",
+    "expectedOutcome": "TIMEOUT_AFTER_SUCCESS",
+    "expectedAction": "RESOLVE_CASE",
+    "relevantCitations": [
+      "RB-TIMEOUT:v1"
+    ],
+    "expectedAbstention": false
+  },
+  {
+    "caseId": "CASE-1002",
+    "split": "development",
+    "expectedOutcome": "TIMEOUT_AFTER_SUCCESS",
+    "expectedAction": "RESOLVE_CASE",
+    "relevantCitations": [
+      "RB-TIMEOUT:v1"
+    ],
+    "expectedAbstention": false
+  },
+  {
+    "caseId": "CASE-1003",
+    "split": "development",
+    "expectedOutcome": "TIMEOUT_AFTER_SUCCESS",
+    "expectedAction": "RESOLVE_CASE",
+    "relevantCitations": [
+      "RB-TIMEOUT:v1"
+    ],
+    "expectedAbstention": false
+  },
+  {
+    "caseId": "CASE-1004",
+    "split": "development",
+    "expectedOutcome": "TIMEOUT_AFTER_SUCCESS",
+    "expectedAction": "RESOLVE_CASE",
+    "relevantCitations": [
+      "RB-TIMEOUT:v1"
+    ],
+    "expectedAbstention": false
+  },
+  {
+    "caseId": "CASE-1005",
+    "split": "development",
+    "expectedOutcome": "TIMEOUT_AFTER_SUCCESS",
+    "expectedAction": "RESOLVE_CASE",
+    "relevantCitations": [
+      "RB-TIMEOUT:v1"
+    ],
+    "expectedAbstention": false
+  },
+  {
+    "caseId": "CASE-1006",
+    "split": "test",
+    "expectedOutcome": "TIMEOUT_AFTER_SUCCESS",
+    "expectedAction": "RESOLVE_CASE",
+    "relevantCitations": [
+      "RB-TIMEOUT:v1"
+    ],
+    "expectedAbstention": false
+  },
+  {
+    "caseId": "CASE-1007",
+    "split": "test",
+    "expectedOutcome": "TIMEOUT_AFTER_SUCCESS",
+    "expectedAction": "RESOLVE_CASE",
+    "relevantCitations": [
+      "RB-TIMEOUT:v1"
+    ],
+    "expectedAbstention": false
+  },
+  {
+    "caseId": "CASE-1008",
+    "split": "test",
+    "expectedOutcome": "TIMEOUT_AFTER_SUCCESS",
+    "expectedAction": "RESOLVE_CASE",
+    "relevantCitations": [
+      "RB-TIMEOUT:v1"
+    ],
+    "expectedAbstention": false
+  },
+  {
+    "caseId": "CASE-1009",
+    "split": "test",
+    "expectedOutcome": "TIMEOUT_AFTER_SUCCESS",
+    "expectedAction": "RESOLVE_CASE",
+    "relevantCitations": [
+      "RB-TIMEOUT:v1"
+    ],
+    "expectedAbstention": false
+  },
+  {
+    "caseId": "CASE-1010",
+    "split": "test",
+    "expectedOutcome": "TIMEOUT_AFTER_SUCCESS",
+    "expectedAction": "RESOLVE_CASE",
+    "relevantCitations": [
+      "RB-TIMEOUT:v1"
+    ],
+    "expectedAbstention": false
+  },
+  {
+    "caseId": "CASE-1011",
+    "split": "development",
+    "expectedOutcome": "DUPLICATE_WEBHOOK",
+    "expectedAction": "RESOLVE_CASE",
+    "relevantCitations": [
+      "RB-WEBHOOK-DEDUP:v1"
+    ],
+    "expectedAbstention": false
+  },
+  {
+    "caseId": "CASE-1012",
+    "split": "development",
+    "expectedOutcome": "DUPLICATE_WEBHOOK",
+    "expectedAction": "RESOLVE_CASE",
+    "relevantCitations": [
+      "RB-WEBHOOK-DEDUP:v1"
+    ],
+    "expectedAbstention": false
+  },
+  {
+    "caseId": "CASE-1013",
+    "split": "development",
+    "expectedOutcome": "DUPLICATE_WEBHOOK",
+    "expectedAction": "RESOLVE_CASE",
+    "relevantCitations": [
+      "RB-WEBHOOK-DEDUP:v1"
+    ],
+    "expectedAbstention": false
+  },
+  {
+    "caseId": "CASE-1014",
+    "split": "development",
+    "expectedOutcome": "DUPLICATE_WEBHOOK",
+    "expectedAction": "RESOLVE_CASE",
+    "relevantCitations": [
+      "RB-WEBHOOK-DEDUP:v1"
+    ],
+    "expectedAbstention": false
+  },
+  {
+    "caseId": "CASE-1015",
+    "split": "development",
+    "expectedOutcome": "DUPLICATE_WEBHOOK",
+    "expectedAction": "RESOLVE_CASE",
+    "relevantCitations": [
+      "RB-WEBHOOK-DEDUP:v1"
+    ],
+    "expectedAbstention": false
+  },
+  {
+    "caseId": "CASE-1016",
+    "split": "test",
+    "expectedOutcome": "DUPLICATE_WEBHOOK",
+    "expectedAction": "RESOLVE_CASE",
+    "relevantCitations": [
+      "RB-WEBHOOK-DEDUP:v1"
+    ],
+    "expectedAbstention": false
+  },
+  {
+    "caseId": "CASE-1017",
+    "split": "test",
+    "expectedOutcome": "DUPLICATE_WEBHOOK",
+    "expectedAction": "RESOLVE_CASE",
+    "relevantCitations": [
+      "RB-WEBHOOK-DEDUP:v1"
+    ],
+    "expectedAbstention": false
+  },
+  {
+    "caseId": "CASE-1018",
+    "split": "test",
+    "expectedOutcome": "DUPLICATE_WEBHOOK",
+    "expectedAction": "RESOLVE_CASE",
+    "relevantCitations": [
+      "RB-WEBHOOK-DEDUP:v1"
+    ],
+    "expectedAbstention": false
+  },
+  {
+    "caseId": "CASE-1019",
+    "split": "test",
+    "expectedOutcome": "DUPLICATE_WEBHOOK",
+    "expectedAction": "RESOLVE_CASE",
+    "relevantCitations": [
+      "RB-WEBHOOK-DEDUP:v1"
+    ],
+    "expectedAbstention": false
+  },
+  {
+    "caseId": "CASE-1020",
+    "split": "test",
+    "expectedOutcome": "DUPLICATE_WEBHOOK",
+    "expectedAction": "RESOLVE_CASE",
+    "relevantCitations": [
+      "RB-WEBHOOK-DEDUP:v1"
+    ],
+    "expectedAbstention": false
+  },
+  {
+    "caseId": "CASE-1021",
+    "split": "development",
+    "expectedOutcome": "OUT_OF_ORDER_WEBHOOK",
+    "expectedAction": "RESOLVE_CASE",
+    "relevantCitations": [
+      "RB-EVENT-ORDER:v1"
+    ],
+    "expectedAbstention": false
+  },
+  {
+    "caseId": "CASE-1022",
+    "split": "development",
+    "expectedOutcome": "OUT_OF_ORDER_WEBHOOK",
+    "expectedAction": "RESOLVE_CASE",
+    "relevantCitations": [
+      "RB-EVENT-ORDER:v1"
+    ],
+    "expectedAbstention": false
+  },
+  {
+    "caseId": "CASE-1023",
+    "split": "development",
+    "expectedOutcome": "OUT_OF_ORDER_WEBHOOK",
+    "expectedAction": "RESOLVE_CASE",
+    "relevantCitations": [
+      "RB-EVENT-ORDER:v1"
+    ],
+    "expectedAbstention": false
+  },
+  {
+    "caseId": "CASE-1024",
+    "split": "development",
+    "expectedOutcome": "OUT_OF_ORDER_WEBHOOK",
+    "expectedAction": "RESOLVE_CASE",
+    "relevantCitations": [
+      "RB-EVENT-ORDER:v1"
+    ],
+    "expectedAbstention": false
+  },
+  {
+    "caseId": "CASE-1025",
+    "split": "development",
+    "expectedOutcome": "OUT_OF_ORDER_WEBHOOK",
+    "expectedAction": "RESOLVE_CASE",
+    "relevantCitations": [
+      "RB-EVENT-ORDER:v1"
+    ],
+    "expectedAbstention": false
+  },
+  {
+    "caseId": "CASE-1026",
+    "split": "test",
+    "expectedOutcome": "OUT_OF_ORDER_WEBHOOK",
+    "expectedAction": "RESOLVE_CASE",
+    "relevantCitations": [
+      "RB-EVENT-ORDER:v1"
+    ],
+    "expectedAbstention": false
+  },
+  {
+    "caseId": "CASE-1027",
+    "split": "test",
+    "expectedOutcome": "OUT_OF_ORDER_WEBHOOK",
+    "expectedAction": "RESOLVE_CASE",
+    "relevantCitations": [
+      "RB-EVENT-ORDER:v1"
+    ],
+    "expectedAbstention": false
+  },
+  {
+    "caseId": "CASE-1028",
+    "split": "test",
+    "expectedOutcome": "OUT_OF_ORDER_WEBHOOK",
+    "expectedAction": "RESOLVE_CASE",
+    "relevantCitations": [
+      "RB-EVENT-ORDER:v1"
+    ],
+    "expectedAbstention": false
+  },
+  {
+    "caseId": "CASE-1029",
+    "split": "test",
+    "expectedOutcome": "OUT_OF_ORDER_WEBHOOK",
+    "expectedAction": "RESOLVE_CASE",
+    "relevantCitations": [
+      "RB-EVENT-ORDER:v1"
+    ],
+    "expectedAbstention": false
+  },
+  {
+    "caseId": "CASE-1030",
+    "split": "test",
+    "expectedOutcome": "OUT_OF_ORDER_WEBHOOK",
+    "expectedAction": "RESOLVE_CASE",
+    "relevantCitations": [
+      "RB-EVENT-ORDER:v1"
+    ],
+    "expectedAbstention": false
+  },
+  {
+    "caseId": "CASE-1031",
+    "split": "development",
+    "expectedOutcome": "MISSING_REFUND",
+    "expectedAction": "ESCALATE",
+    "relevantCitations": [
+      "RB-REFUND:v1"
+    ],
+    "expectedAbstention": false
+  },
+  {
+    "caseId": "CASE-1032",
+    "split": "development",
+    "expectedOutcome": "MISSING_REFUND",
+    "expectedAction": "ESCALATE",
+    "relevantCitations": [
+      "RB-REFUND:v1"
+    ],
+    "expectedAbstention": false
+  },
+  {
+    "caseId": "CASE-1033",
+    "split": "development",
+    "expectedOutcome": "MISSING_REFUND",
+    "expectedAction": "ESCALATE",
+    "relevantCitations": [
+      "RB-REFUND:v1"
+    ],
+    "expectedAbstention": false
+  },
+  {
+    "caseId": "CASE-1034",
+    "split": "development",
+    "expectedOutcome": "MISSING_REFUND",
+    "expectedAction": "ESCALATE",
+    "relevantCitations": [
+      "RB-REFUND:v1"
+    ],
+    "expectedAbstention": false
+  },
+  {
+    "caseId": "CASE-1035",
+    "split": "development",
+    "expectedOutcome": "MISSING_REFUND",
+    "expectedAction": "ESCALATE",
+    "relevantCitations": [
+      "RB-REFUND:v1"
+    ],
+    "expectedAbstention": false
+  },
+  {
+    "caseId": "CASE-1036",
+    "split": "test",
+    "expectedOutcome": "MISSING_REFUND",
+    "expectedAction": "ESCALATE",
+    "relevantCitations": [
+      "RB-REFUND:v1"
+    ],
+    "expectedAbstention": false
+  },
+  {
+    "caseId": "CASE-1037",
+    "split": "test",
+    "expectedOutcome": "MISSING_REFUND",
+    "expectedAction": "ESCALATE",
+    "relevantCitations": [
+      "RB-REFUND:v1"
+    ],
+    "expectedAbstention": false
+  },
+  {
+    "caseId": "CASE-1038",
+    "split": "test",
+    "expectedOutcome": "MISSING_REFUND",
+    "expectedAction": "ESCALATE",
+    "relevantCitations": [
+      "RB-REFUND:v1"
+    ],
+    "expectedAbstention": false
+  },
+  {
+    "caseId": "CASE-1039",
+    "split": "test",
+    "expectedOutcome": "MISSING_REFUND",
+    "expectedAction": "ESCALATE",
+    "relevantCitations": [
+      "RB-REFUND:v1"
+    ],
+    "expectedAbstention": false
+  },
+  {
+    "caseId": "CASE-1040",
+    "split": "test",
+    "expectedOutcome": "MISSING_REFUND",
+    "expectedAction": "ESCALATE",
+    "relevantCitations": [
+      "RB-REFUND:v1"
+    ],
+    "expectedAbstention": false
+  },
+  {
+    "caseId": "CASE-1041",
+    "split": "development",
+    "expectedOutcome": "INSUFFICIENT_EVIDENCE",
+    "expectedAction": "REQUEST_EVIDENCE",
+    "relevantCitations": [
+      "RB-UNCERTAINTY:v1"
+    ],
+    "expectedAbstention": true
+  },
+  {
+    "caseId": "CASE-1042",
+    "split": "development",
+    "expectedOutcome": "INSUFFICIENT_EVIDENCE",
+    "expectedAction": "REQUEST_EVIDENCE",
+    "relevantCitations": [
+      "RB-UNCERTAINTY:v1"
+    ],
+    "expectedAbstention": true
+  },
+  {
+    "caseId": "CASE-1043",
+    "split": "development",
+    "expectedOutcome": "INSUFFICIENT_EVIDENCE",
+    "expectedAction": "REQUEST_EVIDENCE",
+    "relevantCitations": [
+      "RB-UNCERTAINTY:v1"
+    ],
+    "expectedAbstention": true
+  },
+  {
+    "caseId": "CASE-1044",
+    "split": "development",
+    "expectedOutcome": "INSUFFICIENT_EVIDENCE",
+    "expectedAction": "REQUEST_EVIDENCE",
+    "relevantCitations": [
+      "RB-UNCERTAINTY:v1"
+    ],
+    "expectedAbstention": true
+  },
+  {
+    "caseId": "CASE-1045",
+    "split": "development",
+    "expectedOutcome": "INSUFFICIENT_EVIDENCE",
+    "expectedAction": "REQUEST_EVIDENCE",
+    "relevantCitations": [
+      "RB-UNCERTAINTY:v1"
+    ],
+    "expectedAbstention": true
+  },
+  {
+    "caseId": "CASE-1046",
+    "split": "test",
+    "expectedOutcome": "INSUFFICIENT_EVIDENCE",
+    "expectedAction": "REQUEST_EVIDENCE",
+    "relevantCitations": [
+      "RB-UNCERTAINTY:v1"
+    ],
+    "expectedAbstention": true
+  },
+  {
+    "caseId": "CASE-1047",
+    "split": "test",
+    "expectedOutcome": "INSUFFICIENT_EVIDENCE",
+    "expectedAction": "REQUEST_EVIDENCE",
+    "relevantCitations": [
+      "RB-UNCERTAINTY:v1"
+    ],
+    "expectedAbstention": true
+  },
+  {
+    "caseId": "CASE-1048",
+    "split": "test",
+    "expectedOutcome": "INSUFFICIENT_EVIDENCE",
+    "expectedAction": "REQUEST_EVIDENCE",
+    "relevantCitations": [
+      "RB-UNCERTAINTY:v1"
+    ],
+    "expectedAbstention": true
+  },
+  {
+    "caseId": "CASE-1049",
+    "split": "test",
+    "expectedOutcome": "INSUFFICIENT_EVIDENCE",
+    "expectedAction": "REQUEST_EVIDENCE",
+    "relevantCitations": [
+      "RB-UNCERTAINTY:v1"
+    ],
+    "expectedAbstention": true
+  },
+  {
+    "caseId": "CASE-1050",
+    "split": "test",
+    "expectedOutcome": "INSUFFICIENT_EVIDENCE",
+    "expectedAction": "REQUEST_EVIDENCE",
+    "relevantCitations": [
+      "RB-UNCERTAINTY:v1"
+    ],
+    "expectedAbstention": true
+  },
+  {
+    "caseId": "CASE-1051",
+    "split": "development",
+    "expectedOutcome": "PROVIDER_FAILURE",
+    "expectedAction": "ESCALATE",
+    "relevantCitations": [
+      "RB-FAILURE:v1"
+    ],
+    "expectedAbstention": false
+  },
+  {
+    "caseId": "CASE-1052",
+    "split": "development",
+    "expectedOutcome": "PROVIDER_FAILURE",
+    "expectedAction": "ESCALATE",
+    "relevantCitations": [
+      "RB-FAILURE:v1"
+    ],
+    "expectedAbstention": false
+  },
+  {
+    "caseId": "CASE-1053",
+    "split": "development",
+    "expectedOutcome": "PROVIDER_FAILURE",
+    "expectedAction": "ESCALATE",
+    "relevantCitations": [
+      "RB-FAILURE:v1"
+    ],
+    "expectedAbstention": false
+  },
+  {
+    "caseId": "CASE-1054",
+    "split": "development",
+    "expectedOutcome": "PROVIDER_FAILURE",
+    "expectedAction": "ESCALATE",
+    "relevantCitations": [
+      "RB-FAILURE:v1"
+    ],
+    "expectedAbstention": false
+  },
+  {
+    "caseId": "CASE-1055",
+    "split": "development",
+    "expectedOutcome": "PROVIDER_FAILURE",
+    "expectedAction": "ESCALATE",
+    "relevantCitations": [
+      "RB-FAILURE:v1"
+    ],
+    "expectedAbstention": false
+  },
+  {
+    "caseId": "CASE-1056",
+    "split": "test",
+    "expectedOutcome": "PROVIDER_FAILURE",
+    "expectedAction": "ESCALATE",
+    "relevantCitations": [
+      "RB-FAILURE:v1"
+    ],
+    "expectedAbstention": false
+  },
+  {
+    "caseId": "CASE-1057",
+    "split": "test",
+    "expectedOutcome": "PROVIDER_FAILURE",
+    "expectedAction": "ESCALATE",
+    "relevantCitations": [
+      "RB-FAILURE:v1"
+    ],
+    "expectedAbstention": false
+  },
+  {
+    "caseId": "CASE-1058",
+    "split": "test",
+    "expectedOutcome": "PROVIDER_FAILURE",
+    "expectedAction": "ESCALATE",
+    "relevantCitations": [
+      "RB-FAILURE:v1"
+    ],
+    "expectedAbstention": false
+  },
+  {
+    "caseId": "CASE-1059",
+    "split": "test",
+    "expectedOutcome": "PROVIDER_FAILURE",
+    "expectedAction": "ESCALATE",
+    "relevantCitations": [
+      "RB-FAILURE:v1"
+    ],
+    "expectedAbstention": false
+  },
+  {
+    "caseId": "CASE-1060",
+    "split": "test",
+    "expectedOutcome": "PROVIDER_FAILURE",
+    "expectedAction": "ESCALATE",
+    "relevantCitations": [
+      "RB-FAILURE:v1"
+    ],
+    "expectedAbstention": false
+  }
+]

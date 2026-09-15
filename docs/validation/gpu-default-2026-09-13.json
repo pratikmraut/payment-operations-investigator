@@ -1,0 +1,130 @@
+{
+  "schemaVersion": "gpu-default-repair-v1",
+  "date": "2026-09-13",
+  "status": "implemented-and-running",
+  "defaultMode": "native-intel-gpu",
+  "gpuWebsite": "http://127.0.0.1:5178/#/uat-evidence",
+  "cpuWebsite": "http://127.0.0.1:5180/#/uat-evidence",
+  "nativePorts": {
+    "ollama": 11435,
+    "worker": 8093,
+    "api": 8089
+  },
+  "defaultLaunch": "tools/start.ps1",
+  "legacyWithAiLaunchResult": "already-running-gpu",
+  "demoPasswordMatchesVisibleHint": true,
+  "oldGpuPasswordRejected": true,
+  "browserLogin": {
+    "existingEdge": "passed",
+    "inApp": "passed"
+  },
+  "httpAuthChecks": 30,
+  "lifecycleGuardsPerShell": 47,
+  "typeCheck": "passed",
+  "frontendBuild": "passed",
+  "actualDefaultGpuAnswer": {
+    "generatedAt": "2026-09-13T17:45:26.612809Z",
+    "modelDurationMs": 125214,
+    "promptTokens": 6474,
+    "receiptSha256": "d16592dae83c8936e0f0c032afa869dc8d91f1c2a31abc0d757b9a0c93be7805",
+    "completionTokens": 475,
+    "semanticContentMatchesPreviouslyFailedReview": true,
+    "model": "qwen3:8b",
+    "actualCalls": 1,
+    "provider": "ollama"
+  },
+  "gpuEvidence": {
+    "offloadedLayers": 37,
+    "unloadedAfterAnswer": true,
+    "backend": "Vulkan",
+    "totalLayers": 37,
+    "device": "Intel Arc 140V"
+  },
+  "containers": [
+    {
+      "name": "payment-operations-investigator-web-1",
+      "idUnchanged": false,
+      "imageUnchanged": true,
+      "currentPorts": "127.0.0.1:5180->80/tcp"
+    },
+    {
+      "name": "payment-operations-investigator-api-1",
+      "idUnchanged": true,
+      "imageUnchanged": true,
+      "currentPorts": "127.0.0.1:8088->8088/tcp"
+    },
+    {
+      "name": "payment-operations-investigator-investigator-1",
+      "idUnchanged": true,
+      "imageUnchanged": true,
+      "currentPorts": "127.0.0.1:8091->8091/tcp"
+    },
+    {
+      "name": "payment-operations-investigator-mock-inquiry-1",
+      "idUnchanged": true,
+      "imageUnchanged": true,
+      "currentPorts": "127.0.0.1:8092->8092/tcp"
+    },
+    {
+      "name": "payment-operations-investigator-postgres-1",
+      "idUnchanged": true,
+      "imageUnchanged": true,
+      "currentPorts": "127.0.0.1:5438->5432/tcp"
+    },
+    {
+      "name": "payment-operations-investigator-ollama-1",
+      "idUnchanged": true,
+      "imageUnchanged": true,
+      "currentPorts": "127.0.0.1:11438->11434/tcp"
+    }
+  ],
+  "protectedFiles": [
+    {
+      "path": "compose.yaml",
+      "sha256": "1aa7a14db8f6a52b2170d0a1d6227f40bd2f385f2eabae75b47754fc6df0586a",
+      "unchanged": true
+    },
+    {
+      "path": "infra/compose.uat-qa.yaml",
+      "sha256": "58b9cb1ec6bc6736929ab42efde9e4d7cfc7a8674a355e2f5b877d9f34e3586b",
+      "unchanged": true
+    },
+    {
+      "path": "services/investigator/investigator/uat_answer.py",
+      "sha256": "bcea6c6042c2afd376cc8cc56a1be661142555db8765fc9d5116415a5240312c",
+      "unchanged": true
+    },
+    {
+      "path": "services/investigator/investigator/config.py",
+      "sha256": "28599f491e7295cba122c6c0b7f14dcf92f67dd00c6c1557ccae263a1d7cf4fd",
+      "unchanged": true
+    },
+    {
+      "path": "services/investigator/investigator/main.py",
+      "sha256": "e0a1438cd019370282cce0a7b472f289b12cb30b032b64978708e6e93cd2a296",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web/src/UatEvidence.tsx",
+      "sha256": "af3616e6efd6cd36dc8df38534aeb6c7567c9e051b858431f88bb7295842a7fa",
+      "unchanged": true
+    },
+    {
+      "path": "services/api/src/main/java/dev/pratik/poi/UatService.java",
+      "sha256": "a8732a80e7c88381a8646eff75a51f379c1f1b27e32b246b788af1f1ac6c75c1",
+      "unchanged": true
+    },
+    {
+      "path": "services/api/src/main/java/dev/pratik/poi/UatWorkerClient.java",
+      "sha256": "232d3b2b5907b5ea7924feaaa5d068c6551e8a4af6092dace5ad4da69525c1f4",
+      "unchanged": true
+    },
+    {
+      "path": "services/api/src/main/java/dev/pratik/poi/UatController.java",
+      "sha256": "84cbf6e26e694a420efa361411a4c535d3949ce4e2b18cde11cdbf3546109b2e",
+      "unchanged": true
+    }
+  ],
+  "rawUatDataPublished": false,
+  "cloudInferenceCalls": 0
+}

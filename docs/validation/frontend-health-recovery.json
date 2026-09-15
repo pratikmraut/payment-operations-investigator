@@ -1,0 +1,26 @@
+{
+  "status": "passed",
+  "date": "2026-09-12",
+  "reviewer": "Codex using the actual in-app browser; not independent human QA",
+  "baseUrl": "http://127.0.0.1:5178/#/system",
+  "frontendImage": "sha256:66608a06d8c09f0b0926b0550f66e55677996fbb5fb0e9498c7cbf7eb6b6f758",
+  "servedBundleVerifiedInBrowser": "/assets/index-DcpC-uwi.js",
+  "runtimeAfterRecovery": "runtime-v5-components.json",
+  "checks": [
+    "Reloaded the actual production page after deploying the 32-test web image; read its script URL from the DOM.",
+    "With worker available, System & health displayed Business API Up, Investigation worker Up and Northstar Runbooks 14.",
+    "Stopped only the idle Payment Operations Investigator worker container; no model investigation was running.",
+    "Selected Check health in the browser; Business API stayed Up, Investigation worker became Down and Runbooks displayed Unavailable instead of placeholder zero.",
+    "Restarted the same worker and waited for its Docker health check to pass.",
+    "Deployed the independently tested Java wording-only revision, reloaded and signed in again after the API session restart.",
+    "The restored page displayed both services Up, Runbooks 14, and the plain-language message: The runbook count is unavailable when the operating guidance cannot be loaded.",
+    "The default 1280-pixel viewport had a 1265-pixel document width with no page-wide horizontal overflow."
+  ],
+  "limitations": [
+    "One controlled worker outage and recovery, not an availability benchmark.",
+    "The failed-state view used the previous Java image with the same public availability behavior; the subsequent Java revision changes only its explanatory sentence.",
+    "Confirmed zero and historical absent-flag behavior are covered by the 32-test frontend receipt, not by inserting artificial production records.",
+    "Screenshots were visually inspected as native tool images in this task; no separate PNG files are claimed.",
+    "No investigation, review decision or payment command was submitted during this browser check."
+  ]
+}

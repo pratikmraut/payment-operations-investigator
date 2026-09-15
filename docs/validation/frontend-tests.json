@@ -1,0 +1,190 @@
+{
+  "status": "passed",
+  "evidenceCollectedAtUtc": "2026-09-11T22:31:27.954132+00:00",
+  "collectionMethod": "Parsed saved Vitest console, native production-build and Docker build logs from completed checks; no checks were rerun while creating this receipt.",
+  "revision": "V6 distinguishes AI-selected evidence from historical AI-written explanations; service wording and rule-owned assessment are attributed only when recorded.",
+  "frontendTests": {
+    "command": "npm test",
+    "workingDirectory": "apps/web",
+    "vitestVersion": "5.0.0",
+    "startedAtLocal": "2026-09-12T03:59:38+05:30",
+    "observedDurationSeconds": 4.8,
+    "testFilesPassed": 2,
+    "testsPassed": 34,
+    "failed": 0,
+    "commandExitCode": 0,
+    "rawJUnitGenerated": false,
+    "rawVitestReportGenerated": false,
+    "evidence": "Saved Vitest stdout/stderr console log; not a machine-readable Vitest/JUnit report.",
+    "testsRerunDuringReceiptCreation": false,
+    "consoleLogPath": "apps/web/runtime-fact-selection-tests.log",
+    "consoleLogSha256": "4ca6f5e3e86a7eedd10c4dbe5a517a15684f72af18761391db9b5f740ceb555e"
+  },
+  "formatting": {
+    "command": "node apps/web/node_modules/prettier/bin/prettier.cjs --write apps/web/src/App.tsx apps/web/src/App.test.tsx apps/web/src/types.ts",
+    "status": "passed"
+  },
+  "nativeProductionBuild": {
+    "command": "npm run build",
+    "status": "passed",
+    "commandExitCode": 0,
+    "viteVersion": "8.3.0",
+    "observedViteBuildMilliseconds": 596,
+    "javascriptBundle": "dist/assets/index-BV_8yNgi.js",
+    "javascriptBundleSha256": "713e126cec613968c1ea71bee10d0ef278f7290829ce030daa1d9bdb3d2ebfb0",
+    "consoleLogPath": "apps/web/runtime-fact-selection-native-build.log",
+    "consoleLogSha256": "779dad7e30a4cc78db5d034f5278c4414f0913ec620661a9902655f31c8f7fbe"
+  },
+  "dockerBuild": {
+    "command": "docker compose --progress plain build web",
+    "status": "passed",
+    "commandExitCode": 0,
+    "image": "payment-operations-investigator-web:latest",
+    "imageManifestList": "sha256:ab12ff1818841ed981deff5ede030b40bdbae6dc2c4fe8fb2d64445729c6aaa8",
+    "buildExecutedNpmRunBuild": true,
+    "dependencyInstallUsedCachedLayer": true,
+    "observedViteBuildMilliseconds": 201,
+    "logPath": "apps/web/runtime-fact-selection-docker-build.log",
+    "logSha256": "55271937a93cfb25cad7cea118937c2941d3a4c416c5f72810455882b1bebdbb",
+    "relevantObservedLines": [
+      "#13 [build 6/6] RUN npm run build",
+      "#13 0.954 dist/assets/index-BV_8yNgi.js   277.05 kB │ gzip: 84.55 kB",
+      "#13 0.955 ✓ built in 201ms",
+      "#16 exporting manifest list sha256:ab12ff1818841ed981deff5ede030b40bdbae6dc2c4fe8fb2d64445729c6aaa8 0.0s done",
+      " Image payment-operations-investigator-web Built "
+    ]
+  },
+  "moneyRegression": {
+    "previousAlgorithm": "Intl.NumberFormat(...).format(minorUnits / 100)",
+    "newAlgorithm": "Validate Number.isSafeInteger; BigInt quotient/remainder; Intl.formatToParts on exact whole rupees; replace fraction with the exact two-digit remainder.",
+    "currencyScope": "INR with Indian grouping and two decimal digits.",
+    "addedTests": 7,
+    "amountExamplesChecked": 26,
+    "demonstratedBeforeAfter": [
+      {
+        "minorUnits": 9007199254740982,
+        "before": "₹9,00,71,99,25,47,409.81",
+        "after": "₹9,00,71,99,25,47,409.82"
+      },
+      {
+        "minorUnits": 9007199254740991,
+        "before": "₹9,00,71,99,25,47,409.90",
+        "after": "₹9,00,71,99,25,47,409.91"
+      }
+    ],
+    "beforeEvidence": "Coordinating agent reproduced the prior Number-division formatter in Node before requesting this fix.",
+    "afterEvidence": "Exact string assertions passed again in this 34-test run; the original money-fix receipt is preserved separately.",
+    "coverage": [
+      "Both positive safe-integer boundary examples and their negative equivalents.",
+      "Zero, one paise, original CASE-1001/1002/1003 amounts and Indian lakh/crore grouping.",
+      "Negative zero and -1, -9, -82, -99, -100 and -101 paise retain their sign and two digits.",
+      "Unsafe integers, fractional numbers, NaN and infinities render Invalid amount."
+    ],
+    "invalidInputDisplay": "Invalid amount"
+  },
+  "sourceProvenance": {
+    "method": "SHA-256 of working source/configuration after the passing checks. No application source changed between those checks and this receipt; README validation details were updated afterward. This is not source extraction from the Docker image.",
+    "filesHashed": 17,
+    "filesSha256": {
+      "apps/web/.dockerignore": "ed2fa12d7d82715b94448c2a8fdf65c7af47f15f16f5054b13a5108e0cf98324",
+      "apps/web/Dockerfile": "8d94bcac77609093c01f2c18acfaa499dd1cc5061393fa3ca49f9f060b884f11",
+      "apps/web/index.html": "7a88f99132d1d8cbf147fbee5de6fcf9285136b912a8f8074f47168f50c11c32",
+      "apps/web/nginx.conf": "b3f39e28e4e295e02b88f6e22ced7c8ccfeb39b9a4e659566ae9bde5b897e0c7",
+      "apps/web/package-lock.json": "4136fea4dcb470fb3f83ff680f5b6dfc651bbc65a83d0dc23431a509b22da08c",
+      "apps/web/package.json": "591bb352b21ce96b85941efcff2815f9416dcfd918e2cd46c575122a608042b0",
+      "apps/web/src/api.test.ts": "0cb66e69ee2ce5cc5627675832131bc2e84daade80dc032d3d8b556f7abd7f0d",
+      "apps/web/src/api.ts": "a2408d993295cdbbca8636d1f7c93511ae4f347f000f6b87f02fe57161cfa9ce",
+      "apps/web/src/App.test.tsx": "597938e7b326ee5836ba9581a5ecfaaad49a03a35cb0fa1a13bb4e699ae85ebc",
+      "apps/web/src/App.tsx": "da8126d7d71ff9fd177a7cdd6e4779d06f3d83044900f96745e9f7ae7bd77fac",
+      "apps/web/src/main.tsx": "b8c1e566187ea5d53bf9b4c2f4cd8fc8193b4958afa219e57d39b76153f4fb20",
+      "apps/web/src/styles.css": "bbcaf6cc7a45dcb0596a70069675e37eeec20932fbd4eac80b3aa014c06f4822",
+      "apps/web/src/test-setup.ts": "475c7500129ce15530c7b8070b2838a840f96ac75ce83a0a413ef66ae24b5d64",
+      "apps/web/src/types.ts": "ab0784056158376bc06f1833027861236ae3a872f0fe74d7019a0f6554365c57",
+      "apps/web/src/vite-env.d.ts": "65996936fbb042915f7b74a200fcdde7e410f32a669b1ab9597cfaa4b0faddb5",
+      "apps/web/tsconfig.json": "23090ea4d94a9e5399789123db2620215ec5c26f8430171dd3d399618d17a4bf",
+      "apps/web/vite.config.ts": "33666f715738218ce6f0fb1661a64bffcbccd06112b97b7ab4f6971d4a6db5ab"
+    }
+  },
+  "previousProvenanceRevision": {
+    "testsPassed": 24,
+    "imageManifestList": "sha256:de9516b58d68fc2495f704693e3fd80cc19c63c29ca483efc3a61a9724596578",
+    "logPath": "apps/web/runtime-synthesis-build.log",
+    "logSha256": "bcb27a00529be64b0682a9ed2a6bef180459275380051314e68233de8aaaf884",
+    "status": "historical; precedes exact-money fix"
+  },
+  "limitations": [
+    "No machine-readable JUnit/Vitest report was produced; completed test console logs and their digests are recorded.",
+    "Build/test logs and generated bundles are local artifacts excluded from source packaging; this receipt preserves their identities and summaries.",
+    "The two new provenance tests render controlled saved results, not real V6 provider outputs.",
+    "No service deployment, new browser journey, model call or API image rebuild was performed in this frontend task.",
+    "Typed selection limits free-form wording; this UI change does not prove catalog correctness, selection completeness, source-record truth or model accuracy.",
+    "Historical money, provider labels, health availability, authorization and review behavior remain covered by the full suite."
+  ],
+  "providerLabelCorrection": {
+    "fields": {
+      "amountMinor": "Payment amount",
+      "feeMinor": "Provider fee",
+      "refundMinor": "Refund amount",
+      "payoutMinor": "Payout amount",
+      "paymentId": "Provider payment reference",
+      "asOf": "Snapshot at"
+    },
+    "unknownFields": "Existing generic humanized label fallback is preserved.",
+    "newTestsAdded": 0,
+    "existingSuiteRerun": true,
+    "browserQaPerformedByThisTask": false
+  },
+  "previousMoneyRevision": {
+    "testsPassed": 31,
+    "imageManifestList": "sha256:978d5fb67a8159dfd9af46b75d509ba3d414c67b76809983bf5479c5a8f9868b",
+    "receiptPath": "docs/validation/frontend-tests-31-pre-provider-labels.json",
+    "receiptSha256": "1f94edfe38fc658a98d91c4455412f743a07261231135893db65cbb79f028dbd",
+    "status": "historical; predates provider label correction"
+  },
+  "knowledgeAvailabilityCorrection": {
+    "behavior": [
+      "knowledgeAvailable=false and placeholder runbookCount=0 displays Unavailable.",
+      "knowledgeAvailable=true with actual runbookCount=0 displays 0.",
+      "A historical response with no availability flag retains the supplied count."
+    ],
+    "newTestsAdded": 1,
+    "mockedResponseScenarios": 3,
+    "browserQaPerformedByThisTask": false
+  },
+  "previousProviderLabelRevision": {
+    "testsPassed": 31,
+    "imageManifestList": "sha256:fde5de47870a21cdb186dd8254f31aba3335c96c8d2e43a1fbdfe6a69aaeb448",
+    "receiptPath": "docs/validation/frontend-tests-31-pre-knowledge-health.json",
+    "receiptSha256": "8c55efd6a844ade05bf39758f538ab2c67469846d1b1623ed9f252146e608d08",
+    "status": "historical; predates the knowledge-availability display correction"
+  },
+  "factSelectionProvenance": {
+    "newTestsAdded": 2,
+    "synthesisScope": "fact-selection",
+    "findingSource": "service-rendered-facts",
+    "badge": "AI-selected evidence",
+    "wordingCaption": "The model selected facts. Their wording and evidence links are supplied by the service.",
+    "captionRequiresRecordedFindingSource": true,
+    "assessmentCaptionRequiresRecordedAssessmentSource": true,
+    "optionalMetadata": [
+      "findingSource",
+      "factCatalogVersion",
+      "factCatalogHash",
+      "selectedFactIds"
+    ],
+    "actualModelCallsAndTokensPreserved": true,
+    "historicalFindingOnlyLabel": "AI evidence explanation",
+    "existingPlannerReplayAndUnknownScopeTestsRetained": true,
+    "findingsAndLinksRenderedAsReceived": true,
+    "doesNotClaimCompletedReview": true,
+    "publicFindingRouteAndDatabaseUnchanged": true
+  },
+  "previousKnowledgeAvailabilityRevision": {
+    "testsPassed": 32,
+    "imageManifestList": "sha256:66608a06d8c09f0b0926b0550f66e55677996fbb5fb0e9498c7cbf7eb6b6f758",
+    "receiptPath": "docs/validation/frontend-tests-32-pre-fact-selection.json",
+    "receiptSha256": "83ccc32da519c8cb0bec14f463b76a27153172abf25b0fa4a4ebc07f77f042a7",
+    "status": "historical; predates V6 fact-selection provenance",
+    "rawLogsPreserved": "apps/web/runtime-knowledge-health-*.log"
+  }
+}

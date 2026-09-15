@@ -1,0 +1,37 @@
+{
+  "status": "passed",
+  "timestamp": "2026-09-11T23:44:31.648067+00:00",
+  "sourceFilesInspected": 237,
+  "jsonFilesParsed": 112,
+  "localMarkdownFileLinksResolved": 650,
+  "datasetRegeneration": {
+    "status": "verified",
+    "files": 4,
+    "cases": 60,
+    "runbookVersions": 15,
+    "seed": 20260911
+  },
+  "screenshots": [
+    {
+      "path": "docs/screenshots/case-queue.jpg",
+      "format": "JPEG",
+      "width": 622,
+      "height": 870,
+      "sha256": "9f1f9d632f9464a00e3909eb1ab15b98fa7e721acc6bd9973c7bc1a28d96229f"
+    },
+    {
+      "path": "docs/screenshots/refund-investigation.jpg",
+      "format": "JPEG",
+      "width": 622,
+      "height": 870,
+      "sha256": "699b8570fb325a1f25fe0d5000dae0a1e9b6b05de55cbdaa07ab4f998dfa6953"
+    }
+  ],
+  "browserChecks": 14,
+  "rehearsalReportHashAndCleanupVerified": true,
+  "limitations": [
+    "Markdown check resolves linked local files; it is not a browser link click or exhaustive anchor validation.",
+    "Checks inspect the source file set before final packaging; the archive is verified separately.",
+    "Image bytes are unchanged CUA browser captures; this audit checks format, size and digest, while visual inspection was performed in the task."
+  ]
+}

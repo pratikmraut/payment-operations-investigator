@@ -1,0 +1,115 @@
+{
+  "status": "passed",
+  "timestamp": "2026-09-11T23:17:18.331887+00:00",
+  "mode": "ollama",
+  "baseUrl": "http://127.0.0.1:5178",
+  "checks": [
+    "health",
+    "anonymous access denied",
+    "all four demo roles authenticate",
+    "tenant-scoped list",
+    "cross-tenant detail denied",
+    "viewer mutation denied",
+    "CSRF required",
+    "actual worker investigation with evidence and citations",
+    "case version/state refreshed",
+    "analyst cannot approve",
+    "stale version rejected",
+    "review persisted and idempotent retry returned same decision",
+    "idempotency key payload conflict",
+    "authorized export contains durable evidence without labels",
+    "audit trail",
+    "maker-checker self review denied",
+    "knowledge library tenant scope"
+  ],
+  "durationSeconds": 59.869,
+  "caseId": "CASE-1002",
+  "investigationId": "INV-b1e1753e-bcd9-49c8-91b6-d653c5ca4ffb",
+  "decisionId": "DEC-3abf0e93-0b89-4f66-b1d7-b19e2cdda534",
+  "modelMetrics": {
+    "durationMs": 29799.978,
+    "retrievalMs": 4.506,
+    "toolCount": 4,
+    "modelCalls": 2,
+    "inputTokens": 1226,
+    "outputTokens": 130,
+    "retrievalMode": "lexical",
+    "model": "qwen3:4b-instruct",
+    "assessmentSource": "deterministic-evidence-rules",
+    "synthesisScope": "fact-selection",
+    "modelThreads": 4,
+    "modelContextTokens": 4096,
+    "modelTimeoutSeconds": 180.0,
+    "toolOutputTokenLimit": 384,
+    "synthesisOutputTokenLimit": 384,
+    "findingSource": "service-rendered-facts",
+    "factCatalogVersion": 1,
+    "factCatalogHash": "d838ba1333073dfb58c3938d6b9462bd28754a6ecfcac91bb57443cadfc86c77",
+    "selectedFactIds": [
+      "FACT-TIMEOUT-OBSERVATION",
+      "FACT-PROVIDER-STATUS"
+    ],
+    "selectedFactProvenance": [
+      {
+        "id": "FACT-TIMEOUT-OBSERVATION",
+        "sourceTools": [
+          "get_payment_timeline"
+        ],
+        "evidenceIds": [
+          "EVT-1002-3"
+        ],
+        "citationIds": [
+          "RB-TIMEOUT:v1"
+        ]
+      },
+      {
+        "id": "FACT-PROVIDER-STATUS",
+        "sourceTools": [
+          "get_payment_timeline"
+        ],
+        "evidenceIds": [
+          "PROVIDER:PRV-1002"
+        ],
+        "citationIds": [
+          "RB-TIMEOUT:v1"
+        ]
+      }
+    ],
+    "toolSelectionMs": 9002.62,
+    "toolSelectionProvider": {
+      "model": "qwen3:4b-instruct",
+      "created_at": "2026-09-11T23:16:27.905804118Z",
+      "done": true,
+      "done_reason": "stop",
+      "total_duration": 8984178963,
+      "load_duration": 1026732,
+      "prompt_eval_count": 507,
+      "prompt_eval_duration": 888724000,
+      "eval_count": 108,
+      "eval_duration": 7942218000,
+      "logprobs": null,
+      "model_name": "qwen3:4b-instruct",
+      "model_provider": "ollama"
+    },
+    "synthesisMs": 20782.855,
+    "synthesisProvider": {
+      "model": "qwen3:4b-instruct",
+      "created_at": "2026-09-11T23:16:48.697358596Z",
+      "done": true,
+      "done_reason": "stop",
+      "total_duration": 20771493891,
+      "load_duration": 1073682,
+      "prompt_eval_count": 719,
+      "prompt_eval_duration": 18902808000,
+      "eval_count": 22,
+      "eval_duration": 1785971000,
+      "logprobs": null,
+      "model_name": "qwen3:4b-instruct",
+      "model_provider": "ollama"
+    }
+  },
+  "limitations": [
+    "Local demo authentication; this acceptance run does not establish production security.",
+    "Acceptance scenarios are development cases, not held-out benchmark results."
+  ]
+}

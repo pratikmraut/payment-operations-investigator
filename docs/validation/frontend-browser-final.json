@@ -1,0 +1,37 @@
+{
+  "status": "passed",
+  "date": "2026-09-12",
+  "reviewer": "Codex using the actual in-app browser, not an independent human reviewer",
+  "baseUrl": "http://127.0.0.1:5178",
+  "frontendImage": "sha256:fde5de47870a21cdb186dd8254f31aba3335c96c8d2e43a1fbdfe6a69aaeb448",
+  "servedBundle": "/assets/index-ToYKzIzZ.js",
+  "servedBundleSha256": "e78738ab0f1370b2d8afe90a57d425bcf9492652c9606921e257ccb784792d64",
+  "runtimeEvidence": "runtime-v4.json",
+  "checks": [
+    "Fresh production tab loaded and retained the authorized analyst session.",
+    "CASE-1003 provider fields say Payment amount, Provider fee, Refund amount, Payout amount, Provider payment reference and Snapshot at.",
+    "Displayed gross payment INR 18,824.69, positive provider fee INR 329.43, payout INR 18,495.26, zero refund INR 0.00 and signed ledger fee -INR 329.43 match the synthetic snapshot.",
+    "At the default 1280x720 viewport the document width was 1265, with no page-wide horizontal overflow.",
+    "At the temporary 390x844 viewport the document width was 375; the long provider-reference label wrapped and values remained visible. The tab strip has its own horizontal scrolling.",
+    "The viewport override was reset and the document returned to width 1265 in the default 1280x720 viewport.",
+    "CASE-1041 displayed Ollama tool planning and explicitly stated that no model explanation was generated because evidence was insufficient.",
+    "CASE-1041 Tool trace displayed four executed tools, one actual model call, qwen3:4b-instruct, lexical retrieval and the saved 34.78-second graph duration.",
+    "CASE-1041 displayed Request Evidence as a proposal requiring independent review; the saved case was AWAITING_REVIEW.",
+    "Selecting the saved v4 CASE-1003 investigation displayed AI evidence explanation, the rule-authorship caption and Historical investigation.",
+    "Selecting the earlier full-synthesis CASE-1003 investigation displayed Ollama inference and Historical investigation without retroactively assigning its summary/proposal to rules.",
+    "A versioned RB-TIMEOUT:v1 citation dialog was visually reviewed on the immediately preceding provenance/money bundle; provider-label changes did not alter that component. Its initial focus was Close citation. Earlier keyboard-dialog checks have separate milestone evidence."
+  ],
+  "investigations": {
+    "plannerOnly": "INV-8386f184-ca48-4720-9400-2eb6172b10f7",
+    "findingOnly": "INV-9d0f6b48-29db-4491-89f3-20005df7bb95",
+    "historicalFullSynthesis": "INV-f07edabc-8104-4a80-8ac3-4484bc108d2f"
+  },
+  "limitations": [
+    "These browser checks inspect real saved results and presentation; they do not establish model explanation correctness.",
+    "The v4 explanation review separately identifies two material errors in the six-case model development sample.",
+    "The displayed insufficient-evidence list is currently generic and does not yet provide an actionable processor/ledger request checklist.",
+    "Screenshots were visually inspected as native tool images in the task. No separate screenshot image files are claimed in the source archive.",
+    "Extreme safe-integer money values are covered by the frontend test receipt, not by newly inserted browser cases.",
+    "No new investigation or reviewer decision was submitted during this browser observation. Earlier browser review and current HTTP workflow acceptance are separate evidence."
+  ]
+}

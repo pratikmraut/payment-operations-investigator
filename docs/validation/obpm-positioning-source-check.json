@@ -1,0 +1,279 @@
+{
+  "CheckedAt": "2026-09-12T09:45:03.4108297Z",
+  "Reference": "docs/validation/final-build-provenance.json",
+  "Checked": 45,
+  "Mismatches": 0,
+  "Scope": "Current local source hashes only; no fresh running-service or LLM verification",
+  "Files": [
+    {
+      "Path": "services/api/src/main/java/dev/pratik/poi/Actor.java",
+      "ExpectedSha256": "bb79480040fb0016ca4517d2f56bfa5dded2d936402e3cf64cfc04d97b4aeb1d",
+      "ActualSha256": "bb79480040fb0016ca4517d2f56bfa5dded2d936402e3cf64cfc04d97b4aeb1d",
+      "Matches": true
+    },
+    {
+      "Path": "services/api/src/main/java/dev/pratik/poi/ApiController.java",
+      "ExpectedSha256": "6295b7a3b9713ba8615fe0b316209fb23d2e7b928306d846ccce11b60d129813",
+      "ActualSha256": "6295b7a3b9713ba8615fe0b316209fb23d2e7b928306d846ccce11b60d129813",
+      "Matches": true
+    },
+    {
+      "Path": "services/api/src/main/java/dev/pratik/poi/ApiException.java",
+      "ExpectedSha256": "86522fc2885d2f82ba1ed29fe18c9b28c930f47bcf5d0ad47fba23cccd4dfdc5",
+      "ActualSha256": "86522fc2885d2f82ba1ed29fe18c9b28c930f47bcf5d0ad47fba23cccd4dfdc5",
+      "Matches": true
+    },
+    {
+      "Path": "services/api/src/main/java/dev/pratik/poi/Application.java",
+      "ExpectedSha256": "8c05a675c6ce0b45f7efaa992c4dab1f25d578c3eadc904c81969ae73624d5c9",
+      "ActualSha256": "8c05a675c6ce0b45f7efaa992c4dab1f25d578c3eadc904c81969ae73624d5c9",
+      "Matches": true
+    },
+    {
+      "Path": "services/api/src/main/java/dev/pratik/poi/AuthController.java",
+      "ExpectedSha256": "2a058d1488a4d7eba2cc0f8e6636f0fca1bb009d9881c7c5c39150fb4e605e95",
+      "ActualSha256": "2a058d1488a4d7eba2cc0f8e6636f0fca1bb009d9881c7c5c39150fb4e605e95",
+      "Matches": true
+    },
+    {
+      "Path": "services/api/src/main/java/dev/pratik/poi/CaseStore.java",
+      "ExpectedSha256": "c50280cebb7e6abc8d969be08c7c1becbaef9e69730a6ecfc9e85644718c1301",
+      "ActualSha256": "c50280cebb7e6abc8d969be08c7c1becbaef9e69730a6ecfc9e85644718c1301",
+      "Matches": true
+    },
+    {
+      "Path": "services/api/src/main/java/dev/pratik/poi/ErrorHandler.java",
+      "ExpectedSha256": "a1ac4b6c2baa9f0341b9a069627c1446cf5dd9c7f767208c97e4e5c32be43e92",
+      "ActualSha256": "a1ac4b6c2baa9f0341b9a069627c1446cf5dd9c7f767208c97e4e5c32be43e92",
+      "Matches": true
+    },
+    {
+      "Path": "services/api/src/main/java/dev/pratik/poi/InvestigationService.java",
+      "ExpectedSha256": "bfb4dce2b2a15b81a2b3511fee7dcd3c839f602724a1292667b8ff94e3d8e3de",
+      "ActualSha256": "bfb4dce2b2a15b81a2b3511fee7dcd3c839f602724a1292667b8ff94e3d8e3de",
+      "Matches": true
+    },
+    {
+      "Path": "services/api/src/main/java/dev/pratik/poi/JsonSupport.java",
+      "ExpectedSha256": "25737aa83615383897faaf2b8f0e4b5aa86f402f5a139ec88dea8788da618bd0",
+      "ActualSha256": "25737aa83615383897faaf2b8f0e4b5aa86f402f5a139ec88dea8788da618bd0",
+      "Matches": true
+    },
+    {
+      "Path": "services/api/src/main/java/dev/pratik/poi/MoneyFacts.java",
+      "ExpectedSha256": "d5aea88949bf0d0bfe9cd599cc6cc5c9f3fe1b277895b40eb8e8f992bc8cfc78",
+      "ActualSha256": "d5aea88949bf0d0bfe9cd599cc6cc5c9f3fe1b277895b40eb8e8f992bc8cfc78",
+      "Matches": true
+    },
+    {
+      "Path": "services/api/src/main/java/dev/pratik/poi/SecurityConfig.java",
+      "ExpectedSha256": "a42f7cc012e1445f4a2fa4d032fef7cdcc1463a999d6bc0feddfc9f41e3ad660",
+      "ActualSha256": "a42f7cc012e1445f4a2fa4d032fef7cdcc1463a999d6bc0feddfc9f41e3ad660",
+      "Matches": true
+    },
+    {
+      "Path": "services/api/src/main/java/dev/pratik/poi/WorkerClient.java",
+      "ExpectedSha256": "9ab07422abeb84c12a6a9f24e360f95b9e4b26eb45863052334e2dd1316aca4b",
+      "ActualSha256": "9ab07422abeb84c12a6a9f24e360f95b9e4b26eb45863052334e2dd1316aca4b",
+      "Matches": true
+    },
+    {
+      "Path": "services/api/src/main/resources/application-postgres.yml",
+      "ExpectedSha256": "1c00157aca0c4aed5b970ad650e2ef85f11c8ba0c9aa5e9a8c5384e235ec2a23",
+      "ActualSha256": "1c00157aca0c4aed5b970ad650e2ef85f11c8ba0c9aa5e9a8c5384e235ec2a23",
+      "Matches": true
+    },
+    {
+      "Path": "services/api/src/main/resources/application.yml",
+      "ExpectedSha256": "146b963afec6522512ed8db054041b944eedc95e7bfce50901816741297b75df",
+      "ActualSha256": "146b963afec6522512ed8db054041b944eedc95e7bfce50901816741297b75df",
+      "Matches": true
+    },
+    {
+      "Path": "services/api/src/main/resources/schema.sql",
+      "ExpectedSha256": "2853a286ff0d83a4fc85c55bafc104fe1fb448102512903d825a5320f540df1f",
+      "ActualSha256": "2853a286ff0d83a4fc85c55bafc104fe1fb448102512903d825a5320f540df1f",
+      "Matches": true
+    },
+    {
+      "Path": "services/api/src/test/java/dev/pratik/poi/ApiIntegrationTest.java",
+      "ExpectedSha256": "869acf0ee00209d3dca21df2484c2be93a6ec6eb80603c4bd04c5b69f8fc069e",
+      "ActualSha256": "869acf0ee00209d3dca21df2484c2be93a6ec6eb80603c4bd04c5b69f8fc069e",
+      "Matches": true
+    },
+    {
+      "Path": "services/api/src/test/java/dev/pratik/poi/MoneyFactsTest.java",
+      "ExpectedSha256": "ccb32db6d253342fe1d2a73f573b2aa8de454af2cc60b6d25eb866c563f714c6",
+      "ActualSha256": "ccb32db6d253342fe1d2a73f573b2aa8de454af2cc60b6d25eb866c563f714c6",
+      "Matches": true
+    },
+    {
+      "Path": "services/api/pom.xml",
+      "ExpectedSha256": "55ffabae4905895d14d83d7a551d1c2b1eac2b4e054f784c3a565fbaa47f6ab4",
+      "ActualSha256": "55ffabae4905895d14d83d7a551d1c2b1eac2b4e054f784c3a565fbaa47f6ab4",
+      "Matches": true
+    },
+    {
+      "Path": "apps/web/.dockerignore",
+      "ExpectedSha256": "ed2fa12d7d82715b94448c2a8fdf65c7af47f15f16f5054b13a5108e0cf98324",
+      "ActualSha256": "ed2fa12d7d82715b94448c2a8fdf65c7af47f15f16f5054b13a5108e0cf98324",
+      "Matches": true
+    },
+    {
+      "Path": "apps/web/Dockerfile",
+      "ExpectedSha256": "8d94bcac77609093c01f2c18acfaa499dd1cc5061393fa3ca49f9f060b884f11",
+      "ActualSha256": "8d94bcac77609093c01f2c18acfaa499dd1cc5061393fa3ca49f9f060b884f11",
+      "Matches": true
+    },
+    {
+      "Path": "apps/web/index.html",
+      "ExpectedSha256": "7a88f99132d1d8cbf147fbee5de6fcf9285136b912a8f8074f47168f50c11c32",
+      "ActualSha256": "7a88f99132d1d8cbf147fbee5de6fcf9285136b912a8f8074f47168f50c11c32",
+      "Matches": true
+    },
+    {
+      "Path": "apps/web/nginx.conf",
+      "ExpectedSha256": "b3f39e28e4e295e02b88f6e22ced7c8ccfeb39b9a4e659566ae9bde5b897e0c7",
+      "ActualSha256": "b3f39e28e4e295e02b88f6e22ced7c8ccfeb39b9a4e659566ae9bde5b897e0c7",
+      "Matches": true
+    },
+    {
+      "Path": "apps/web/package-lock.json",
+      "ExpectedSha256": "4136fea4dcb470fb3f83ff680f5b6dfc651bbc65a83d0dc23431a509b22da08c",
+      "ActualSha256": "4136fea4dcb470fb3f83ff680f5b6dfc651bbc65a83d0dc23431a509b22da08c",
+      "Matches": true
+    },
+    {
+      "Path": "apps/web/package.json",
+      "ExpectedSha256": "591bb352b21ce96b85941efcff2815f9416dcfd918e2cd46c575122a608042b0",
+      "ActualSha256": "591bb352b21ce96b85941efcff2815f9416dcfd918e2cd46c575122a608042b0",
+      "Matches": true
+    },
+    {
+      "Path": "apps/web/src/api.test.ts",
+      "ExpectedSha256": "0cb66e69ee2ce5cc5627675832131bc2e84daade80dc032d3d8b556f7abd7f0d",
+      "ActualSha256": "0cb66e69ee2ce5cc5627675832131bc2e84daade80dc032d3d8b556f7abd7f0d",
+      "Matches": true
+    },
+    {
+      "Path": "apps/web/src/api.ts",
+      "ExpectedSha256": "a2408d993295cdbbca8636d1f7c93511ae4f347f000f6b87f02fe57161cfa9ce",
+      "ActualSha256": "a2408d993295cdbbca8636d1f7c93511ae4f347f000f6b87f02fe57161cfa9ce",
+      "Matches": true
+    },
+    {
+      "Path": "apps/web/src/App.test.tsx",
+      "ExpectedSha256": "597938e7b326ee5836ba9581a5ecfaaad49a03a35cb0fa1a13bb4e699ae85ebc",
+      "ActualSha256": "597938e7b326ee5836ba9581a5ecfaaad49a03a35cb0fa1a13bb4e699ae85ebc",
+      "Matches": true
+    },
+    {
+      "Path": "apps/web/src/App.tsx",
+      "ExpectedSha256": "da8126d7d71ff9fd177a7cdd6e4779d06f3d83044900f96745e9f7ae7bd77fac",
+      "ActualSha256": "da8126d7d71ff9fd177a7cdd6e4779d06f3d83044900f96745e9f7ae7bd77fac",
+      "Matches": true
+    },
+    {
+      "Path": "apps/web/src/main.tsx",
+      "ExpectedSha256": "b8c1e566187ea5d53bf9b4c2f4cd8fc8193b4958afa219e57d39b76153f4fb20",
+      "ActualSha256": "b8c1e566187ea5d53bf9b4c2f4cd8fc8193b4958afa219e57d39b76153f4fb20",
+      "Matches": true
+    },
+    {
+      "Path": "apps/web/src/styles.css",
+      "ExpectedSha256": "bbcaf6cc7a45dcb0596a70069675e37eeec20932fbd4eac80b3aa014c06f4822",
+      "ActualSha256": "bbcaf6cc7a45dcb0596a70069675e37eeec20932fbd4eac80b3aa014c06f4822",
+      "Matches": true
+    },
+    {
+      "Path": "apps/web/src/test-setup.ts",
+      "ExpectedSha256": "475c7500129ce15530c7b8070b2838a840f96ac75ce83a0a413ef66ae24b5d64",
+      "ActualSha256": "475c7500129ce15530c7b8070b2838a840f96ac75ce83a0a413ef66ae24b5d64",
+      "Matches": true
+    },
+    {
+      "Path": "apps/web/src/types.ts",
+      "ExpectedSha256": "ab0784056158376bc06f1833027861236ae3a872f0fe74d7019a0f6554365c57",
+      "ActualSha256": "ab0784056158376bc06f1833027861236ae3a872f0fe74d7019a0f6554365c57",
+      "Matches": true
+    },
+    {
+      "Path": "apps/web/src/vite-env.d.ts",
+      "ExpectedSha256": "65996936fbb042915f7b74a200fcdde7e410f32a669b1ab9597cfaa4b0faddb5",
+      "ActualSha256": "65996936fbb042915f7b74a200fcdde7e410f32a669b1ab9597cfaa4b0faddb5",
+      "Matches": true
+    },
+    {
+      "Path": "apps/web/tsconfig.json",
+      "ExpectedSha256": "23090ea4d94a9e5399789123db2620215ec5c26f8430171dd3d399618d17a4bf",
+      "ActualSha256": "23090ea4d94a9e5399789123db2620215ec5c26f8430171dd3d399618d17a4bf",
+      "Matches": true
+    },
+    {
+      "Path": "apps/web/vite.config.ts",
+      "ExpectedSha256": "33666f715738218ce6f0fb1661a64bffcbccd06112b97b7ab4f6971d4a6db5ab",
+      "ActualSha256": "33666f715738218ce6f0fb1661a64bffcbccd06112b97b7ab4f6971d4a6db5ab",
+      "Matches": true
+    },
+    {
+      "Path": "services/investigator/investigator/__init__.py",
+      "ExpectedSha256": "b5391400f0a9c6a6d4f0d8913021edf256e87d0577fa86146ae489bd45bf2173",
+      "ActualSha256": "b5391400f0a9c6a6d4f0d8913021edf256e87d0577fa86146ae489bd45bf2173",
+      "Matches": true
+    },
+    {
+      "Path": "services/investigator/investigator/config.py",
+      "ExpectedSha256": "d660f8ce92e00ef8a7a00dd3790f6fa8cf3f5e2b46f698ab057ef453fd6024b0",
+      "ActualSha256": "d660f8ce92e00ef8a7a00dd3790f6fa8cf3f5e2b46f698ab057ef453fd6024b0",
+      "Matches": true
+    },
+    {
+      "Path": "services/investigator/investigator/errors.py",
+      "ExpectedSha256": "e57dde3e04b0f9cd31bfd827d5193f6e331251bf52a1a0c09a29ff2c285a4469",
+      "ActualSha256": "e57dde3e04b0f9cd31bfd827d5193f6e331251bf52a1a0c09a29ff2c285a4469",
+      "Matches": true
+    },
+    {
+      "Path": "services/investigator/investigator/evidence.py",
+      "ExpectedSha256": "3d0ef74b64bd528bf966918d3ee9f58175a9c00868fbf89caeb9457f3bfd95b0",
+      "ActualSha256": "3d0ef74b64bd528bf966918d3ee9f58175a9c00868fbf89caeb9457f3bfd95b0",
+      "Matches": true
+    },
+    {
+      "Path": "services/investigator/investigator/facts.py",
+      "ExpectedSha256": "a7745c344efb3100c8b6a762b9c073e0f45804b0f5c95f0e90b373c5001d6bb4",
+      "ActualSha256": "a7745c344efb3100c8b6a762b9c073e0f45804b0f5c95f0e90b373c5001d6bb4",
+      "Matches": true
+    },
+    {
+      "Path": "services/investigator/investigator/graph.py",
+      "ExpectedSha256": "b1116509b1ffdf5157a878e772d37421d7a6508afc5dd0904f22383cd1b01180",
+      "ActualSha256": "b1116509b1ffdf5157a878e772d37421d7a6508afc5dd0904f22383cd1b01180",
+      "Matches": true
+    },
+    {
+      "Path": "services/investigator/investigator/main.py",
+      "ExpectedSha256": "8ed3dcb86e2c8facad9f54c20a31ce4f6c418fa759e95ee3e14c906d3c4509a0",
+      "ActualSha256": "8ed3dcb86e2c8facad9f54c20a31ce4f6c418fa759e95ee3e14c906d3c4509a0",
+      "Matches": true
+    },
+    {
+      "Path": "services/investigator/investigator/models.py",
+      "ExpectedSha256": "0ad10f8f8d65472d20d2da366643472d02d6aae23e395da4ecda6e32b071ea89",
+      "ActualSha256": "0ad10f8f8d65472d20d2da366643472d02d6aae23e395da4ecda6e32b071ea89",
+      "Matches": true
+    },
+    {
+      "Path": "services/investigator/investigator/retrieval.py",
+      "ExpectedSha256": "06e1c41d73daaef156c78905e9112f9adcc84d723f7f97dd080a275ab28f0c19",
+      "ActualSha256": "06e1c41d73daaef156c78905e9112f9adcc84d723f7f97dd080a275ab28f0c19",
+      "Matches": true
+    },
+    {
+      "Path": "services/investigator/investigator/vector_store.py",
+      "ExpectedSha256": "d1fc0b89efb7c9bcc62b57a2c5cce10e623a719724efb7c30380c979d11358bb",
+      "ActualSha256": "d1fc0b89efb7c9bcc62b57a2c5cce10e623a719724efb7c30380c979d11358bb",
+      "Matches": true
+    }
+  ]
+}

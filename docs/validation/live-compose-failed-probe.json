@@ -1,0 +1,107 @@
+{
+  "acceptanceStatus": "FAILED_NO_FALLBACK",
+  "scope": "Selected synthetic live Java-to-Docker-worker development acceptance. Read-only checkpoint extraction, no inference repeated.",
+  "javaRequestId": "2c15234e-4da3-4774-bfa0-e2d915e57a11",
+  "investigationId": "INV-215bf7f2-fcb1-48a4-9603-0e746283bf4a",
+  "checkpointId": "1f1ae178-4007-629a-8004-242c90dbe53c",
+  "mode": "ollama",
+  "caseId": "CASE-1002",
+  "question": "Investigate the observed payment state and recommend the next case action with evidence.",
+  "candidate": {
+    "outcome": "TIMEOUT_AFTER_SUCCESS",
+    "summary": "Timeout at transport level; provider confirms success and one ledger capture exists. No further action required.",
+    "confidence": "INSUFFICIENT",
+    "findings": [],
+    "missingEvidence": [],
+    "proposal": {
+      "action": "RESOLVE_CASE",
+      "reason": "Payment confirmed by provider and one matching ledger entry; no further action needed."
+    }
+  },
+  "selectedTools": [
+    {
+      "name": "get_payment_timeline",
+      "args": {
+        "caseId": "CASE-1002"
+      }
+    },
+    {
+      "name": "compare_settlement",
+      "args": {
+        "caseId": "CASE-1002"
+      }
+    },
+    {
+      "name": "inspect_webhooks",
+      "args": {
+        "caseId": "CASE-1002"
+      }
+    },
+    {
+      "name": "check_refund",
+      "args": {
+        "caseId": "CASE-1002"
+      }
+    }
+  ],
+  "modelTimings": {
+    "toolSelectionMs": 94524.259,
+    "toolSelectionProvider": {
+      "model": "qwen3:4b-instruct",
+      "created_at": "2026-09-11T19:30:41.561820953Z",
+      "done": true,
+      "done_reason": "stop",
+      "total_duration": 94504048725,
+      "load_duration": 10945498806,
+      "prompt_eval_count": 507,
+      "prompt_eval_duration": 11999734000,
+      "eval_count": 108,
+      "eval_duration": 71540677000,
+      "logprobs": null,
+      "model_name": "qwen3:4b-instruct",
+      "model_provider": "ollama"
+    },
+    "synthesisMs": 103146.3,
+    "synthesisProvider": {
+      "model": "qwen3:4b-instruct",
+      "created_at": "2026-09-11T19:32:24.727724693Z",
+      "done": true,
+      "done_reason": "stop",
+      "total_duration": 103123067381,
+      "load_duration": 8500411,
+      "prompt_eval_count": 506,
+      "prompt_eval_duration": 14397313000,
+      "eval_count": 94,
+      "eval_duration": 88547904000,
+      "logprobs": null,
+      "model_name": "qwen3:4b-instruct",
+      "model_provider": "ollama"
+    }
+  },
+  "usage": {
+    "modelCalls": 2,
+    "inputTokens": 1013,
+    "outputTokens": 202
+  },
+  "errors": [
+    "InvalidModelResult('An established conclusion requires a cited evidence finding.')"
+  ],
+  "diagnosis": "Tool selection and synthesis both completed. Evidence validation rejected an established conclusion with no cited finding. Candidate also had INSUFFICIENT confidence with RESOLVE_CASE. Nonstream tool-call decoding was successful.",
+  "settings": {
+    "model": "qwen3:4b-instruct",
+    "retrievalMode": "lexical",
+    "contextTokens": 4096,
+    "toolOutputTokens": 384,
+    "synthesisOutputTokens": 384,
+    "providerHttpTimeoutSeconds": 120.0,
+    "stream": false,
+    "think": false
+  },
+  "provenance": "Read from deployed worker SQLite checkpoints using file:...?mode=ro and serialized checkpoint decoding. No inference was repeated during extraction.",
+  "workerRevisionContext": "Deployed 50-test worker revision, before conditional finding/confidence grammar and payout-reconciliation gate fixes.",
+  "limitations": [
+    "One selected synthetic development case, not an accuracy evaluation.",
+    "Both provider calls completed, but the candidate was rejected and was not an accepted Java investigation.",
+    "Later source fixes require rebuilt deployment and fresh live acceptance."
+  ]
+}

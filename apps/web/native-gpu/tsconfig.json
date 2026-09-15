@@ -1,0 +1,8 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "types": ["vite/client"],
+    "allowImportingTsExtensions": true
+  },
+  "include": ["./main.tsx", "../vite.gpu.config.ts"]
+}

@@ -1,0 +1,277 @@
+{
+  "schemaVersion": 1,
+  "status": "PASS",
+  "evidenceKind": "JUnit extraction from the completed 198-test V6 fact-selection and strict delivery-state run, including real restricted-role PostgreSQL; no successful model inference in this suite",
+  "run": {
+    "timestamp": "2026-09-12T04:28:00.128866+05:30",
+    "timestampUtc": "2026-09-11T22:58:00.128866+00:00",
+    "suiteDurationSeconds": 5.655,
+    "totals": {
+      "tests": 198,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 198
+    },
+    "xmlTestcaseElements": 198,
+    "testsByModule": {
+      "tests.test_config": 7,
+      "tests.test_evidence": 57,
+      "tests.test_fact_catalog": 18,
+      "tests.test_finding_synthesis": 19,
+      "tests.test_graph_service": 16,
+      "tests.test_money_boundary": 31,
+      "tests.test_observation_scopes": 11,
+      "tests.test_ollama_adapter": 7,
+      "tests.test_retrieval": 3,
+      "tests.test_vector_store": 7,
+      "tests.test_webhook_ties": 5,
+      "tests.test_workflow": 17
+    }
+  },
+  "junit": {
+    "path": "services/investigator/runtime/pytest-verified.xml",
+    "sha256": "6bda3096ddb1af9f4305da3d3406f3ffbd3fad988955a13bcaaa81895a89f4d7"
+  },
+  "provenance": {
+    "extractedAt": "2026-09-11T22:59:58.183937+00:00",
+    "sourceHashTiming": "Hashes captured after this test run while application source/configuration/dependencies remained frozen; the original JUnit does not embed source hashes.",
+    "treeHashAlgorithm": "SHA-256 of UTF-8 lines relativePath:sha256 followed by newline, sorted by relative path; include Python files only.",
+    "sourceTree": {
+      "sha256": "06cba2a74bb07895ec9c74b6deae69c8bec3a8ea739aacf43104a4bc821d78ca",
+      "files": {
+        "investigator/__init__.py": "b5391400f0a9c6a6d4f0d8913021edf256e87d0577fa86146ae489bd45bf2173",
+        "investigator/config.py": "d660f8ce92e00ef8a7a00dd3790f6fa8cf3f5e2b46f698ab057ef453fd6024b0",
+        "investigator/errors.py": "e57dde3e04b0f9cd31bfd827d5193f6e331251bf52a1a0c09a29ff2c285a4469",
+        "investigator/evidence.py": "3d0ef74b64bd528bf966918d3ee9f58175a9c00868fbf89caeb9457f3bfd95b0",
+        "investigator/facts.py": "a7745c344efb3100c8b6a762b9c073e0f45804b0f5c95f0e90b373c5001d6bb4",
+        "investigator/graph.py": "2a58562fb84b3046d677d23d33619fb8a471b9d6a63ac99f638f46257b3425c5",
+        "investigator/main.py": "8ed3dcb86e2c8facad9f54c20a31ce4f6c418fa759e95ee3e14c906d3c4509a0",
+        "investigator/models.py": "0ad10f8f8d65472d20d2da366643472d02d6aae23e395da4ecda6e32b071ea89",
+        "investigator/retrieval.py": "06e1c41d73daaef156c78905e9112f9adcc84d723f7f97dd080a275ab28f0c19",
+        "investigator/vector_store.py": "d1fc0b89efb7c9bcc62b57a2c5cce10e623a719724efb7c30380c979d11358bb"
+      }
+    },
+    "testTreeSha256": "39c5dda3196ffee468cd020bec1bdbf9de2dce6f90378fe0eed8c29ff8f265da",
+    "testFiles": 13,
+    "configuration": {
+      "path": "investigator/config.py",
+      "sha256": "d660f8ce92e00ef8a7a00dd3790f6fa8cf3f5e2b46f698ab057ef453fd6024b0"
+    },
+    "requirements": {
+      "path": "requirements.txt",
+      "sha256": "fd3bc3e05ba5925401cd18b051428f582e17fd4543e378c9aa69e8edf25bf4e2"
+    },
+    "projectMetadata": {
+      "path": "pyproject.toml",
+      "sha256": "7333fda9ef4075252712862f6bd0c206b4314e51d85a6a6d7c6c16066e7fa918"
+    }
+  },
+  "recordedInvocation": {
+    "command": ".venv/Scripts/python.exe -m pytest --basetemp=runtime/pytest-money-boundary-v6 --junitxml=runtime/pytest-verified.xml --tb=short",
+    "databaseEnvironment": "POI_TEST_VECTOR_DB_URL was explicitly set to the restricted local PostgreSQL role in the recorded run command; credential omitted.",
+    "databaseContext": {
+      "host": "127.0.0.1",
+      "port": 5438,
+      "database": "poi",
+      "role": "poi_vectors",
+      "schema": "poi_knowledge",
+      "provenance": "Recorded run command and prior restricted-role setup; connection identity is not a field in JUnit XML."
+    }
+  },
+  "coverageEvidence": {
+    "actualPostgresql": {
+      "test": "tests.test_vector_store::test_actual_pgvector_persistence_scope_dates_and_model_filters",
+      "included": true,
+      "skipped": false,
+      "durationSeconds": 0.175,
+      "checks": [
+        "Persistent pgvector storage reused by a fresh store instance",
+        "Tenant, effective date, current-source, model and dimension filters before results",
+        "Historical policy retrieval"
+      ],
+      "vectorData": "Tiny fixed numeric vectors supplied by the test; no embedding model is called by this database test."
+    },
+    "actualLocalComponents": [
+      "FastAPI TestClient request handling and service authentication",
+      "LangChain typed snapshot-scoped tools",
+      "Compiled LangGraph nodes and durable SQLite checkpoints",
+      "Deterministic money/evidence gates and citation identity/link checks"
+    ],
+    "modelAdapterDouble": {
+      "test": "tests.test_ollama_adapter::test_generation_controls_are_ollama_options_and_reasoning_is_disabled",
+      "method": "Production ChatOllama and actual Ollama client HTTP serialization under httpx.MockTransport; synthetic provider responses.",
+      "liveModelInference": false,
+      "verifiedRequestOptions": {
+        "stream": false,
+        "think": false,
+        "num_thread": 4,
+        "num_ctx": 4096,
+        "num_predict": 384,
+        "httpTimeoutSeconds": 180
+      },
+      "verifiedSchema": "FactSelection object has only factIds; 1-2 distinct IDs, restricted to the authorized catalog. No model prose, operational-link, citation-link or decision fields.",
+      "verifiedContext": "Original question and applicable top policy are untrusted data; catalog entries contain fixed sentences, complete available links and sourceTools. The model supplies selection only.",
+      "verifiedProvenance": {
+        "synthesisScope": "fact-selection",
+        "findingSource": "service-rendered-facts",
+        "assessmentSource": "deterministic-evidence-rules",
+        "factCatalogVersion": 1,
+        "catalogHashAndSelectedIds": true,
+        "selectedSourceToolAndLinkProvenance": true
+      },
+      "insufficientPath": "One synthetic planner response; no fact-selection request, no finding, unchanged conservative/actionable rule-owned response.",
+      "note": "All successful calls/tokens in adapter tests are doubles, not live provider usage."
+    },
+    "embeddingDoubles": "RecordingEmbeddings returns simple fixed vectors to inspect tenant filtering/cache behavior; BrokenEmbeddings raises a controlled error to test explicit failure without lexical fallback.",
+    "actualUnavailableProvider": "A real ChatOllama request to closed loopback port 1 verifies provider failure/no replay fallback. It is not successful model inference.",
+    "successfulLiveInferenceIncluded": false,
+    "actualEmbeddingModelIncluded": false,
+    "workflowGuard": {
+      "capturedRegressionSources": [
+        "Earlier live CASE-1002 summary",
+        "Earlier live CASE-1003 summary",
+        "First six-case development CASE-1021 proposal reason"
+      ],
+      "checks": [
+        "Captured completed-case/unqualified-action wording remains rejected without rewriting in the unchanged final gate",
+        "Valid payment, modal/negated case and financially scoped wording remains accepted",
+        "Actual FastAPI/LangGraph rejection checkpoints original invalid candidate and no accepted result",
+        "V6 model prose fields are rejected by FactSelection schema before they can become a displayed finding"
+      ],
+      "limitation": "Targeted phrase checks are not general semantic entailment or paraphrase coverage."
+    },
+    "observedFactsProjection": {
+      "checks": [
+        "Scenario-independent whitelist over executed tools rather than free-text decision summaries",
+        "Refund requests and confirmations stay distinct; exact Java-derived money is formatted through integer arithmetic",
+        "Webhook event/payment identities and delivery/application counts are preserved",
+        "Unknown monetary fields remain unavailable rather than zero",
+        "Provider event occurrence order is distinct from webhook receipt order; inverse relationships use strict observed timestamps",
+        "Timestamp offsets compare as instants; ties or missing times do not invent strict order or processing timestamps",
+        "Refund confirmation is separate from explicit refund entry presence/count/IDs in the supplied ledger snapshot",
+        "UNKNOWN/UNAVAILABLE zero-candidate requests ask for status and conditional ledger/delivery verification, without inventing missing records",
+        "Insufficient retrieval query, summary, outcome and action are unchanged; current terminal status survives historical unavailable lookup"
+      ],
+      "modelQualityClaim": false,
+      "status": "Historical V5 projection helper regressions retained; not the V6 model input. V6 uses the service fact catalog."
+    },
+    "factSelectionAndCatalog": {
+      "checks": [
+        "Exact selected service sentences and union of available evidence/policy links; no unselected facts or prose repair",
+        "Reject unknown, duplicate, too-many or empty selections and extra model-written prose/decision/link fields",
+        "Reject modified catalog wording/links/sourceTools even with recomputed hash by rebuilding from authorized outputs",
+        "Snapshot-as-of differs from success event occurrence; generic timeout is not labelled transport; CANCELLED is not labelled rejection",
+        "Exact named money fields use integer formatting and Java authoritative reconciliation when supplied",
+        "Refund confirmation differs from supplied-ledger membership; absence carries sourceTools and no invented evidence ID",
+        "Injected policy/record/title strings cannot write catalog text; selection relevance remains a limitation",
+        "Real API/LangGraph invalid-ID rejection retains original selection and two double-provider stages, with no accepted result",
+        "Validation resume does not regenerate selection; already completed historical prose result returns unchanged without relabelling"
+      ],
+      "successfulModelInference": false,
+      "limits": "Catalog/template correctness, source completeness, policy relevance and model selection usefulness remain separate from structural validity."
+    },
+    "strictDeliveryStateRules": {
+      "checks": [
+        "Equal receipt instants, including timezone offsets, cannot fabricate order",
+        "Strictly earlier receipt groups provide at most one maximum-occurrence witness per record; nonadjacent ties do not hide inversions",
+        "Successful duplicate resolution requires one APPLIED and all remaining IGNORED_DUPLICATE records",
+        "Late earlier-occurring event in an inversion must be IGNORED_STALE, otherwise request evidence"
+      ],
+      "fixtures": "Small explicit unit records; no evaluation-label access. Root's actual HTTP adversarial run is separate."
+    },
+    "moneyBoundary": {
+      "checks": [
+        "Normalized CAPTURE/PAYMENT_CAPTURED/SALE and REFUND/REFUND_POSTED aliases match visible count and total",
+        "Captures positive, refunds negative, FEE non-positive including zero; generic signed adjustments retained",
+        "Java count/capture/refund/net/currency/availability/payout/discrepancy must agree with immutable records and local sign validity",
+        "Contradictory authoritative values remain in audit reconciliation, invalidate money and request evidence without substitution",
+        "Refund/capture/settlement catalog money sentences cannot render invalid aggregate totals",
+        "Empty/whitespace/UNKNOWN/UNAVAILABLE status cannot expose usable payout despite a numeric field"
+      ],
+      "tests": "tests.test_money_boundary (31 test cases), plus preserved and adjusted reconciliation regressions",
+      "liveProviderInference": false
+    }
+  },
+  "limitations": [
+    "198 passed tests do not establish real-world AI accuracy, production readiness or prompt-injection immunity.",
+    "Successful live Qwen/Nomic runs and full Java-to-worker acceptance are recorded separately; this report cannot substitute for them.",
+    "JUnit totals and duration are extracted as recorded; console-only warnings are not encoded by this XML."
+  ],
+  "build": {
+    "image": "payment-operations-investigator-investigator:latest",
+    "imageId": "sha256:90077f26ab568780a0dda8043b6b089442da99fbae1ba84622f926f5d88c0200",
+    "status": "BUILT",
+    "deploymentAtCapture": "Built only by worker agent. Root coordinates deployment and new live inference; prior V5 remains the deployed worker at capture.",
+    "createdAt": "2026-09-12T04:29:03.108403233+05:30"
+  },
+  "historical96Evidence": {
+    "receipt": "docs/validation/worker-tests-96-pre-finding-only.json",
+    "runtimeSourceArchive": "services/investigator/runtime/history-worker96-20260912",
+    "sourceAndRequirementsMatchHistoricalHashes": true,
+    "originalJUnitXmlRetained": false,
+    "reason": "The 96-test XML had already been overwritten by the 108-test run. The receipt was preserved separately and no prior XML or test run was reconstructed."
+  },
+  "historical108Evidence": {
+    "receipt": "docs/validation/worker-tests-108-pre-observed-context.json",
+    "archive": "services/investigator/runtime/history-worker108-20260912",
+    "preserved": [
+      "source",
+      "tests",
+      "requirements",
+      "project metadata",
+      "original JUnit XML",
+      "receipt"
+    ],
+    "sourceAndXmlHashesVerified": true,
+    "historicalTestsRerunForArchive": false
+  },
+  "historical112Evidence": {
+    "receipt": "docs/validation/worker-tests-112-pre-timing-context.json",
+    "archive": "services/investigator/runtime/history-worker112-pre-v5",
+    "preserved": [
+      "source",
+      "tests",
+      "requirements",
+      "project metadata",
+      "Dockerfile",
+      "README",
+      "original JUnit XML",
+      "receipt"
+    ],
+    "originalJUnitSha256": "0da451189c39f380463eb2a107545571e40a26e56e235a6b2673ba6dcd165c71",
+    "historicalTestsRerunForArchive": false
+  },
+  "historical131Evidence": {
+    "receipt": "docs/validation/worker-tests-131-pre-fact-selection.json",
+    "archive": "services/investigator/runtime/history-worker131-pre-v6",
+    "preserved": [
+      "source",
+      "tests",
+      "requirements",
+      "project metadata",
+      "Dockerfile",
+      "README",
+      "original JUnit XML",
+      "receipt"
+    ],
+    "originalJUnitSha256": "a74832ddc20de0e7529f16992b4844b2e6c8c72973325767d71d3b906e9a53b0",
+    "historicalTestsRerunForArchive": false
+  },
+  "historical167Evidence": {
+    "receipt": "docs/validation/worker-tests-167-pre-money-boundary.json",
+    "archive": "services/investigator/runtime/history-worker167-pre-money-boundary",
+    "preserved": [
+      "source",
+      "tests",
+      "requirements",
+      "project metadata",
+      "Dockerfile",
+      "README",
+      "original JUnit XML",
+      "receipt"
+    ],
+    "originalJUnitSha256": "eca26c2b40b27051ef48c311fe27c4e2c2d691a2a0de6e028c7fe0b3c2bf0df6",
+    "historicalTestsRerunForArchive": false
+  }
+}

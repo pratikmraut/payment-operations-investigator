@@ -1,0 +1,2160 @@
+{
+  "startedAt": "2026-09-11T20:41:09.868464+00:00",
+  "timestamp": "2026-09-11T20:41:10.917414+00:00",
+  "workerUrl": "http://127.0.0.1:8091",
+  "clientTimeoutSeconds": 430,
+  "localSourceSha256": {
+    "services/investigator/investigator/__init__.py": "b5391400f0a9c6a6d4f0d8913021edf256e87d0577fa86146ae489bd45bf2173",
+    "services/investigator/investigator/config.py": "d660f8ce92e00ef8a7a00dd3790f6fa8cf3f5e2b46f698ab057ef453fd6024b0",
+    "services/investigator/investigator/errors.py": "e57dde3e04b0f9cd31bfd827d5193f6e331251bf52a1a0c09a29ff2c285a4469",
+    "services/investigator/investigator/evidence.py": "03c62e3c00ec6b3fca7ccf0fcfa850663c32b56e42dcf89bf55821b528b2a22d",
+    "services/investigator/investigator/graph.py": "642edbaf8443ef6742aaf5d502c5606401a692e8d7a078008c86e79276f58c47",
+    "services/investigator/investigator/main.py": "8ed3dcb86e2c8facad9f54c20a31ce4f6c418fa759e95ee3e14c906d3c4509a0",
+    "services/investigator/investigator/models.py": "5f50af89b85052cb79d6bcfdde6e89b5c81614c3045f66735ad3522dcc6daed2",
+    "services/investigator/investigator/retrieval.py": "06e1c41d73daaef156c78905e9112f9adcc84d723f7f97dd080a275ab28f0c19",
+    "services/investigator/investigator/vector_store.py": "d1fc0b89efb7c9bcc62b57a2c5cce10e623a719724efb7c30380c979d11358bb",
+    "tools/evaluate.py": "cad3ef5180093190562d1825c4d191a8fdeda787c6db69b9059677eb484cca0b",
+    "services/investigator/requirements.txt": "fd3bc3e05ba5925401cd18b051428f582e17fd4543e378c9aa69e8edf25bf4e2"
+  },
+  "localSourcesUnchanged": true,
+  "sourceProvenanceLimit": "Local source hashes are a reference snapshot; match them with the separately verified worker image/test receipt before attributing a remote worker run to these files.",
+  "split": "test",
+  "mode": "replay",
+  "sampleSize": 30,
+  "sampleSelection": "fixture split in source order, with explicit limit if supplied",
+  "datasetManifestSha256": "b467da9818fd0813665e06301b7ea5940b61d94c54ce04e3d34b1dc31223e140",
+  "rates": {
+    "outcomeCorrect": 1.0,
+    "actionCorrect": 1.0,
+    "relevantCitationRetrieved": 1.0,
+    "abstentionCorrect": 1.0,
+    "evidenceReferencesValid": 1.0
+  },
+  "latencyMs": {
+    "p50": 33.018,
+    "p95": 44.968
+  },
+  "latencyQuantileMethod": "Lower order statistic at floor((n - 1) * p); includes failed attempts and is descriptive only.",
+  "failures": 0,
+  "modelCalls": 0,
+  "acceptedResultModelCalls": 0,
+  "failedRequestModelCalls": "no unreported failed-model usage",
+  "limitations": [
+    "Template variants share scenario structure; scores do not establish real-world generalization.",
+    "Identifier validation checks citation existence, not semantic entailment of generated prose.",
+    "This worker benchmark bypasses Java; HTTP acceptance separately validates authentication, Java reconciliation and review.",
+    "Replay is a deterministic evidence baseline, not a language-model result."
+  ],
+  "rows": [
+    {
+      "caseId": "CASE-1006",
+      "expectedOutcome": "TIMEOUT_AFTER_SUCCESS",
+      "expectedAction": "RESOLVE_CASE",
+      "outcome": "TIMEOUT_AFTER_SUCCESS",
+      "action": "RESOLVE_CASE",
+      "confidence": "HIGH",
+      "investigationId": "EVAL-dd8904dd-6245-4800-9300-76e07d14c638",
+      "toolCalls": [
+        {
+          "name": "get_payment_timeline",
+          "status": "COMPLETED",
+          "durationMs": 0.018,
+          "evidenceIds": [
+            "EVT-1006-1",
+            "EVT-1006-2",
+            "EVT-1006-3",
+            "PROVIDER:PRV-1006"
+          ]
+        },
+        {
+          "name": "compare_settlement",
+          "status": "COMPLETED",
+          "durationMs": 0.013,
+          "evidenceIds": [
+            "LED-1006-1",
+            "LED-1006-2",
+            "PROVIDER:PRV-1006"
+          ]
+        },
+        {
+          "name": "inspect_webhooks",
+          "status": "COMPLETED",
+          "durationMs": 0.012,
+          "evidenceIds": [
+            "WH-1006-1"
+          ]
+        },
+        {
+          "name": "check_refund",
+          "status": "COMPLETED",
+          "durationMs": 0.008,
+          "evidenceIds": [
+            "PROVIDER:PRV-1006"
+          ]
+        }
+      ],
+      "outcomeCorrect": true,
+      "actionCorrect": true,
+      "relevantCitationRetrieved": true,
+      "abstentionCorrect": true,
+      "metrics": {
+        "durationMs": 10.437,
+        "retrievalMs": 3.634,
+        "toolCount": 4,
+        "modelCalls": 0,
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "retrievalMode": "lexical",
+        "model": "deterministic-replay"
+      },
+      "warnings": [
+        "Synthetic data only; proposals change case disposition, never payment or ledger balances.",
+        "Deterministic replay mode; actual LangGraph and LangChain tools executed, but no LLM inference was used.",
+        "Lexical retrieval baseline; semantic embeddings are not enabled."
+      ],
+      "error": null,
+      "evidenceReferencesValid": true,
+      "wallMs": 80.773
+    },
+    {
+      "caseId": "CASE-1007",
+      "expectedOutcome": "TIMEOUT_AFTER_SUCCESS",
+      "expectedAction": "RESOLVE_CASE",
+      "outcome": "TIMEOUT_AFTER_SUCCESS",
+      "action": "RESOLVE_CASE",
+      "confidence": "HIGH",
+      "investigationId": "EVAL-af17a9bf-4f2e-4229-a719-6dea7f44556a",
+      "toolCalls": [
+        {
+          "name": "get_payment_timeline",
+          "status": "COMPLETED",
+          "durationMs": 0.009,
+          "evidenceIds": [
+            "EVT-1007-1",
+            "EVT-1007-2",
+            "EVT-1007-3",
+            "PROVIDER:PRV-1007"
+          ]
+        },
+        {
+          "name": "compare_settlement",
+          "status": "COMPLETED",
+          "durationMs": 0.013,
+          "evidenceIds": [
+            "LED-1007-1",
+            "LED-1007-2",
+            "PROVIDER:PRV-1007"
+          ]
+        },
+        {
+          "name": "inspect_webhooks",
+          "status": "COMPLETED",
+          "durationMs": 0.012,
+          "evidenceIds": [
+            "WH-1007-1"
+          ]
+        },
+        {
+          "name": "check_refund",
+          "status": "COMPLETED",
+          "durationMs": 0.008,
+          "evidenceIds": [
+            "PROVIDER:PRV-1007"
+          ]
+        }
+      ],
+      "outcomeCorrect": true,
+      "actionCorrect": true,
+      "relevantCitationRetrieved": true,
+      "abstentionCorrect": true,
+      "metrics": {
+        "durationMs": 10.298,
+        "retrievalMs": 3.406,
+        "toolCount": 4,
+        "modelCalls": 0,
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "retrievalMode": "lexical",
+        "model": "deterministic-replay"
+      },
+      "warnings": [
+        "Synthetic data only; proposals change case disposition, never payment or ledger balances.",
+        "Deterministic replay mode; actual LangGraph and LangChain tools executed, but no LLM inference was used.",
+        "Lexical retrieval baseline; semantic embeddings are not enabled."
+      ],
+      "error": null,
+      "evidenceReferencesValid": true,
+      "wallMs": 44.968
+    },
+    {
+      "caseId": "CASE-1008",
+      "expectedOutcome": "TIMEOUT_AFTER_SUCCESS",
+      "expectedAction": "RESOLVE_CASE",
+      "outcome": "TIMEOUT_AFTER_SUCCESS",
+      "action": "RESOLVE_CASE",
+      "confidence": "HIGH",
+      "investigationId": "EVAL-83c3efe7-90cd-4dd6-85c6-8085a154c7a9",
+      "toolCalls": [
+        {
+          "name": "get_payment_timeline",
+          "status": "COMPLETED",
+          "durationMs": 0.01,
+          "evidenceIds": [
+            "EVT-1008-1",
+            "EVT-1008-2",
+            "EVT-1008-3",
+            "PROVIDER:PRV-1008"
+          ]
+        },
+        {
+          "name": "compare_settlement",
+          "status": "COMPLETED",
+          "durationMs": 0.014,
+          "evidenceIds": [
+            "LED-1008-1",
+            "LED-1008-2",
+            "PROVIDER:PRV-1008"
+          ]
+        },
+        {
+          "name": "inspect_webhooks",
+          "status": "COMPLETED",
+          "durationMs": 0.014,
+          "evidenceIds": [
+            "WH-1008-1"
+          ]
+        },
+        {
+          "name": "check_refund",
+          "status": "COMPLETED",
+          "durationMs": 0.008,
+          "evidenceIds": [
+            "PROVIDER:PRV-1008"
+          ]
+        }
+      ],
+      "outcomeCorrect": true,
+      "actionCorrect": true,
+      "relevantCitationRetrieved": true,
+      "abstentionCorrect": true,
+      "metrics": {
+        "durationMs": 9.378,
+        "retrievalMs": 3.318,
+        "toolCount": 4,
+        "modelCalls": 0,
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "retrievalMode": "lexical",
+        "model": "deterministic-replay"
+      },
+      "warnings": [
+        "Synthetic data only; proposals change case disposition, never payment or ledger balances.",
+        "Deterministic replay mode; actual LangGraph and LangChain tools executed, but no LLM inference was used.",
+        "Lexical retrieval baseline; semantic embeddings are not enabled."
+      ],
+      "error": null,
+      "evidenceReferencesValid": true,
+      "wallMs": 42.169
+    },
+    {
+      "caseId": "CASE-1009",
+      "expectedOutcome": "TIMEOUT_AFTER_SUCCESS",
+      "expectedAction": "RESOLVE_CASE",
+      "outcome": "TIMEOUT_AFTER_SUCCESS",
+      "action": "RESOLVE_CASE",
+      "confidence": "HIGH",
+      "investigationId": "EVAL-11128db2-a03d-4858-ae18-4d87d42f9a47",
+      "toolCalls": [
+        {
+          "name": "get_payment_timeline",
+          "status": "COMPLETED",
+          "durationMs": 0.007,
+          "evidenceIds": [
+            "EVT-1009-1",
+            "EVT-1009-2",
+            "EVT-1009-3",
+            "PROVIDER:PRV-1009"
+          ]
+        },
+        {
+          "name": "compare_settlement",
+          "status": "COMPLETED",
+          "durationMs": 0.013,
+          "evidenceIds": [
+            "LED-1009-1",
+            "LED-1009-2",
+            "PROVIDER:PRV-1009"
+          ]
+        },
+        {
+          "name": "inspect_webhooks",
+          "status": "COMPLETED",
+          "durationMs": 0.034,
+          "evidenceIds": [
+            "WH-1009-1"
+          ]
+        },
+        {
+          "name": "check_refund",
+          "status": "COMPLETED",
+          "durationMs": 0.008,
+          "evidenceIds": [
+            "PROVIDER:PRV-1009"
+          ]
+        }
+      ],
+      "outcomeCorrect": true,
+      "actionCorrect": true,
+      "relevantCitationRetrieved": true,
+      "abstentionCorrect": true,
+      "metrics": {
+        "durationMs": 8.25,
+        "retrievalMs": 2.911,
+        "toolCount": 4,
+        "modelCalls": 0,
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "retrievalMode": "lexical",
+        "model": "deterministic-replay"
+      },
+      "warnings": [
+        "Synthetic data only; proposals change case disposition, never payment or ledger balances.",
+        "Deterministic replay mode; actual LangGraph and LangChain tools executed, but no LLM inference was used.",
+        "Lexical retrieval baseline; semantic embeddings are not enabled."
+      ],
+      "error": null,
+      "evidenceReferencesValid": true,
+      "wallMs": 40.185
+    },
+    {
+      "caseId": "CASE-1010",
+      "expectedOutcome": "TIMEOUT_AFTER_SUCCESS",
+      "expectedAction": "RESOLVE_CASE",
+      "outcome": "TIMEOUT_AFTER_SUCCESS",
+      "action": "RESOLVE_CASE",
+      "confidence": "HIGH",
+      "investigationId": "EVAL-4ee3f18b-1531-4c0d-9e91-3115899a2903",
+      "toolCalls": [
+        {
+          "name": "get_payment_timeline",
+          "status": "COMPLETED",
+          "durationMs": 0.008,
+          "evidenceIds": [
+            "EVT-1010-1",
+            "EVT-1010-2",
+            "EVT-1010-3",
+            "PROVIDER:PRV-1010"
+          ]
+        },
+        {
+          "name": "compare_settlement",
+          "status": "COMPLETED",
+          "durationMs": 0.014,
+          "evidenceIds": [
+            "LED-1010-1",
+            "LED-1010-2",
+            "PROVIDER:PRV-1010"
+          ]
+        },
+        {
+          "name": "inspect_webhooks",
+          "status": "COMPLETED",
+          "durationMs": 0.013,
+          "evidenceIds": [
+            "WH-1010-1"
+          ]
+        },
+        {
+          "name": "check_refund",
+          "status": "COMPLETED",
+          "durationMs": 0.009,
+          "evidenceIds": [
+            "PROVIDER:PRV-1010"
+          ]
+        }
+      ],
+      "outcomeCorrect": true,
+      "actionCorrect": true,
+      "relevantCitationRetrieved": true,
+      "abstentionCorrect": true,
+      "metrics": {
+        "durationMs": 8.277,
+        "retrievalMs": 2.828,
+        "toolCount": 4,
+        "modelCalls": 0,
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "retrievalMode": "lexical",
+        "model": "deterministic-replay"
+      },
+      "warnings": [
+        "Synthetic data only; proposals change case disposition, never payment or ledger balances.",
+        "Deterministic replay mode; actual LangGraph and LangChain tools executed, but no LLM inference was used.",
+        "Lexical retrieval baseline; semantic embeddings are not enabled."
+      ],
+      "error": null,
+      "evidenceReferencesValid": true,
+      "wallMs": 41.319
+    },
+    {
+      "caseId": "CASE-1016",
+      "expectedOutcome": "DUPLICATE_WEBHOOK",
+      "expectedAction": "RESOLVE_CASE",
+      "outcome": "DUPLICATE_WEBHOOK",
+      "action": "RESOLVE_CASE",
+      "confidence": "HIGH",
+      "investigationId": "EVAL-8c1e1a5d-a684-43a6-be8e-5c67c6e92046",
+      "toolCalls": [
+        {
+          "name": "get_payment_timeline",
+          "status": "COMPLETED",
+          "durationMs": 0.008,
+          "evidenceIds": [
+            "EVT-1016-1",
+            "EVT-1016-2",
+            "EVT-1016-3",
+            "EVT-1016-4",
+            "PROVIDER:PRV-1016"
+          ]
+        },
+        {
+          "name": "compare_settlement",
+          "status": "COMPLETED",
+          "durationMs": 0.014,
+          "evidenceIds": [
+            "LED-1016-1",
+            "LED-1016-2",
+            "PROVIDER:PRV-1016"
+          ]
+        },
+        {
+          "name": "inspect_webhooks",
+          "status": "COMPLETED",
+          "durationMs": 0.02,
+          "evidenceIds": [
+            "WH-1016-1",
+            "WH-1016-2"
+          ]
+        },
+        {
+          "name": "check_refund",
+          "status": "COMPLETED",
+          "durationMs": 0.008,
+          "evidenceIds": [
+            "PROVIDER:PRV-1016"
+          ]
+        }
+      ],
+      "outcomeCorrect": true,
+      "actionCorrect": true,
+      "relevantCitationRetrieved": true,
+      "abstentionCorrect": true,
+      "metrics": {
+        "durationMs": 8.637,
+        "retrievalMs": 3.042,
+        "toolCount": 4,
+        "modelCalls": 0,
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "retrievalMode": "lexical",
+        "model": "deterministic-replay"
+      },
+      "warnings": [
+        "Synthetic data only; proposals change case disposition, never payment or ledger balances.",
+        "Deterministic replay mode; actual LangGraph and LangChain tools executed, but no LLM inference was used.",
+        "Lexical retrieval baseline; semantic embeddings are not enabled."
+      ],
+      "error": null,
+      "evidenceReferencesValid": true,
+      "wallMs": 41.049
+    },
+    {
+      "caseId": "CASE-1017",
+      "expectedOutcome": "DUPLICATE_WEBHOOK",
+      "expectedAction": "RESOLVE_CASE",
+      "outcome": "DUPLICATE_WEBHOOK",
+      "action": "RESOLVE_CASE",
+      "confidence": "HIGH",
+      "investigationId": "EVAL-d2d28c5a-5002-4fcc-87c4-06e57c953dca",
+      "toolCalls": [
+        {
+          "name": "get_payment_timeline",
+          "status": "COMPLETED",
+          "durationMs": 0.009,
+          "evidenceIds": [
+            "EVT-1017-1",
+            "EVT-1017-2",
+            "EVT-1017-3",
+            "EVT-1017-4",
+            "PROVIDER:PRV-1017"
+          ]
+        },
+        {
+          "name": "compare_settlement",
+          "status": "COMPLETED",
+          "durationMs": 0.013,
+          "evidenceIds": [
+            "LED-1017-1",
+            "LED-1017-2",
+            "PROVIDER:PRV-1017"
+          ]
+        },
+        {
+          "name": "inspect_webhooks",
+          "status": "COMPLETED",
+          "durationMs": 0.02,
+          "evidenceIds": [
+            "WH-1017-1",
+            "WH-1017-2"
+          ]
+        },
+        {
+          "name": "check_refund",
+          "status": "COMPLETED",
+          "durationMs": 0.008,
+          "evidenceIds": [
+            "PROVIDER:PRV-1017"
+          ]
+        }
+      ],
+      "outcomeCorrect": true,
+      "actionCorrect": true,
+      "relevantCitationRetrieved": true,
+      "abstentionCorrect": true,
+      "metrics": {
+        "durationMs": 8.146,
+        "retrievalMs": 2.938,
+        "toolCount": 4,
+        "modelCalls": 0,
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "retrievalMode": "lexical",
+        "model": "deterministic-replay"
+      },
+      "warnings": [
+        "Synthetic data only; proposals change case disposition, never payment or ledger balances.",
+        "Deterministic replay mode; actual LangGraph and LangChain tools executed, but no LLM inference was used.",
+        "Lexical retrieval baseline; semantic embeddings are not enabled."
+      ],
+      "error": null,
+      "evidenceReferencesValid": true,
+      "wallMs": 37.412
+    },
+    {
+      "caseId": "CASE-1018",
+      "expectedOutcome": "DUPLICATE_WEBHOOK",
+      "expectedAction": "RESOLVE_CASE",
+      "outcome": "DUPLICATE_WEBHOOK",
+      "action": "RESOLVE_CASE",
+      "confidence": "HIGH",
+      "investigationId": "EVAL-3921cd7b-8822-474b-bb86-c8333b3d91de",
+      "toolCalls": [
+        {
+          "name": "get_payment_timeline",
+          "status": "COMPLETED",
+          "durationMs": 0.009,
+          "evidenceIds": [
+            "EVT-1018-1",
+            "EVT-1018-2",
+            "EVT-1018-3",
+            "EVT-1018-4",
+            "PROVIDER:PRV-1018"
+          ]
+        },
+        {
+          "name": "compare_settlement",
+          "status": "COMPLETED",
+          "durationMs": 0.013,
+          "evidenceIds": [
+            "LED-1018-1",
+            "LED-1018-2",
+            "PROVIDER:PRV-1018"
+          ]
+        },
+        {
+          "name": "inspect_webhooks",
+          "status": "COMPLETED",
+          "durationMs": 0.018,
+          "evidenceIds": [
+            "WH-1018-1",
+            "WH-1018-2"
+          ]
+        },
+        {
+          "name": "check_refund",
+          "status": "COMPLETED",
+          "durationMs": 0.008,
+          "evidenceIds": [
+            "PROVIDER:PRV-1018"
+          ]
+        }
+      ],
+      "outcomeCorrect": true,
+      "actionCorrect": true,
+      "relevantCitationRetrieved": true,
+      "abstentionCorrect": true,
+      "metrics": {
+        "durationMs": 8.548,
+        "retrievalMs": 2.831,
+        "toolCount": 4,
+        "modelCalls": 0,
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "retrievalMode": "lexical",
+        "model": "deterministic-replay"
+      },
+      "warnings": [
+        "Synthetic data only; proposals change case disposition, never payment or ledger balances.",
+        "Deterministic replay mode; actual LangGraph and LangChain tools executed, but no LLM inference was used.",
+        "Lexical retrieval baseline; semantic embeddings are not enabled."
+      ],
+      "error": null,
+      "evidenceReferencesValid": true,
+      "wallMs": 39.658
+    },
+    {
+      "caseId": "CASE-1019",
+      "expectedOutcome": "DUPLICATE_WEBHOOK",
+      "expectedAction": "RESOLVE_CASE",
+      "outcome": "DUPLICATE_WEBHOOK",
+      "action": "RESOLVE_CASE",
+      "confidence": "HIGH",
+      "investigationId": "EVAL-db471f45-368c-41f6-8e84-4a04f4f89a51",
+      "toolCalls": [
+        {
+          "name": "get_payment_timeline",
+          "status": "COMPLETED",
+          "durationMs": 0.009,
+          "evidenceIds": [
+            "EVT-1019-1",
+            "EVT-1019-2",
+            "EVT-1019-3",
+            "EVT-1019-4",
+            "PROVIDER:PRV-1019"
+          ]
+        },
+        {
+          "name": "compare_settlement",
+          "status": "COMPLETED",
+          "durationMs": 0.014,
+          "evidenceIds": [
+            "LED-1019-1",
+            "LED-1019-2",
+            "PROVIDER:PRV-1019"
+          ]
+        },
+        {
+          "name": "inspect_webhooks",
+          "status": "COMPLETED",
+          "durationMs": 0.016,
+          "evidenceIds": [
+            "WH-1019-1",
+            "WH-1019-2"
+          ]
+        },
+        {
+          "name": "check_refund",
+          "status": "COMPLETED",
+          "durationMs": 0.009,
+          "evidenceIds": [
+            "PROVIDER:PRV-1019"
+          ]
+        }
+      ],
+      "outcomeCorrect": true,
+      "actionCorrect": true,
+      "relevantCitationRetrieved": true,
+      "abstentionCorrect": true,
+      "metrics": {
+        "durationMs": 8.462,
+        "retrievalMs": 3.204,
+        "toolCount": 4,
+        "modelCalls": 0,
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "retrievalMode": "lexical",
+        "model": "deterministic-replay"
+      },
+      "warnings": [
+        "Synthetic data only; proposals change case disposition, never payment or ledger balances.",
+        "Deterministic replay mode; actual LangGraph and LangChain tools executed, but no LLM inference was used.",
+        "Lexical retrieval baseline; semantic embeddings are not enabled."
+      ],
+      "error": null,
+      "evidenceReferencesValid": true,
+      "wallMs": 39.055
+    },
+    {
+      "caseId": "CASE-1020",
+      "expectedOutcome": "DUPLICATE_WEBHOOK",
+      "expectedAction": "RESOLVE_CASE",
+      "outcome": "DUPLICATE_WEBHOOK",
+      "action": "RESOLVE_CASE",
+      "confidence": "HIGH",
+      "investigationId": "EVAL-4b6af076-ec49-49b1-aa72-3b2e6c46900f",
+      "toolCalls": [
+        {
+          "name": "get_payment_timeline",
+          "status": "COMPLETED",
+          "durationMs": 0.009,
+          "evidenceIds": [
+            "EVT-1020-1",
+            "EVT-1020-2",
+            "EVT-1020-3",
+            "EVT-1020-4",
+            "PROVIDER:PRV-1020"
+          ]
+        },
+        {
+          "name": "compare_settlement",
+          "status": "COMPLETED",
+          "durationMs": 0.014,
+          "evidenceIds": [
+            "LED-1020-1",
+            "LED-1020-2",
+            "PROVIDER:PRV-1020"
+          ]
+        },
+        {
+          "name": "inspect_webhooks",
+          "status": "COMPLETED",
+          "durationMs": 0.019,
+          "evidenceIds": [
+            "WH-1020-1",
+            "WH-1020-2"
+          ]
+        },
+        {
+          "name": "check_refund",
+          "status": "COMPLETED",
+          "durationMs": 0.009,
+          "evidenceIds": [
+            "PROVIDER:PRV-1020"
+          ]
+        }
+      ],
+      "outcomeCorrect": true,
+      "actionCorrect": true,
+      "relevantCitationRetrieved": true,
+      "abstentionCorrect": true,
+      "metrics": {
+        "durationMs": 8.586,
+        "retrievalMs": 2.986,
+        "toolCount": 4,
+        "modelCalls": 0,
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "retrievalMode": "lexical",
+        "model": "deterministic-replay"
+      },
+      "warnings": [
+        "Synthetic data only; proposals change case disposition, never payment or ledger balances.",
+        "Deterministic replay mode; actual LangGraph and LangChain tools executed, but no LLM inference was used.",
+        "Lexical retrieval baseline; semantic embeddings are not enabled."
+      ],
+      "error": null,
+      "evidenceReferencesValid": true,
+      "wallMs": 37.486
+    },
+    {
+      "caseId": "CASE-1026",
+      "expectedOutcome": "OUT_OF_ORDER_WEBHOOK",
+      "expectedAction": "RESOLVE_CASE",
+      "outcome": "OUT_OF_ORDER_WEBHOOK",
+      "action": "RESOLVE_CASE",
+      "confidence": "HIGH",
+      "investigationId": "EVAL-bcfadf3f-5c95-473f-b8dc-f8c79d5c6e0d",
+      "toolCalls": [
+        {
+          "name": "get_payment_timeline",
+          "status": "COMPLETED",
+          "durationMs": 0.009,
+          "evidenceIds": [
+            "EVT-1026-1",
+            "EVT-1026-2",
+            "EVT-1026-3",
+            "EVT-1026-4",
+            "PROVIDER:PRV-1026"
+          ]
+        },
+        {
+          "name": "compare_settlement",
+          "status": "COMPLETED",
+          "durationMs": 0.015,
+          "evidenceIds": [
+            "LED-1026-1",
+            "LED-1026-2",
+            "PROVIDER:PRV-1026"
+          ]
+        },
+        {
+          "name": "inspect_webhooks",
+          "status": "COMPLETED",
+          "durationMs": 0.017,
+          "evidenceIds": [
+            "WH-1026-1",
+            "WH-1026-2"
+          ]
+        },
+        {
+          "name": "check_refund",
+          "status": "COMPLETED",
+          "durationMs": 0.009,
+          "evidenceIds": [
+            "PROVIDER:PRV-1026"
+          ]
+        }
+      ],
+      "outcomeCorrect": true,
+      "actionCorrect": true,
+      "relevantCitationRetrieved": true,
+      "abstentionCorrect": true,
+      "metrics": {
+        "durationMs": 8.914,
+        "retrievalMs": 2.633,
+        "toolCount": 4,
+        "modelCalls": 0,
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "retrievalMode": "lexical",
+        "model": "deterministic-replay"
+      },
+      "warnings": [
+        "Synthetic data only; proposals change case disposition, never payment or ledger balances.",
+        "Deterministic replay mode; actual LangGraph and LangChain tools executed, but no LLM inference was used.",
+        "Lexical retrieval baseline; semantic embeddings are not enabled."
+      ],
+      "error": null,
+      "evidenceReferencesValid": true,
+      "wallMs": 40.563
+    },
+    {
+      "caseId": "CASE-1027",
+      "expectedOutcome": "OUT_OF_ORDER_WEBHOOK",
+      "expectedAction": "RESOLVE_CASE",
+      "outcome": "OUT_OF_ORDER_WEBHOOK",
+      "action": "RESOLVE_CASE",
+      "confidence": "HIGH",
+      "investigationId": "EVAL-f857e3b6-ea8d-42b2-a76d-d1d32e0f1e67",
+      "toolCalls": [
+        {
+          "name": "get_payment_timeline",
+          "status": "COMPLETED",
+          "durationMs": 0.009,
+          "evidenceIds": [
+            "EVT-1027-1",
+            "EVT-1027-2",
+            "EVT-1027-3",
+            "EVT-1027-4",
+            "PROVIDER:PRV-1027"
+          ]
+        },
+        {
+          "name": "compare_settlement",
+          "status": "COMPLETED",
+          "durationMs": 0.014,
+          "evidenceIds": [
+            "LED-1027-1",
+            "LED-1027-2",
+            "PROVIDER:PRV-1027"
+          ]
+        },
+        {
+          "name": "inspect_webhooks",
+          "status": "COMPLETED",
+          "durationMs": 0.017,
+          "evidenceIds": [
+            "WH-1027-1",
+            "WH-1027-2"
+          ]
+        },
+        {
+          "name": "check_refund",
+          "status": "COMPLETED",
+          "durationMs": 0.008,
+          "evidenceIds": [
+            "PROVIDER:PRV-1027"
+          ]
+        }
+      ],
+      "outcomeCorrect": true,
+      "actionCorrect": true,
+      "relevantCitationRetrieved": true,
+      "abstentionCorrect": true,
+      "metrics": {
+        "durationMs": 7.801,
+        "retrievalMs": 2.863,
+        "toolCount": 4,
+        "modelCalls": 0,
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "retrievalMode": "lexical",
+        "model": "deterministic-replay"
+      },
+      "warnings": [
+        "Synthetic data only; proposals change case disposition, never payment or ledger balances.",
+        "Deterministic replay mode; actual LangGraph and LangChain tools executed, but no LLM inference was used.",
+        "Lexical retrieval baseline; semantic embeddings are not enabled."
+      ],
+      "error": null,
+      "evidenceReferencesValid": true,
+      "wallMs": 33.532
+    },
+    {
+      "caseId": "CASE-1028",
+      "expectedOutcome": "OUT_OF_ORDER_WEBHOOK",
+      "expectedAction": "RESOLVE_CASE",
+      "outcome": "OUT_OF_ORDER_WEBHOOK",
+      "action": "RESOLVE_CASE",
+      "confidence": "HIGH",
+      "investigationId": "EVAL-dd539a1f-ce96-4445-860b-0e64a83d339f",
+      "toolCalls": [
+        {
+          "name": "get_payment_timeline",
+          "status": "COMPLETED",
+          "durationMs": 0.008,
+          "evidenceIds": [
+            "EVT-1028-1",
+            "EVT-1028-2",
+            "EVT-1028-3",
+            "EVT-1028-4",
+            "PROVIDER:PRV-1028"
+          ]
+        },
+        {
+          "name": "compare_settlement",
+          "status": "COMPLETED",
+          "durationMs": 0.013,
+          "evidenceIds": [
+            "LED-1028-1",
+            "LED-1028-2",
+            "PROVIDER:PRV-1028"
+          ]
+        },
+        {
+          "name": "inspect_webhooks",
+          "status": "COMPLETED",
+          "durationMs": 0.016,
+          "evidenceIds": [
+            "WH-1028-1",
+            "WH-1028-2"
+          ]
+        },
+        {
+          "name": "check_refund",
+          "status": "COMPLETED",
+          "durationMs": 0.008,
+          "evidenceIds": [
+            "PROVIDER:PRV-1028"
+          ]
+        }
+      ],
+      "outcomeCorrect": true,
+      "actionCorrect": true,
+      "relevantCitationRetrieved": true,
+      "abstentionCorrect": true,
+      "metrics": {
+        "durationMs": 8.298,
+        "retrievalMs": 2.637,
+        "toolCount": 4,
+        "modelCalls": 0,
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "retrievalMode": "lexical",
+        "model": "deterministic-replay"
+      },
+      "warnings": [
+        "Synthetic data only; proposals change case disposition, never payment or ledger balances.",
+        "Deterministic replay mode; actual LangGraph and LangChain tools executed, but no LLM inference was used.",
+        "Lexical retrieval baseline; semantic embeddings are not enabled."
+      ],
+      "error": null,
+      "evidenceReferencesValid": true,
+      "wallMs": 25.38
+    },
+    {
+      "caseId": "CASE-1029",
+      "expectedOutcome": "OUT_OF_ORDER_WEBHOOK",
+      "expectedAction": "RESOLVE_CASE",
+      "outcome": "OUT_OF_ORDER_WEBHOOK",
+      "action": "RESOLVE_CASE",
+      "confidence": "HIGH",
+      "investigationId": "EVAL-23c3d5db-ea1e-449d-b2ca-6d2130c34e99",
+      "toolCalls": [
+        {
+          "name": "get_payment_timeline",
+          "status": "COMPLETED",
+          "durationMs": 0.009,
+          "evidenceIds": [
+            "EVT-1029-1",
+            "EVT-1029-2",
+            "EVT-1029-3",
+            "EVT-1029-4",
+            "PROVIDER:PRV-1029"
+          ]
+        },
+        {
+          "name": "compare_settlement",
+          "status": "COMPLETED",
+          "durationMs": 0.013,
+          "evidenceIds": [
+            "LED-1029-1",
+            "LED-1029-2",
+            "PROVIDER:PRV-1029"
+          ]
+        },
+        {
+          "name": "inspect_webhooks",
+          "status": "COMPLETED",
+          "durationMs": 0.015,
+          "evidenceIds": [
+            "WH-1029-1",
+            "WH-1029-2"
+          ]
+        },
+        {
+          "name": "check_refund",
+          "status": "COMPLETED",
+          "durationMs": 0.008,
+          "evidenceIds": [
+            "PROVIDER:PRV-1029"
+          ]
+        }
+      ],
+      "outcomeCorrect": true,
+      "actionCorrect": true,
+      "relevantCitationRetrieved": true,
+      "abstentionCorrect": true,
+      "metrics": {
+        "durationMs": 8.905,
+        "retrievalMs": 2.716,
+        "toolCount": 4,
+        "modelCalls": 0,
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "retrievalMode": "lexical",
+        "model": "deterministic-replay"
+      },
+      "warnings": [
+        "Synthetic data only; proposals change case disposition, never payment or ledger balances.",
+        "Deterministic replay mode; actual LangGraph and LangChain tools executed, but no LLM inference was used.",
+        "Lexical retrieval baseline; semantic embeddings are not enabled."
+      ],
+      "error": null,
+      "evidenceReferencesValid": true,
+      "wallMs": 25.127
+    },
+    {
+      "caseId": "CASE-1030",
+      "expectedOutcome": "OUT_OF_ORDER_WEBHOOK",
+      "expectedAction": "RESOLVE_CASE",
+      "outcome": "OUT_OF_ORDER_WEBHOOK",
+      "action": "RESOLVE_CASE",
+      "confidence": "HIGH",
+      "investigationId": "EVAL-01742612-3115-41fc-b7f4-7296e722eb1f",
+      "toolCalls": [
+        {
+          "name": "get_payment_timeline",
+          "status": "COMPLETED",
+          "durationMs": 0.008,
+          "evidenceIds": [
+            "EVT-1030-1",
+            "EVT-1030-2",
+            "EVT-1030-3",
+            "EVT-1030-4",
+            "PROVIDER:PRV-1030"
+          ]
+        },
+        {
+          "name": "compare_settlement",
+          "status": "COMPLETED",
+          "durationMs": 0.013,
+          "evidenceIds": [
+            "LED-1030-1",
+            "LED-1030-2",
+            "PROVIDER:PRV-1030"
+          ]
+        },
+        {
+          "name": "inspect_webhooks",
+          "status": "COMPLETED",
+          "durationMs": 0.015,
+          "evidenceIds": [
+            "WH-1030-1",
+            "WH-1030-2"
+          ]
+        },
+        {
+          "name": "check_refund",
+          "status": "COMPLETED",
+          "durationMs": 0.008,
+          "evidenceIds": [
+            "PROVIDER:PRV-1030"
+          ]
+        }
+      ],
+      "outcomeCorrect": true,
+      "actionCorrect": true,
+      "relevantCitationRetrieved": true,
+      "abstentionCorrect": true,
+      "metrics": {
+        "durationMs": 7.668,
+        "retrievalMs": 2.705,
+        "toolCount": 4,
+        "modelCalls": 0,
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "retrievalMode": "lexical",
+        "model": "deterministic-replay"
+      },
+      "warnings": [
+        "Synthetic data only; proposals change case disposition, never payment or ledger balances.",
+        "Deterministic replay mode; actual LangGraph and LangChain tools executed, but no LLM inference was used.",
+        "Lexical retrieval baseline; semantic embeddings are not enabled."
+      ],
+      "error": null,
+      "evidenceReferencesValid": true,
+      "wallMs": 24.856
+    },
+    {
+      "caseId": "CASE-1036",
+      "expectedOutcome": "MISSING_REFUND",
+      "expectedAction": "ESCALATE",
+      "outcome": "MISSING_REFUND",
+      "action": "ESCALATE",
+      "confidence": "HIGH",
+      "investigationId": "EVAL-b6c981d6-fe2b-4ce8-9060-3ea7b518fb2d",
+      "toolCalls": [
+        {
+          "name": "get_payment_timeline",
+          "status": "COMPLETED",
+          "durationMs": 0.01,
+          "evidenceIds": [
+            "EVT-1036-1",
+            "EVT-1036-2",
+            "EVT-1036-3",
+            "EVT-1036-4",
+            "EVT-1036-5",
+            "EVT-1036-6",
+            "PROVIDER:PRV-1036"
+          ]
+        },
+        {
+          "name": "compare_settlement",
+          "status": "COMPLETED",
+          "durationMs": 0.013,
+          "evidenceIds": [
+            "LED-1036-1",
+            "LED-1036-2",
+            "PROVIDER:PRV-1036"
+          ]
+        },
+        {
+          "name": "inspect_webhooks",
+          "status": "COMPLETED",
+          "durationMs": 0.014,
+          "evidenceIds": [
+            "WH-1036-1",
+            "WH-1036-2"
+          ]
+        },
+        {
+          "name": "check_refund",
+          "status": "COMPLETED",
+          "durationMs": 0.021,
+          "evidenceIds": [
+            "EVT-1036-4",
+            "EVT-1036-5",
+            "PROVIDER:PRV-1036"
+          ]
+        }
+      ],
+      "outcomeCorrect": true,
+      "actionCorrect": true,
+      "relevantCitationRetrieved": true,
+      "abstentionCorrect": true,
+      "metrics": {
+        "durationMs": 8.548,
+        "retrievalMs": 2.976,
+        "toolCount": 4,
+        "modelCalls": 0,
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "retrievalMode": "lexical",
+        "model": "deterministic-replay"
+      },
+      "warnings": [
+        "Synthetic data only; proposals change case disposition, never payment or ledger balances.",
+        "Deterministic replay mode; actual LangGraph and LangChain tools executed, but no LLM inference was used.",
+        "Lexical retrieval baseline; semantic embeddings are not enabled."
+      ],
+      "error": null,
+      "evidenceReferencesValid": true,
+      "wallMs": 29.811
+    },
+    {
+      "caseId": "CASE-1037",
+      "expectedOutcome": "MISSING_REFUND",
+      "expectedAction": "ESCALATE",
+      "outcome": "MISSING_REFUND",
+      "action": "ESCALATE",
+      "confidence": "HIGH",
+      "investigationId": "EVAL-ac891b3d-eb5f-4744-8560-2d8325d6ef61",
+      "toolCalls": [
+        {
+          "name": "get_payment_timeline",
+          "status": "COMPLETED",
+          "durationMs": 0.01,
+          "evidenceIds": [
+            "EVT-1037-1",
+            "EVT-1037-2",
+            "EVT-1037-3",
+            "EVT-1037-4",
+            "EVT-1037-5",
+            "EVT-1037-6",
+            "PROVIDER:PRV-1037"
+          ]
+        },
+        {
+          "name": "compare_settlement",
+          "status": "COMPLETED",
+          "durationMs": 0.014,
+          "evidenceIds": [
+            "LED-1037-1",
+            "LED-1037-2",
+            "PROVIDER:PRV-1037"
+          ]
+        },
+        {
+          "name": "inspect_webhooks",
+          "status": "COMPLETED",
+          "durationMs": 0.015,
+          "evidenceIds": [
+            "WH-1037-1",
+            "WH-1037-2"
+          ]
+        },
+        {
+          "name": "check_refund",
+          "status": "COMPLETED",
+          "durationMs": 0.023,
+          "evidenceIds": [
+            "EVT-1037-4",
+            "EVT-1037-5",
+            "PROVIDER:PRV-1037"
+          ]
+        }
+      ],
+      "outcomeCorrect": true,
+      "actionCorrect": true,
+      "relevantCitationRetrieved": true,
+      "abstentionCorrect": true,
+      "metrics": {
+        "durationMs": 9.038,
+        "retrievalMs": 3.228,
+        "toolCount": 4,
+        "modelCalls": 0,
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "retrievalMode": "lexical",
+        "model": "deterministic-replay"
+      },
+      "warnings": [
+        "Synthetic data only; proposals change case disposition, never payment or ledger balances.",
+        "Deterministic replay mode; actual LangGraph and LangChain tools executed, but no LLM inference was used.",
+        "Lexical retrieval baseline; semantic embeddings are not enabled."
+      ],
+      "error": null,
+      "evidenceReferencesValid": true,
+      "wallMs": 27.308
+    },
+    {
+      "caseId": "CASE-1038",
+      "expectedOutcome": "MISSING_REFUND",
+      "expectedAction": "ESCALATE",
+      "outcome": "MISSING_REFUND",
+      "action": "ESCALATE",
+      "confidence": "HIGH",
+      "investigationId": "EVAL-d120a9a9-02a0-4459-ab05-ca2df5dd90fa",
+      "toolCalls": [
+        {
+          "name": "get_payment_timeline",
+          "status": "COMPLETED",
+          "durationMs": 0.013,
+          "evidenceIds": [
+            "EVT-1038-1",
+            "EVT-1038-2",
+            "EVT-1038-3",
+            "EVT-1038-4",
+            "EVT-1038-5",
+            "EVT-1038-6",
+            "PROVIDER:PRV-1038"
+          ]
+        },
+        {
+          "name": "compare_settlement",
+          "status": "COMPLETED",
+          "durationMs": 0.014,
+          "evidenceIds": [
+            "LED-1038-1",
+            "LED-1038-2",
+            "PROVIDER:PRV-1038"
+          ]
+        },
+        {
+          "name": "inspect_webhooks",
+          "status": "COMPLETED",
+          "durationMs": 0.016,
+          "evidenceIds": [
+            "WH-1038-1",
+            "WH-1038-2"
+          ]
+        },
+        {
+          "name": "check_refund",
+          "status": "COMPLETED",
+          "durationMs": 0.017,
+          "evidenceIds": [
+            "EVT-1038-4",
+            "EVT-1038-5",
+            "PROVIDER:PRV-1038"
+          ]
+        }
+      ],
+      "outcomeCorrect": true,
+      "actionCorrect": true,
+      "relevantCitationRetrieved": true,
+      "abstentionCorrect": true,
+      "metrics": {
+        "durationMs": 9.278,
+        "retrievalMs": 2.959,
+        "toolCount": 4,
+        "modelCalls": 0,
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "retrievalMode": "lexical",
+        "model": "deterministic-replay"
+      },
+      "warnings": [
+        "Synthetic data only; proposals change case disposition, never payment or ledger balances.",
+        "Deterministic replay mode; actual LangGraph and LangChain tools executed, but no LLM inference was used.",
+        "Lexical retrieval baseline; semantic embeddings are not enabled."
+      ],
+      "error": null,
+      "evidenceReferencesValid": true,
+      "wallMs": 26.933
+    },
+    {
+      "caseId": "CASE-1039",
+      "expectedOutcome": "MISSING_REFUND",
+      "expectedAction": "ESCALATE",
+      "outcome": "MISSING_REFUND",
+      "action": "ESCALATE",
+      "confidence": "HIGH",
+      "investigationId": "EVAL-cfdb0a9d-df70-419e-ba4b-010409b50a38",
+      "toolCalls": [
+        {
+          "name": "get_payment_timeline",
+          "status": "COMPLETED",
+          "durationMs": 0.01,
+          "evidenceIds": [
+            "EVT-1039-1",
+            "EVT-1039-2",
+            "EVT-1039-3",
+            "EVT-1039-4",
+            "EVT-1039-5",
+            "EVT-1039-6",
+            "PROVIDER:PRV-1039"
+          ]
+        },
+        {
+          "name": "compare_settlement",
+          "status": "COMPLETED",
+          "durationMs": 0.014,
+          "evidenceIds": [
+            "LED-1039-1",
+            "LED-1039-2",
+            "PROVIDER:PRV-1039"
+          ]
+        },
+        {
+          "name": "inspect_webhooks",
+          "status": "COMPLETED",
+          "durationMs": 0.015,
+          "evidenceIds": [
+            "WH-1039-1",
+            "WH-1039-2"
+          ]
+        },
+        {
+          "name": "check_refund",
+          "status": "COMPLETED",
+          "durationMs": 0.017,
+          "evidenceIds": [
+            "EVT-1039-4",
+            "EVT-1039-5",
+            "PROVIDER:PRV-1039"
+          ]
+        }
+      ],
+      "outcomeCorrect": true,
+      "actionCorrect": true,
+      "relevantCitationRetrieved": true,
+      "abstentionCorrect": true,
+      "metrics": {
+        "durationMs": 8.402,
+        "retrievalMs": 2.823,
+        "toolCount": 4,
+        "modelCalls": 0,
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "retrievalMode": "lexical",
+        "model": "deterministic-replay"
+      },
+      "warnings": [
+        "Synthetic data only; proposals change case disposition, never payment or ledger balances.",
+        "Deterministic replay mode; actual LangGraph and LangChain tools executed, but no LLM inference was used.",
+        "Lexical retrieval baseline; semantic embeddings are not enabled."
+      ],
+      "error": null,
+      "evidenceReferencesValid": true,
+      "wallMs": 24.611
+    },
+    {
+      "caseId": "CASE-1040",
+      "expectedOutcome": "MISSING_REFUND",
+      "expectedAction": "ESCALATE",
+      "outcome": "MISSING_REFUND",
+      "action": "ESCALATE",
+      "confidence": "HIGH",
+      "investigationId": "EVAL-19d391a8-22e7-4dec-86d6-2bf63198bfa4",
+      "toolCalls": [
+        {
+          "name": "get_payment_timeline",
+          "status": "COMPLETED",
+          "durationMs": 0.009,
+          "evidenceIds": [
+            "EVT-1040-1",
+            "EVT-1040-2",
+            "EVT-1040-3",
+            "EVT-1040-4",
+            "EVT-1040-5",
+            "EVT-1040-6",
+            "PROVIDER:PRV-1040"
+          ]
+        },
+        {
+          "name": "compare_settlement",
+          "status": "COMPLETED",
+          "durationMs": 0.013,
+          "evidenceIds": [
+            "LED-1040-1",
+            "LED-1040-2",
+            "PROVIDER:PRV-1040"
+          ]
+        },
+        {
+          "name": "inspect_webhooks",
+          "status": "COMPLETED",
+          "durationMs": 0.015,
+          "evidenceIds": [
+            "WH-1040-1",
+            "WH-1040-2"
+          ]
+        },
+        {
+          "name": "check_refund",
+          "status": "COMPLETED",
+          "durationMs": 0.016,
+          "evidenceIds": [
+            "EVT-1040-4",
+            "EVT-1040-5",
+            "PROVIDER:PRV-1040"
+          ]
+        }
+      ],
+      "outcomeCorrect": true,
+      "actionCorrect": true,
+      "relevantCitationRetrieved": true,
+      "abstentionCorrect": true,
+      "metrics": {
+        "durationMs": 8.499,
+        "retrievalMs": 2.719,
+        "toolCount": 4,
+        "modelCalls": 0,
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "retrievalMode": "lexical",
+        "model": "deterministic-replay"
+      },
+      "warnings": [
+        "Synthetic data only; proposals change case disposition, never payment or ledger balances.",
+        "Deterministic replay mode; actual LangGraph and LangChain tools executed, but no LLM inference was used.",
+        "Lexical retrieval baseline; semantic embeddings are not enabled."
+      ],
+      "error": null,
+      "evidenceReferencesValid": true,
+      "wallMs": 25.392
+    },
+    {
+      "caseId": "CASE-1046",
+      "expectedOutcome": "INSUFFICIENT_EVIDENCE",
+      "expectedAction": "REQUEST_EVIDENCE",
+      "outcome": "INSUFFICIENT_EVIDENCE",
+      "action": "REQUEST_EVIDENCE",
+      "confidence": "INSUFFICIENT",
+      "investigationId": "EVAL-0fb9dee3-6390-4f6e-931e-0e6ce7b70232",
+      "toolCalls": [
+        {
+          "name": "get_payment_timeline",
+          "status": "COMPLETED",
+          "durationMs": 0.008,
+          "evidenceIds": [
+            "EVT-1046-1",
+            "EVT-1046-2",
+            "EVT-1046-3",
+            "PROVIDER:PRV-1046"
+          ]
+        },
+        {
+          "name": "compare_settlement",
+          "status": "COMPLETED",
+          "durationMs": 0.009,
+          "evidenceIds": [
+            "PROVIDER:PRV-1046"
+          ]
+        },
+        {
+          "name": "inspect_webhooks",
+          "status": "COMPLETED",
+          "durationMs": 0.004,
+          "evidenceIds": []
+        },
+        {
+          "name": "check_refund",
+          "status": "COMPLETED",
+          "durationMs": 0.007,
+          "evidenceIds": [
+            "PROVIDER:PRV-1046"
+          ]
+        }
+      ],
+      "outcomeCorrect": true,
+      "actionCorrect": true,
+      "relevantCitationRetrieved": true,
+      "abstentionCorrect": true,
+      "metrics": {
+        "durationMs": 8.1,
+        "retrievalMs": 3.069,
+        "toolCount": 4,
+        "modelCalls": 0,
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "retrievalMode": "lexical",
+        "model": "deterministic-replay"
+      },
+      "warnings": [
+        "Synthetic data only; proposals change case disposition, never payment or ledger balances.",
+        "Deterministic replay mode; actual LangGraph and LangChain tools executed, but no LLM inference was used.",
+        "Lexical retrieval baseline; semantic embeddings are not enabled."
+      ],
+      "error": null,
+      "evidenceReferencesValid": true,
+      "wallMs": 26.834
+    },
+    {
+      "caseId": "CASE-1047",
+      "expectedOutcome": "INSUFFICIENT_EVIDENCE",
+      "expectedAction": "REQUEST_EVIDENCE",
+      "outcome": "INSUFFICIENT_EVIDENCE",
+      "action": "REQUEST_EVIDENCE",
+      "confidence": "INSUFFICIENT",
+      "investigationId": "EVAL-3cd67b4c-ec80-4abb-b36a-07ef08488ccc",
+      "toolCalls": [
+        {
+          "name": "get_payment_timeline",
+          "status": "COMPLETED",
+          "durationMs": 0.008,
+          "evidenceIds": [
+            "EVT-1047-1",
+            "EVT-1047-2",
+            "EVT-1047-3",
+            "PROVIDER:PRV-1047"
+          ]
+        },
+        {
+          "name": "compare_settlement",
+          "status": "COMPLETED",
+          "durationMs": 0.01,
+          "evidenceIds": [
+            "PROVIDER:PRV-1047"
+          ]
+        },
+        {
+          "name": "inspect_webhooks",
+          "status": "COMPLETED",
+          "durationMs": 0.004,
+          "evidenceIds": []
+        },
+        {
+          "name": "check_refund",
+          "status": "COMPLETED",
+          "durationMs": 0.007,
+          "evidenceIds": [
+            "PROVIDER:PRV-1047"
+          ]
+        }
+      ],
+      "outcomeCorrect": true,
+      "actionCorrect": true,
+      "relevantCitationRetrieved": true,
+      "abstentionCorrect": true,
+      "metrics": {
+        "durationMs": 10.492,
+        "retrievalMs": 4.865,
+        "toolCount": 4,
+        "modelCalls": 0,
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "retrievalMode": "lexical",
+        "model": "deterministic-replay"
+      },
+      "warnings": [
+        "Synthetic data only; proposals change case disposition, never payment or ledger balances.",
+        "Deterministic replay mode; actual LangGraph and LangChain tools executed, but no LLM inference was used.",
+        "Lexical retrieval baseline; semantic embeddings are not enabled."
+      ],
+      "error": null,
+      "evidenceReferencesValid": true,
+      "wallMs": 28.93
+    },
+    {
+      "caseId": "CASE-1048",
+      "expectedOutcome": "INSUFFICIENT_EVIDENCE",
+      "expectedAction": "REQUEST_EVIDENCE",
+      "outcome": "INSUFFICIENT_EVIDENCE",
+      "action": "REQUEST_EVIDENCE",
+      "confidence": "INSUFFICIENT",
+      "investigationId": "EVAL-759c1377-c007-4f08-907a-963dc1274c46",
+      "toolCalls": [
+        {
+          "name": "get_payment_timeline",
+          "status": "COMPLETED",
+          "durationMs": 0.007,
+          "evidenceIds": [
+            "EVT-1048-1",
+            "EVT-1048-2",
+            "EVT-1048-3",
+            "PROVIDER:PRV-1048"
+          ]
+        },
+        {
+          "name": "compare_settlement",
+          "status": "COMPLETED",
+          "durationMs": 0.009,
+          "evidenceIds": [
+            "PROVIDER:PRV-1048"
+          ]
+        },
+        {
+          "name": "inspect_webhooks",
+          "status": "COMPLETED",
+          "durationMs": 0.004,
+          "evidenceIds": []
+        },
+        {
+          "name": "check_refund",
+          "status": "COMPLETED",
+          "durationMs": 0.007,
+          "evidenceIds": [
+            "PROVIDER:PRV-1048"
+          ]
+        }
+      ],
+      "outcomeCorrect": true,
+      "actionCorrect": true,
+      "relevantCitationRetrieved": true,
+      "abstentionCorrect": true,
+      "metrics": {
+        "durationMs": 7.934,
+        "retrievalMs": 2.828,
+        "toolCount": 4,
+        "modelCalls": 0,
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "retrievalMode": "lexical",
+        "model": "deterministic-replay"
+      },
+      "warnings": [
+        "Synthetic data only; proposals change case disposition, never payment or ledger balances.",
+        "Deterministic replay mode; actual LangGraph and LangChain tools executed, but no LLM inference was used.",
+        "Lexical retrieval baseline; semantic embeddings are not enabled."
+      ],
+      "error": null,
+      "evidenceReferencesValid": true,
+      "wallMs": 27.918
+    },
+    {
+      "caseId": "CASE-1049",
+      "expectedOutcome": "INSUFFICIENT_EVIDENCE",
+      "expectedAction": "REQUEST_EVIDENCE",
+      "outcome": "INSUFFICIENT_EVIDENCE",
+      "action": "REQUEST_EVIDENCE",
+      "confidence": "INSUFFICIENT",
+      "investigationId": "EVAL-5c4a0df5-988b-4c91-82d4-e782fae89865",
+      "toolCalls": [
+        {
+          "name": "get_payment_timeline",
+          "status": "COMPLETED",
+          "durationMs": 0.007,
+          "evidenceIds": [
+            "EVT-1049-1",
+            "EVT-1049-2",
+            "EVT-1049-3",
+            "PROVIDER:PRV-1049"
+          ]
+        },
+        {
+          "name": "compare_settlement",
+          "status": "COMPLETED",
+          "durationMs": 0.009,
+          "evidenceIds": [
+            "PROVIDER:PRV-1049"
+          ]
+        },
+        {
+          "name": "inspect_webhooks",
+          "status": "COMPLETED",
+          "durationMs": 0.004,
+          "evidenceIds": []
+        },
+        {
+          "name": "check_refund",
+          "status": "COMPLETED",
+          "durationMs": 0.007,
+          "evidenceIds": [
+            "PROVIDER:PRV-1049"
+          ]
+        }
+      ],
+      "outcomeCorrect": true,
+      "actionCorrect": true,
+      "relevantCitationRetrieved": true,
+      "abstentionCorrect": true,
+      "metrics": {
+        "durationMs": 8.079,
+        "retrievalMs": 2.93,
+        "toolCount": 4,
+        "modelCalls": 0,
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "retrievalMode": "lexical",
+        "model": "deterministic-replay"
+      },
+      "warnings": [
+        "Synthetic data only; proposals change case disposition, never payment or ledger balances.",
+        "Deterministic replay mode; actual LangGraph and LangChain tools executed, but no LLM inference was used.",
+        "Lexical retrieval baseline; semantic embeddings are not enabled."
+      ],
+      "error": null,
+      "evidenceReferencesValid": true,
+      "wallMs": 24.367
+    },
+    {
+      "caseId": "CASE-1050",
+      "expectedOutcome": "INSUFFICIENT_EVIDENCE",
+      "expectedAction": "REQUEST_EVIDENCE",
+      "outcome": "INSUFFICIENT_EVIDENCE",
+      "action": "REQUEST_EVIDENCE",
+      "confidence": "INSUFFICIENT",
+      "investigationId": "EVAL-2f36202f-ca1f-44c0-a377-20d4981e58e0",
+      "toolCalls": [
+        {
+          "name": "get_payment_timeline",
+          "status": "COMPLETED",
+          "durationMs": 0.008,
+          "evidenceIds": [
+            "EVT-1050-1",
+            "EVT-1050-2",
+            "EVT-1050-3",
+            "PROVIDER:PRV-1050"
+          ]
+        },
+        {
+          "name": "compare_settlement",
+          "status": "COMPLETED",
+          "durationMs": 0.01,
+          "evidenceIds": [
+            "PROVIDER:PRV-1050"
+          ]
+        },
+        {
+          "name": "inspect_webhooks",
+          "status": "COMPLETED",
+          "durationMs": 0.004,
+          "evidenceIds": []
+        },
+        {
+          "name": "check_refund",
+          "status": "COMPLETED",
+          "durationMs": 0.035,
+          "evidenceIds": [
+            "PROVIDER:PRV-1050"
+          ]
+        }
+      ],
+      "outcomeCorrect": true,
+      "actionCorrect": true,
+      "relevantCitationRetrieved": true,
+      "abstentionCorrect": true,
+      "metrics": {
+        "durationMs": 7.279,
+        "retrievalMs": 2.376,
+        "toolCount": 4,
+        "modelCalls": 0,
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "retrievalMode": "lexical",
+        "model": "deterministic-replay"
+      },
+      "warnings": [
+        "Synthetic data only; proposals change case disposition, never payment or ledger balances.",
+        "Deterministic replay mode; actual LangGraph and LangChain tools executed, but no LLM inference was used.",
+        "Lexical retrieval baseline; semantic embeddings are not enabled."
+      ],
+      "error": null,
+      "evidenceReferencesValid": true,
+      "wallMs": 27.74
+    },
+    {
+      "caseId": "CASE-1056",
+      "expectedOutcome": "PROVIDER_FAILURE",
+      "expectedAction": "ESCALATE",
+      "outcome": "PROVIDER_FAILURE",
+      "action": "ESCALATE",
+      "confidence": "HIGH",
+      "investigationId": "EVAL-04c2768f-1b3e-42d3-86e2-08c3ddc66464",
+      "toolCalls": [
+        {
+          "name": "get_payment_timeline",
+          "status": "COMPLETED",
+          "durationMs": 0.01,
+          "evidenceIds": [
+            "EVT-1056-1",
+            "EVT-1056-2",
+            "EVT-1056-3",
+            "PROVIDER:PRV-1056"
+          ]
+        },
+        {
+          "name": "compare_settlement",
+          "status": "COMPLETED",
+          "durationMs": 0.011,
+          "evidenceIds": [
+            "PROVIDER:PRV-1056"
+          ]
+        },
+        {
+          "name": "inspect_webhooks",
+          "status": "COMPLETED",
+          "durationMs": 0.005,
+          "evidenceIds": []
+        },
+        {
+          "name": "check_refund",
+          "status": "COMPLETED",
+          "durationMs": 0.009,
+          "evidenceIds": [
+            "PROVIDER:PRV-1056"
+          ]
+        }
+      ],
+      "outcomeCorrect": true,
+      "actionCorrect": true,
+      "relevantCitationRetrieved": true,
+      "abstentionCorrect": true,
+      "metrics": {
+        "durationMs": 11.724,
+        "retrievalMs": 3.503,
+        "toolCount": 4,
+        "modelCalls": 0,
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "retrievalMode": "lexical",
+        "model": "deterministic-replay"
+      },
+      "warnings": [
+        "Synthetic data only; proposals change case disposition, never payment or ledger balances.",
+        "Deterministic replay mode; actual LangGraph and LangChain tools executed, but no LLM inference was used.",
+        "Lexical retrieval baseline; semantic embeddings are not enabled."
+      ],
+      "error": null,
+      "evidenceReferencesValid": true,
+      "wallMs": 34.871
+    },
+    {
+      "caseId": "CASE-1057",
+      "expectedOutcome": "PROVIDER_FAILURE",
+      "expectedAction": "ESCALATE",
+      "outcome": "PROVIDER_FAILURE",
+      "action": "ESCALATE",
+      "confidence": "HIGH",
+      "investigationId": "EVAL-bc4c7a98-bad8-4d7f-a053-dd823edfc73b",
+      "toolCalls": [
+        {
+          "name": "get_payment_timeline",
+          "status": "COMPLETED",
+          "durationMs": 0.009,
+          "evidenceIds": [
+            "EVT-1057-1",
+            "EVT-1057-2",
+            "EVT-1057-3",
+            "PROVIDER:PRV-1057"
+          ]
+        },
+        {
+          "name": "compare_settlement",
+          "status": "COMPLETED",
+          "durationMs": 0.01,
+          "evidenceIds": [
+            "PROVIDER:PRV-1057"
+          ]
+        },
+        {
+          "name": "inspect_webhooks",
+          "status": "COMPLETED",
+          "durationMs": 0.005,
+          "evidenceIds": []
+        },
+        {
+          "name": "check_refund",
+          "status": "COMPLETED",
+          "durationMs": 0.008,
+          "evidenceIds": [
+            "PROVIDER:PRV-1057"
+          ]
+        }
+      ],
+      "outcomeCorrect": true,
+      "actionCorrect": true,
+      "relevantCitationRetrieved": true,
+      "abstentionCorrect": true,
+      "metrics": {
+        "durationMs": 9.236,
+        "retrievalMs": 2.801,
+        "toolCount": 4,
+        "modelCalls": 0,
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "retrievalMode": "lexical",
+        "model": "deterministic-replay"
+      },
+      "warnings": [
+        "Synthetic data only; proposals change case disposition, never payment or ledger balances.",
+        "Deterministic replay mode; actual LangGraph and LangChain tools executed, but no LLM inference was used.",
+        "Lexical retrieval baseline; semantic embeddings are not enabled."
+      ],
+      "error": null,
+      "evidenceReferencesValid": true,
+      "wallMs": 30.794
+    },
+    {
+      "caseId": "CASE-1058",
+      "expectedOutcome": "PROVIDER_FAILURE",
+      "expectedAction": "ESCALATE",
+      "outcome": "PROVIDER_FAILURE",
+      "action": "ESCALATE",
+      "confidence": "HIGH",
+      "investigationId": "EVAL-4b54189a-a9e7-4f89-9a59-72fe844330be",
+      "toolCalls": [
+        {
+          "name": "get_payment_timeline",
+          "status": "COMPLETED",
+          "durationMs": 0.01,
+          "evidenceIds": [
+            "EVT-1058-1",
+            "EVT-1058-2",
+            "EVT-1058-3",
+            "PROVIDER:PRV-1058"
+          ]
+        },
+        {
+          "name": "compare_settlement",
+          "status": "COMPLETED",
+          "durationMs": 0.01,
+          "evidenceIds": [
+            "PROVIDER:PRV-1058"
+          ]
+        },
+        {
+          "name": "inspect_webhooks",
+          "status": "COMPLETED",
+          "durationMs": 0.005,
+          "evidenceIds": []
+        },
+        {
+          "name": "check_refund",
+          "status": "COMPLETED",
+          "durationMs": 0.008,
+          "evidenceIds": [
+            "PROVIDER:PRV-1058"
+          ]
+        }
+      ],
+      "outcomeCorrect": true,
+      "actionCorrect": true,
+      "relevantCitationRetrieved": true,
+      "abstentionCorrect": true,
+      "metrics": {
+        "durationMs": 15.938,
+        "retrievalMs": 6.973,
+        "toolCount": 4,
+        "modelCalls": 0,
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "retrievalMode": "lexical",
+        "model": "deterministic-replay"
+      },
+      "warnings": [
+        "Synthetic data only; proposals change case disposition, never payment or ledger balances.",
+        "Deterministic replay mode; actual LangGraph and LangChain tools executed, but no LLM inference was used.",
+        "Lexical retrieval baseline; semantic embeddings are not enabled."
+      ],
+      "error": null,
+      "evidenceReferencesValid": true,
+      "wallMs": 45.558
+    },
+    {
+      "caseId": "CASE-1059",
+      "expectedOutcome": "PROVIDER_FAILURE",
+      "expectedAction": "ESCALATE",
+      "outcome": "PROVIDER_FAILURE",
+      "action": "ESCALATE",
+      "confidence": "HIGH",
+      "investigationId": "EVAL-d057facb-4f47-4b21-a89c-574bfc5d6ad4",
+      "toolCalls": [
+        {
+          "name": "get_payment_timeline",
+          "status": "COMPLETED",
+          "durationMs": 0.01,
+          "evidenceIds": [
+            "EVT-1059-1",
+            "EVT-1059-2",
+            "EVT-1059-3",
+            "PROVIDER:PRV-1059"
+          ]
+        },
+        {
+          "name": "compare_settlement",
+          "status": "COMPLETED",
+          "durationMs": 0.01,
+          "evidenceIds": [
+            "PROVIDER:PRV-1059"
+          ]
+        },
+        {
+          "name": "inspect_webhooks",
+          "status": "COMPLETED",
+          "durationMs": 0.004,
+          "evidenceIds": []
+        },
+        {
+          "name": "check_refund",
+          "status": "COMPLETED",
+          "durationMs": 0.008,
+          "evidenceIds": [
+            "PROVIDER:PRV-1059"
+          ]
+        }
+      ],
+      "outcomeCorrect": true,
+      "actionCorrect": true,
+      "relevantCitationRetrieved": true,
+      "abstentionCorrect": true,
+      "metrics": {
+        "durationMs": 12.293,
+        "retrievalMs": 3.067,
+        "toolCount": 4,
+        "modelCalls": 0,
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "retrievalMode": "lexical",
+        "model": "deterministic-replay"
+      },
+      "warnings": [
+        "Synthetic data only; proposals change case disposition, never payment or ledger balances.",
+        "Deterministic replay mode; actual LangGraph and LangChain tools executed, but no LLM inference was used.",
+        "Lexical retrieval baseline; semantic embeddings are not enabled."
+      ],
+      "error": null,
+      "evidenceReferencesValid": true,
+      "wallMs": 33.018
+    },
+    {
+      "caseId": "CASE-1060",
+      "expectedOutcome": "PROVIDER_FAILURE",
+      "expectedAction": "ESCALATE",
+      "outcome": "PROVIDER_FAILURE",
+      "action": "ESCALATE",
+      "confidence": "HIGH",
+      "investigationId": "EVAL-58ebc1ef-c158-42e8-89d4-14bc723735fd",
+      "toolCalls": [
+        {
+          "name": "get_payment_timeline",
+          "status": "COMPLETED",
+          "durationMs": 0.009,
+          "evidenceIds": [
+            "EVT-1060-1",
+            "EVT-1060-2",
+            "EVT-1060-3",
+            "PROVIDER:PRV-1060"
+          ]
+        },
+        {
+          "name": "compare_settlement",
+          "status": "COMPLETED",
+          "durationMs": 0.011,
+          "evidenceIds": [
+            "PROVIDER:PRV-1060"
+          ]
+        },
+        {
+          "name": "inspect_webhooks",
+          "status": "COMPLETED",
+          "durationMs": 0.005,
+          "evidenceIds": []
+        },
+        {
+          "name": "check_refund",
+          "status": "COMPLETED",
+          "durationMs": 0.009,
+          "evidenceIds": [
+            "PROVIDER:PRV-1060"
+          ]
+        }
+      ],
+      "outcomeCorrect": true,
+      "actionCorrect": true,
+      "relevantCitationRetrieved": true,
+      "abstentionCorrect": true,
+      "metrics": {
+        "durationMs": 15.947,
+        "retrievalMs": 9.912,
+        "toolCount": 4,
+        "modelCalls": 0,
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "retrievalMode": "lexical",
+        "model": "deterministic-replay"
+      },
+      "warnings": [
+        "Synthetic data only; proposals change case disposition, never payment or ledger balances.",
+        "Deterministic replay mode; actual LangGraph and LangChain tools executed, but no LLM inference was used.",
+        "Lexical retrieval baseline; semantic embeddings are not enabled."
+      ],
+      "error": null,
+      "evidenceReferencesValid": true,
+      "wallMs": 33.361
+    }
+  ]
+}

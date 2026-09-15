@@ -1,0 +1,233 @@
+{
+  "timestamp": "2026-09-11T23:17:36.461821+00:00",
+  "baseUrl": "http://127.0.0.1:5178",
+  "caseId": "CASE-1041",
+  "mode": "ollama",
+  "datasetManifestSha256": "b467da9818fd0813665e06301b7ea5940b61d94c54ce04e3d34b1dc31223e140",
+  "limitations": [
+    "One development case; not an accuracy, capacity or generalization benchmark.",
+    "The recorded synthesisScope distinguishes model-selected/service-rendered facts from historical model-written prose; assessment remains rule-owned.",
+    "Identifier validation does not establish catalog correctness, source completeness or selection relevance; inspect the saved facts and provenance.",
+    "Creates a synthetic investigation; no review decision or payment action is submitted."
+  ],
+  "operationalSnapshot": {
+    "id": "CASE-1041",
+    "tenantId": "northstar",
+    "paymentId": "PAY-1041",
+    "title": "Payment status requires confirmation",
+    "description": "Review this simulated payment using the available evidence. Confirm the observed state, account for ledger entries, and propose the next case action.",
+    "priority": "MEDIUM",
+    "status": "AWAITING_REVIEW",
+    "amountMinor": 70140,
+    "currency": "INR",
+    "rail": "SIMULATED_TRANSFER",
+    "merchant": "Juniper Supplies",
+    "createdAt": "2026-09-11T06:40:00Z",
+    "updatedAt": "2026-09-11T21:30:19.464103881Z",
+    "version": 2,
+    "events": [
+      {
+        "id": "EVT-1041-1",
+        "occurredAt": "2026-09-11T06:40:00Z",
+        "type": "REQUEST_ACCEPTED",
+        "source": "gateway",
+        "status": "SUCCESS",
+        "summary": "Gateway accepted the payment request.",
+        "correlationId": "COR-1041",
+        "attributes": {
+          "idempotencyKey": "IDEM-1041",
+          "providerPaymentId": "PRV-1041",
+          "amountMinor": 70140,
+          "currency": "INR"
+        }
+      },
+      {
+        "id": "EVT-1041-2",
+        "occurredAt": "2026-09-11T06:40:08Z",
+        "type": "CLIENT_RESPONSE",
+        "source": "gateway",
+        "status": "TIMED_OUT",
+        "summary": "Client response exceeded the transport deadline.",
+        "correlationId": "COR-1041",
+        "attributes": {
+          "idempotencyKey": "IDEM-1041",
+          "providerPaymentId": "PRV-1041",
+          "httpStatus": 504
+        }
+      },
+      {
+        "id": "EVT-1041-3",
+        "occurredAt": "2026-09-11T06:45:00Z",
+        "type": "STATUS_LOOKUP",
+        "source": "processor-adapter",
+        "status": "UNAVAILABLE",
+        "summary": "Processor lookup unavailable at snapshot cutoff.",
+        "correlationId": "COR-1041",
+        "attributes": {
+          "idempotencyKey": "IDEM-1041",
+          "providerPaymentId": "PRV-1041",
+          "httpStatus": 503
+        }
+      }
+    ],
+    "ledgerEntries": [],
+    "webhooks": [],
+    "policyDate": "2026-09-11",
+    "tags": [
+      "synthetic",
+      "payment-operations"
+    ],
+    "provider": {
+      "status": "UNKNOWN",
+      "paymentId": "PRV-1041",
+      "amountMinor": 0,
+      "feeMinor": 0,
+      "refundMinor": 0,
+      "payoutMinor": 0,
+      "asOf": "2026-09-11T06:45:50Z"
+    },
+    "reconciliation": {
+      "validMoney": true,
+      "captureCount": 0,
+      "captureMinor": 0,
+      "refundMinor": 0,
+      "ledgerNetMinor": 0,
+      "providerAvailable": false,
+      "currency": "INR",
+      "calculatedBy": "java-api",
+      "providerPayoutMinor": null,
+      "discrepancyMinor": null
+    }
+  },
+  "investigation": {
+    "outcome": "INSUFFICIENT_EVIDENCE",
+    "summary": "The available evidence does not support a reliable conclusion. Obtain or reconcile the missing facts before changing case disposition.",
+    "confidence": "INSUFFICIENT",
+    "findings": [],
+    "missingEvidence": [
+      "Obtain an authoritative processor status for the original payment reference, with its observation timestamp; the supplied provider state is UNKNOWN.",
+      "Confirm whether the empty ledger snapshot is complete for this payment through a stated cutoff; supply any capture, fee or refund records found.",
+      "Check provider delivery history for the original payment reference; supply any events found, including occurrence time, receipt time and processing status, or confirm that none were delivered."
+    ],
+    "proposal": {
+      "action": "REQUEST_EVIDENCE",
+      "reason": "Request the listed evidence and keep financial state unchanged."
+    },
+    "id": "INV-04267790-0d73-4d79-8324-0336b8a39461",
+    "caseId": "CASE-1041",
+    "createdAt": "2026-09-11T23:17:47.341680367Z",
+    "createdBy": "analyst",
+    "mode": "ollama",
+    "status": "AWAITING_REVIEW",
+    "citations": [
+      {
+        "id": "RB-FAILURE:v1",
+        "documentId": "RB-FAILURE",
+        "version": 1,
+        "title": "Confirmed processor rejection",
+        "excerpt": "A terminal FAILED processor state with a matching rejection event and no capture ledger establishes a processing failure in this simulated workflow. Preserve the provider reference and reason code. Propose escalation to the appropriate operations queue for review; this case workflow does not authorize retries, changes to payment instruments, refunds or contact with a customer. A conflicting capture entry invalidates this conclusion and requires evidence reconciliation.",
+        "source": "Original simulated operating policy",
+        "score": 1.075351
+      },
+      {
+        "id": "RB-UNCERTAINTY:v1",
+        "documentId": "RB-UNCERTAINTY",
+        "version": 1,
+        "title": "Insufficient or conflicting payment evidence",
+        "excerpt": "A timeout, an empty ledger or an unavailable status lookup alone cannot prove success or failure. Request a processor status result correlated to the original payment reference, a ledger extract with its cutoff time, and relevant delivery records. If amount, currency, identity or timestamps conflict, state the conflict and avoid a confident conclusion. Propose REQUEST_EVIDENCE for the case. Do not invent missing facts, rely on case titles as answers, or convert missing evidence into a guessed payment outcome.",
+        "source": "Original simulated operating policy",
+        "score": 0.903843
+      },
+      {
+        "id": "RB-INCIDENT:v1",
+        "documentId": "RB-INCIDENT",
+        "version": 1,
+        "title": "Operations incident evidence packet",
+        "excerpt": "A useful escalation packet contains case identifier, payment reference, amount and currency, observed symptom, ordered timeline, exact ledger comparison, cited operating policy, missing evidence and proposed queue action. Describe observed facts separately from hypotheses. Include snapshot times so reviewers understand possible processing lag. Export only authorized synthetic case data and its audit history; never include evaluation labels, credentials or unrelated cases.",
+        "source": "Original simulated operating policy",
+        "score": 0.607435
+      }
+    ],
+    "toolCalls": [
+      {
+        "name": "get_payment_timeline",
+        "status": "COMPLETED",
+        "durationMs": 0.017,
+        "evidenceIds": [
+          "EVT-1041-1",
+          "EVT-1041-2",
+          "EVT-1041-3",
+          "PROVIDER:PRV-1041"
+        ]
+      },
+      {
+        "name": "compare_settlement",
+        "status": "COMPLETED",
+        "durationMs": 0.025,
+        "evidenceIds": [
+          "PROVIDER:PRV-1041"
+        ]
+      },
+      {
+        "name": "inspect_webhooks",
+        "status": "COMPLETED",
+        "durationMs": 0.006,
+        "evidenceIds": []
+      },
+      {
+        "name": "check_refund",
+        "status": "COMPLETED",
+        "durationMs": 0.028,
+        "evidenceIds": [
+          "PROVIDER:PRV-1041"
+        ]
+      }
+    ],
+    "metrics": {
+      "durationMs": 10749.547,
+      "retrievalMs": 4.578,
+      "toolCount": 4,
+      "modelCalls": 1,
+      "inputTokens": 511,
+      "outputTokens": 108,
+      "retrievalMode": "lexical",
+      "model": "qwen3:4b-instruct",
+      "assessmentSource": "deterministic-evidence-rules",
+      "synthesisScope": "skipped-insufficient-evidence",
+      "modelThreads": 4,
+      "modelContextTokens": 4096,
+      "modelTimeoutSeconds": 180.0,
+      "toolOutputTokenLimit": 384,
+      "synthesisOutputTokenLimit": 384,
+      "toolSelectionMs": 10735.093,
+      "toolSelectionProvider": {
+        "model": "qwen3:4b-instruct",
+        "created_at": "2026-09-11T23:17:47.308766343Z",
+        "done": true,
+        "done_reason": "stop",
+        "total_duration": 10721895715,
+        "load_duration": 915837,
+        "prompt_eval_count": 511,
+        "prompt_eval_duration": 793319000,
+        "eval_count": 108,
+        "eval_duration": 9814245000,
+        "logprobs": null,
+        "model_name": "qwen3:4b-instruct",
+        "model_provider": "ollama"
+      }
+    },
+    "warnings": [
+      "Synthetic data only; proposals change case disposition, never payment or ledger balances.",
+      "Ollama planned diagnostic tools; fact selection was skipped because evidence was insufficient. All explanation text comes from deterministic evidence rules.",
+      "Lexical retrieval baseline; semantic embeddings are not enabled."
+    ],
+    "caseVersion": 3,
+    "snapshotHash": "e786aed3f89699c543e6bd0a0d6aeb2dc5f906486a9ade9c7834282fa9f87f02"
+  },
+  "caseStateAfter": {
+    "status": "AWAITING_REVIEW",
+    "version": 3
+  },
+  "status": "passed",
+  "wallSeconds": 10.896
+}

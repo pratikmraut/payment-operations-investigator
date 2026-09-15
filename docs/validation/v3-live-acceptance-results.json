@@ -1,0 +1,358 @@
+{
+  "schemaVersion": 1,
+  "reviewedAt": "2026-09-11T21:07:05.560703+00:00",
+  "overallAcceptanceStatus": "FAIL",
+  "attemptedInvestigations": 1,
+  "acceptedInvestigations": 0,
+  "rejectedInvestigations": 1,
+  "successfulAcceptanceReportExists": false,
+  "workerImage": "sha256:b85058310f8baa9800ed839113bb892a04762500efe2319fab50ab333120aea3",
+  "configuration": {
+    "model": "qwen3:4b-instruct",
+    "modelTimeoutSeconds": 180.0,
+    "modelThreads": 4,
+    "modelContextTokens": 4096,
+    "toolOutputTokenLimit": 384,
+    "synthesisOutputTokenLimit": 384,
+    "retrievalMode": "lexical"
+  },
+  "javaFailure": {
+    "requestId": "3dff1ba7-dd24-4722-8cc3-738a77ec3b74",
+    "status": 503,
+    "upstreamWorkerStatus": 422
+  },
+  "log": {
+    "path": "runtime/live-compose-finding-only.log",
+    "sha256": "692e76e1d05031409323fea3b9ba236e7306627e43d53a0e4dd220514b32c3fd"
+  },
+  "rows": [
+    {
+      "investigationId": "INV-c8b7cf28-f357-4233-85ba-3ed9e5cb924b",
+      "caseId": "CASE-1002",
+      "startedAt": "2026-09-11T21:03:06.838546+00:00",
+      "synthesisScope": "finding-only",
+      "candidate": {
+        "outcome": "TIMEOUT_AFTER_SUCCESS",
+        "summary": "The request timed out at transport level, but the provider reports success and one matching ledger capture is present. Do not initiate another payment from this evidence.",
+        "confidence": "HIGH",
+        "findings": [
+          {
+            "id": "F-1",
+            "text": "Payment succeeded with one matching capture; no further action required.",
+            "evidenceIds": [
+              "EVT-1002-3",
+              "LED-1002-1",
+              "LED-1002-2",
+              "PROVIDER:PRV-1002"
+            ],
+            "citationIds": [
+              "RB-TIMEOUT:v1"
+            ]
+          }
+        ],
+        "missingEvidence": [],
+        "proposal": {
+          "action": "RESOLVE_CASE",
+          "reason": "Record the observed successful processing and resolve the investigation without moving funds."
+        }
+      },
+      "checkpointResult": null,
+      "assessment": {
+        "outcome": "TIMEOUT_AFTER_SUCCESS",
+        "summary": "The request timed out at transport level, but the provider reports success and one matching ledger capture is present. Do not initiate another payment from this evidence.",
+        "evidenceIds": [
+          "EVT-1002-3",
+          "LED-1002-1",
+          "LED-1002-2",
+          "PROVIDER:PRV-1002"
+        ],
+        "query": "transport timeout succeeded successful capture idempotency retry",
+        "action": "RESOLVE_CASE",
+        "reason": "Record the observed successful processing and resolve the investigation without moving funds.",
+        "missingEvidence": []
+      },
+      "operationalEvidence": {
+        "get_payment_timeline": {
+          "events": [
+            {
+              "id": "EVT-1002-1",
+              "occurredAt": "2026-09-11T06:01:00Z",
+              "type": "REQUEST_ACCEPTED",
+              "source": "gateway",
+              "status": "SUCCESS",
+              "correlationId": "COR-1002",
+              "attributes": {
+                "idempotencyKey": "IDEM-1002",
+                "providerPaymentId": "PRV-1002",
+                "amountMinor": 65075
+              }
+            },
+            {
+              "id": "EVT-1002-2",
+              "occurredAt": "2026-09-11T06:01:05Z",
+              "type": "PROCESSOR_CONFIRMED",
+              "source": "processor",
+              "status": "SUCCEEDED",
+              "correlationId": "COR-1002",
+              "attributes": {
+                "idempotencyKey": "IDEM-1002",
+                "providerPaymentId": "PRV-1002",
+                "amountMinor": 65075
+              }
+            },
+            {
+              "id": "EVT-1002-3",
+              "occurredAt": "2026-09-11T06:01:08Z",
+              "type": "CLIENT_RESPONSE",
+              "source": "gateway",
+              "status": "TIMED_OUT",
+              "correlationId": "COR-1002",
+              "attributes": {
+                "idempotencyKey": "IDEM-1002",
+                "providerPaymentId": "PRV-1002"
+              }
+            }
+          ],
+          "provider": {
+            "status": "SUCCEEDED",
+            "paymentId": "PRV-1002",
+            "amountMinor": 65075,
+            "feeMinor": 1138,
+            "refundMinor": 0,
+            "payoutMinor": 63937,
+            "asOf": "2026-09-11T06:06:50Z"
+          },
+          "evidenceIds": [
+            "EVT-1002-1",
+            "EVT-1002-2",
+            "EVT-1002-3",
+            "PROVIDER:PRV-1002"
+          ]
+        },
+        "compare_settlement": {
+          "expectedAmountMinor": 65075,
+          "currency": "INR",
+          "entries": [
+            {
+              "id": "LED-1002-1",
+              "type": "CAPTURE",
+              "amountMinor": 65075,
+              "currency": "INR",
+              "occurredAt": "2026-09-11T06:01:06Z",
+              "reference": "PRV-1002"
+            },
+            {
+              "id": "LED-1002-2",
+              "type": "FEE",
+              "amountMinor": -1138,
+              "currency": "INR",
+              "occurredAt": "2026-09-11T06:01:07Z",
+              "reference": "PRV-1002"
+            }
+          ],
+          "captureCount": 1,
+          "captureMinor": 65075,
+          "refundMinor": 0,
+          "validMoney": true,
+          "calculationSource": "java-api",
+          "ledgerNetMinor": 63937,
+          "providerPayoutMinor": 63937,
+          "discrepancyMinor": 0,
+          "providerAvailable": true,
+          "reconciliation": {
+            "validMoney": true,
+            "captureCount": 1,
+            "captureMinor": 65075,
+            "refundMinor": 0,
+            "ledgerNetMinor": 63937,
+            "providerAvailable": true,
+            "currency": "INR",
+            "calculatedBy": "java-api",
+            "providerPayoutMinor": 63937,
+            "discrepancyMinor": 0
+          },
+          "provider": {
+            "status": "SUCCEEDED",
+            "paymentId": "PRV-1002",
+            "amountMinor": 65075,
+            "feeMinor": 1138,
+            "refundMinor": 0,
+            "payoutMinor": 63937,
+            "asOf": "2026-09-11T06:06:50Z"
+          },
+          "evidenceIds": [
+            "LED-1002-1",
+            "LED-1002-2",
+            "PROVIDER:PRV-1002"
+          ]
+        },
+        "inspect_webhooks": {
+          "records": [
+            {
+              "id": "WH-1002-1",
+              "providerEventId": "PEVT-1002-CAP",
+              "type": "payment.captured",
+              "occurredAt": "2026-09-11T06:01:05Z",
+              "receivedAt": "2026-09-11T06:01:10Z",
+              "processingStatus": "APPLIED",
+              "providerPaymentId": "PRV-1002"
+            }
+          ],
+          "duplicates": [],
+          "orderingInversions": [],
+          "timestampsComplete": true,
+          "evidenceIds": [
+            "WH-1002-1"
+          ]
+        },
+        "check_refund": {
+          "requests": [],
+          "requestedMinor": null,
+          "confirmedMinor": 0,
+          "confirmationIds": [],
+          "ledgerRefundMinor": 0,
+          "providerRefundMinor": 0,
+          "evidenceIds": [
+            "PROVIDER:PRV-1002"
+          ]
+        }
+      },
+      "retrievedPolicies": [
+        {
+          "id": "RB-TIMEOUT:v1",
+          "documentId": "RB-TIMEOUT",
+          "version": 1,
+          "title": "Transport timeout after processing",
+          "excerpt": "A client transport timeout does not establish payment failure. Correlate the accepted request, idempotency key and processor payment reference. A SUCCEEDED processor confirmation plus exactly one matching capture ledger entry establishes completed capture for this simulated workflow. Reconcile the amount and currency before proposing case resolution. Explain that retrying without checking the original reference can create ambiguity. Never propose a second debit or an automatic refund from a timeout alone. If confirmation or matching ledger evidence is absent, request evidence instead.",
+          "source": "Original simulated operating policy",
+          "score": 1.152201
+        },
+        {
+          "id": "RB-REFUND:v1",
+          "documentId": "RB-REFUND",
+          "version": 1,
+          "title": "Refund posting and payout reconciliation",
+          "excerpt": "All values are integer minor units in a single currency. Compute ledger net as the signed sum of capture, fee and refund postings. For a succeeded payment, expected processor payout equals capture amount minus processor fee minus confirmed refunds. A confirmed processor refund that is absent from the ledger creates a difference equal to that refund when other postings agree. Preserve the processor refund reference, confirmation event, ledger snapshot cutoff and exact difference. Escalate the posting exception for a human reconciliation review. The investigator must not create a refund, repair a ledger or transfer money.",
+          "source": "Original simulated operating policy",
+          "score": 0.369203
+        },
+        {
+          "id": "RB-REVIEW:v1",
+          "documentId": "RB-REVIEW",
+          "version": 1,
+          "title": "Human review of case proposals",
+          "excerpt": "An investigator proposes RESOLVE_CASE, ESCALATE or REQUEST_EVIDENCE. Only a reviewer distinct from the investigation creator can approve or reject a stored proposal. Apply the stored proposal, check the current case version, and persist the decision and audit entry atomically. Reusing an idempotency key with the same request returns the original decision; a different request with that key must conflict. These actions change case workflow only and never change a payment.",
+          "source": "Original simulated operating policy",
+          "score": 0.264805
+        }
+      ],
+      "policySuppliedToCompletedFindingGeneration": [
+        {
+          "id": "RB-TIMEOUT:v1",
+          "documentId": "RB-TIMEOUT",
+          "version": 1,
+          "title": "Transport timeout after processing",
+          "excerpt": "A client transport timeout does not establish payment failure. Correlate the accepted request, idempotency key and processor payment reference. A SUCCEEDED processor confirmation plus exactly one matching capture ledger entry establishes completed capture for this simulated workflow. Reconcile the amount and currency before proposing case resolution. Explain that retrying without checking the original reference can create ambiguity. Never propose a second debit or an automatic refund from a timeout alone. If confirmation or matching ledger evidence is absent, request evidence instead.",
+          "source": "Original simulated operating policy",
+          "score": 1.152201
+        }
+      ],
+      "policyContextNote": "Skipped synthesis supplies no policy to an explanation model; retrieval alone does not imply model grounding.",
+      "usage": {
+        "modelCalls": 2,
+        "inputTokens": 1025,
+        "outputTokens": 186
+      },
+      "modelTimings": {
+        "toolSelectionMs": 21586.424,
+        "toolSelectionProvider": {
+          "model": "qwen3:4b-instruct",
+          "created_at": "2026-09-11T21:03:28.424577386Z",
+          "done": true,
+          "done_reason": "stop",
+          "total_duration": 21570589649,
+          "load_duration": 4057994051,
+          "prompt_eval_count": 507,
+          "prompt_eval_duration": 10010943000,
+          "eval_count": 108,
+          "eval_duration": 7482292000,
+          "logprobs": null,
+          "model_name": "qwen3:4b-instruct",
+          "model_provider": "ollama"
+        },
+        "synthesisMs": 18273.142,
+        "synthesisProvider": {
+          "model": "qwen3:4b-instruct",
+          "created_at": "2026-09-11T21:03:46.707232528Z",
+          "done": true,
+          "done_reason": "stop",
+          "total_duration": 18261785981,
+          "load_duration": 882640,
+          "prompt_eval_count": 518,
+          "prompt_eval_duration": 11700457000,
+          "eval_count": 78,
+          "eval_duration": 6465507000,
+          "logprobs": null,
+          "model_name": "qwen3:4b-instruct",
+          "model_provider": "ollama"
+        }
+      },
+      "errors": [
+        "InvalidModelResult(\"Generated findings[0].text contradicts this investigation's pending independent review; no completed case action is established.\")"
+      ],
+      "authorizedApiRead": {
+        "status": 404,
+        "body": {
+          "message": "Record not found.",
+          "requestId": "8c6332df-e4ee-4b64-8b0e-a8602d6ce6df",
+          "code": "NOT_FOUND"
+        }
+      },
+      "modelWrittenFinding": {
+        "id": "F-1",
+        "text": "Payment succeeded with one matching capture; no further action required.",
+        "evidenceIds": [
+          "EVT-1002-3",
+          "LED-1002-1",
+          "LED-1002-2",
+          "PROVIDER:PRV-1002"
+        ],
+        "citationIds": [
+          "RB-TIMEOUT:v1"
+        ]
+      },
+      "ruleOwnedFields": {
+        "outcome": "TIMEOUT_AFTER_SUCCESS",
+        "summary": "The request timed out at transport level, but the provider reports success and one matching ledger capture is present. Do not initiate another payment from this evidence.",
+        "confidence": "HIGH",
+        "missingEvidence": [],
+        "proposal": {
+          "action": "RESOLVE_CASE",
+          "reason": "Record the observed successful processing and resolve the investigation without moving funds."
+        }
+      },
+      "semanticReview": {
+        "reviewer": "Codex AI, not human",
+        "verdict": "Conservatively rejected unqualified no-action clause; no accepted investigation",
+        "exactRejectedText": "Payment succeeded with one matching capture; no further action required.",
+        "supportedPortion": "Provider PRV-1002 is SUCCEEDED and one matching CAPTURE entry exists. CAPTURE65075 and FEE-1138 give net63937 equal to provider payout; Java reconciliation discrepancy is zero.",
+        "problem": "The unqualified no-further-action clause is not an observed payment fact and obscures required independent proposal review. The guard rejected it; it is not a claim that a specific case transition already occurred.",
+        "links": "All cited operational IDs are in executed tools; RB-TIMEOUT:v1 is the single actually supplied policy and is linked once.",
+        "stage": "Both provider calls and Finding JSON parsing completed. Validation rejected finding prose; no timeout, schema failure or fallback occurred.",
+        "timingsSeconds": {
+          "toolSelection": 21.586424,
+          "findingGeneration": 18.273142
+        },
+        "ruleFieldProvenance": "Outcome, summary, confidence, missingEvidence and proposal match deterministic assessment assembly. Only the finding text and links came from the model.",
+        "possibleContributingContext": "The old finding context still included the full assessment action/reason and user request for case-action recommendations. This is a plausible influence, not a proven causal diagnosis."
+      }
+    }
+  ],
+  "limitations": [
+    "Original synthetic case reviewed by Codex AI, not independent human review or real-world accuracy measurement.",
+    "The preserved finding is the exact parsed model-written object in the checkpoint, not a raw HTTP response dump.",
+    "This is a failed full-stack run; seven preliminary authorization/health checks passing do not constitute successful acceptance.",
+    "Completed provider node usage is preserved; failed transport/parse attempts in other runs may not be fully counted.",
+    "No source changes or inference were used to produce this read-only review."
+  ]
+}

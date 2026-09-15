@@ -1,0 +1,165 @@
+{
+  "scope": "Selected synthetic development fixture; actual Qwen tools and structured synthesis with lexical retrieval. Resumed synthesis after provider grammar failure; not held-out accuracy.",
+  "resumeElapsedSeconds": 545.6444781000027,
+  "result": {
+    "outcome": "TIMEOUT_AFTER_SUCCESS",
+    "summary": "The payment was successfully processed by the processor and provider, with a confirmed capture in the ledger. A client transport timeout occurred but did not affect the outcome. All required evidence for successful processing is present and consistent with policy. Case resolution is appropriate without financial action.",
+    "confidence": "HIGH",
+    "findings": [
+      {
+        "id": "FINDING-1",
+        "text": "The client transport timeout occurred after the processor confirmed success (EVT-1002-2), and the provider reports a successful payment (PROVIDER:PRV-1002). The policy RB-TIMEOUT:v1 explicitly states that a transport timeout does not constitute payment failure and requires a SUCCEEDED processor confirmation and a matching ledger capture to establish completed capture. These conditions are met: processor confirmation is present (EVT-1002-2), and one matching capture ledger entry exists (LED-1002-1). Therefore, the payment is considered successfully processed despite the client-side timeout.",
+        "evidenceIds": [
+          "EVT-1002-1",
+          "EVT-1002-2",
+          "EVT-1002-3",
+          "PROVIDER:PRV-1002"
+        ],
+        "citationIds": [
+          "RB-TIMEOUT:v1"
+        ]
+      }
+    ],
+    "missingEvidence": [],
+    "proposal": {
+      "action": "RESOLVE_CASE",
+      "reason": "The payment was successfully processed by the provider and confirmed by the processor, with a matching ledger capture. The transport timeout is a client-side event and does not invalidate the payment outcome. Policy RB-TIMEOUT:v1 confirms that such a timeout does not establish failure and requires no action beyond case resolution. No funds are to be moved or refunded."
+    },
+    "id": "LIVE-NOTHINK-b403c56f8ad645bcad40d1655d93111d",
+    "caseId": "CASE-1002",
+    "createdAt": "2026-09-11T19:08:26.200396Z",
+    "createdBy": "development-probe",
+    "mode": "ollama",
+    "status": "AWAITING_REVIEW",
+    "citations": [
+      {
+        "id": "RB-TIMEOUT:v1",
+        "documentId": "RB-TIMEOUT",
+        "version": 1,
+        "title": "Transport timeout after processing",
+        "excerpt": "A client transport timeout does not establish payment failure. Correlate the accepted request, idempotency key and processor payment reference. A SUCCEEDED processor confirmation plus exactly one matching capture ledger entry establishes completed capture for this simulated workflow. Reconcile the amount and currency before proposing case resolution. Explain that retrying without checking the original reference can create ambiguity. Never propose a second debit or an automatic refund from a timeout alone. If confirmation or matching ledger evidence is absent, request evidence instead.",
+        "source": "Original simulated operating policy",
+        "score": 1.152201
+      },
+      {
+        "id": "RB-REFUND:v1",
+        "documentId": "RB-REFUND",
+        "version": 1,
+        "title": "Refund posting and payout reconciliation",
+        "excerpt": "All values are integer minor units in a single currency. Compute ledger net as the signed sum of capture, fee and refund postings. For a succeeded payment, expected processor payout equals capture amount minus processor fee minus confirmed refunds. A confirmed processor refund that is absent from the ledger creates a difference equal to that refund when other postings agree. Preserve the processor refund reference, confirmation event, ledger snapshot cutoff and exact difference. Escalate the posting exception for a human reconciliation review. The investigator must not create a refund, repair a ledger or transfer money.",
+        "source": "Original simulated operating policy",
+        "score": 0.369203
+      },
+      {
+        "id": "RB-REVIEW:v1",
+        "documentId": "RB-REVIEW",
+        "version": 1,
+        "title": "Human review of case proposals",
+        "excerpt": "An investigator proposes RESOLVE_CASE, ESCALATE or REQUEST_EVIDENCE. Only a reviewer distinct from the investigation creator can approve or reject a stored proposal. Apply the stored proposal, check the current case version, and persist the decision and audit entry atomically. Reusing an idempotency key with the same request returns the original decision; a different request with that key must conflict. These actions change case workflow only and never change a payment.",
+        "source": "Original simulated operating policy",
+        "score": 0.264805
+      }
+    ],
+    "toolCalls": [
+      {
+        "name": "get_payment_timeline",
+        "status": "COMPLETED",
+        "durationMs": 0.031,
+        "evidenceIds": [
+          "EVT-1002-1",
+          "EVT-1002-2",
+          "EVT-1002-3",
+          "PROVIDER:PRV-1002"
+        ]
+      },
+      {
+        "name": "compare_settlement",
+        "status": "COMPLETED",
+        "durationMs": 0.034,
+        "evidenceIds": [
+          "LED-1002-1",
+          "LED-1002-2",
+          "PROVIDER:PRV-1002"
+        ]
+      },
+      {
+        "name": "inspect_webhooks",
+        "status": "COMPLETED",
+        "durationMs": 0.03,
+        "evidenceIds": [
+          "WH-1002-1"
+        ]
+      },
+      {
+        "name": "check_refund",
+        "status": "COMPLETED",
+        "durationMs": 0.02,
+        "evidenceIds": [
+          "PROVIDER:PRV-1002"
+        ]
+      }
+    ],
+    "metrics": {
+      "durationMs": 751231.679,
+      "retrievalMs": 6.972,
+      "toolCount": 4,
+      "modelCalls": 2,
+      "inputTokens": 2391,
+      "outputTokens": 517,
+      "retrievalMode": "lexical",
+      "model": "qwen3:4b-instruct",
+      "toolSelectionMs": 98093.461,
+      "toolSelectionProvider": {
+        "model": "qwen3:4b-instruct",
+        "created_at": "2026-09-11T19:10:04.180074932Z",
+        "done": true,
+        "done_reason": "stop",
+        "total_duration": 97951456408,
+        "load_duration": 36651143152,
+        "prompt_eval_count": 503,
+        "prompt_eval_duration": 28614079000,
+        "eval_count": 108,
+        "eval_duration": 31182907000,
+        "logprobs": null,
+        "model_name": "qwen3:4b-instruct",
+        "model_provider": "ollama"
+      },
+      "synthesisMs": 545617.595,
+      "synthesisProvider": {
+        "model": "qwen3:4b-instruct",
+        "created_at": "2026-09-11T19:20:57.407608115Z",
+        "done": true,
+        "done_reason": "stop",
+        "total_duration": 545560705785,
+        "load_duration": 1219237,
+        "prompt_eval_count": 1888,
+        "prompt_eval_duration": 100688989000,
+        "eval_count": 409,
+        "eval_duration": 444835363000,
+        "logprobs": null,
+        "model_name": "qwen3:4b-instruct",
+        "model_provider": "ollama"
+      }
+    },
+    "warnings": [
+      "Synthetic data only; proposals change case disposition, never payment or ledger balances.",
+      "Live Ollama synthesis; citation identity/scope and outcome are validated, but natural-language claim entailment still requires analyst review.",
+      "Lexical retrieval baseline; semantic embeddings are not enabled."
+    ]
+  },
+  "acceptanceStatus": "DEVELOPMENT_PROBE_ONLY_NOT_FINAL_ACCEPTANCE",
+  "configurationDuringProbe": {
+    "model": "qwen3:4b-instruct",
+    "reasoning": false,
+    "stream": true,
+    "modelContextTokens": 8192,
+    "synthesisOutputTokenCap": 640,
+    "retrievalMode": "lexical"
+  },
+  "timingInterpretation": "The 751231.679 ms graph duration includes an earlier grammar failure and manual resume gap. Successful model stage times were 98093.461 ms and 545617.595 ms. This is a slow development checkpoint-resume probe, not uninterrupted endpoint latency.",
+  "reviewFindings": [
+    "Finding text explicitly names LED-1002-1 but its evidenceIds array omits that ledger ID. Previous identity and outcome gates passed, but citation linkage was incomplete.",
+    "A subsequent regression and validator reject known evidence IDs or policy-version IDs named in finding text but missing from their declared arrays.",
+    "Natural-language entailment remains only partly checked; this result must not be presented as perfect grounding or final live acceptance."
+  ]
+}

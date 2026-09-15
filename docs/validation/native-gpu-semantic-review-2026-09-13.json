@@ -1,0 +1,162 @@
+{
+  "schemaVersion": "native-gpu-semantic-review-v1",
+  "reviewDate": "2026-09-13",
+  "overallStatus": "failed-full-evidence-review",
+  "method": "Reviewer comparison of generated claims, uncertainty and next checks against the exact supplied source documents. No separate evaluation-model call and no ground-truth document supplied to the inference model.",
+  "scope": "Two original synthetic controls and one private UAT evidence question evaluated through the benchmark and native website path. This is a bounded qualitative review, not a measured accuracy rate or production validation.",
+  "structuralValidationIsSemanticProof": false,
+  "privateContentPublished": false,
+  "cases": [
+    {
+      "case": "synthetic-control-initial",
+      "structuralStatus": "passed",
+      "semanticStatus": "passed-for-reviewed-claims",
+      "answerSha256": "970776f71f33421508ecea611bf4cca72e542558cc676214edcee2dba2fe047c",
+      "bundleSha256": "f2d7516d1fa05c768ca52ee693749a081304e14e7b729146d326fb06fbc79176",
+      "requestHash": "b5b4da94387d8462dcd37c8265815473f226d213f84cc29d4416881960d795fc",
+      "evidenceHash": "7d7ba305f088f3b4b0b32adc11055e14abaf487f4b8262947824549dfe66c782",
+      "rawResponseSha256": "559487915d82dfe549daf55a1a6a71914a189aee7f615fbc151827de95dbfdd9",
+      "claimCount": 2,
+      "findings": [
+        "The generated observation count matches the supplied synthetic record.",
+        "The generated outcome limitation matches the supplied scope note; it does not assert either a positive or negative beneficiary-credit event.",
+        "Both claims cite documents supporting their respective observation or limitation."
+      ],
+      "limits": [
+        "The empty unknowns and next-check arrays do not omit the requested uncertainty, because a cited claim states the outcome limitation.",
+        "This small synthetic fixture does not exercise full payment-domain complexity."
+      ]
+    },
+    {
+      "case": "synthetic-control-changed-input",
+      "structuralStatus": "passed",
+      "semanticStatus": "passed-for-reviewed-claims",
+      "answerSha256": "f07319f389c45d66ac6a607690a9338b0bf96a0dea69fdf8b315e19cb7de3430",
+      "bundleSha256": "1460caf89e8b0cc85a156d7899e3e7b3815cda1e3692e538a8649a650cd10194",
+      "requestHash": "eaf6a3cd891f00209400e3129683c213717c06312fc91cc5a83d03d86a1b7b62",
+      "evidenceHash": "39bb451c60982ef35e533e6b3ca71dbb7b38dda8efe07d80aa872f4fcb7b4c96",
+      "rawResponseSha256": "d55f530782116b31de755f65d76f523ae41714163065b2997a5f064a39813e63",
+      "claimCount": 2,
+      "findings": [
+        "The newly generated count changes with the supplied synthetic input and matches the updated record.",
+        "The outcome limitation remains scoped to supplied evidence and does not become a negative-event claim.",
+        "The observation and scope citations support the two generated claims."
+      ],
+      "limits": [
+        "One changed-input pair demonstrates responsiveness for this control; it does not establish general sensitivity or accuracy."
+      ]
+    },
+    {
+      "case": "private-uat-handoff-acceptance",
+      "structuralStatus": "passed",
+      "semanticStatus": "failed",
+      "answerSha256": "74656c8dbb1e5d1b25beba81d68ce4dc3e14bde4f2ba60363b8c1e078189ad4d",
+      "bundleSha256": "a98e6eba6fd24063e33b76b394dca47e8861030c7bdf2b780469e59bf67325a3",
+      "requestHash": "bf572accb04663f58b475bebb296e43d64dbd87a5fbeab7a635b12c52c5a0977",
+      "evidenceHash": "a5374dcae47f1ad4d97835623c2868231ef6926975d4bd4c2f72ca18f691eaed",
+      "rawResponseSha256": "6e0cace60d81775e7cccc642116354fee08af3b06ef3d6cc093e05b170617a19",
+      "baselineReceiptSha256": "3cfe3ec7a413866fced2083239af9936a779ebd7b2317a1924bc420aefe05593",
+      "baselineRequestMatches": true,
+      "claimCount": 5,
+      "claimReview": [
+        {
+          "claimIndex": 1,
+          "status": "failed",
+          "finding": "Attributes the host reference-field name to the payment record, which uses a different native field name. The underlying matching values do not make the field attribution correct."
+        },
+        {
+          "claimIndex": 2,
+          "status": "supported-with-source-version-limit",
+          "finding": "The payment transaction-status value and its source-defined label match the cited record and matching field domain."
+        },
+        {
+          "claimIndex": 3,
+          "status": "failed",
+          "finding": "Attributes the payment message-status field name to the host record, which uses a different native field name."
+        },
+        {
+          "claimIndex": 4,
+          "status": "supported-with-source-version-limit",
+          "finding": "The earlier history transaction-status value and source-defined label match the cited record and field domain."
+        },
+        {
+          "claimIndex": 5,
+          "status": "supported-with-source-version-limit",
+          "finding": "The later history transaction-status value and source-defined label match the cited record and field domain."
+        }
+      ],
+      "questionCoverage": {
+        "status": "failed",
+        "finding": "The cited response lists status observations but does not directly explain whether the supplied evidence establishes OBPM handoff acceptance. It omits the supplied ambiguity between multiple status-writing paths and the need for a correlated submission response."
+      },
+      "uncertaintyReview": {
+        "status": "partly-supported",
+        "findings": [
+          "The response preserves the unknown meaning of the separately unmapped acknowledgement-status field.",
+          "It correctly states that final payment outcome is unestablished without additional correlated evidence.",
+          "It does not explicitly assert acceptance, rejection, beneficiary credit or non-credit as an observed outcome.",
+          "Uncertainty about final outcome does not substitute for answering the narrower handoff-acceptance question."
+        ]
+      },
+      "nextCheckReview": {
+        "status": "needs-correction",
+        "findings": [
+          "The first check proposes a native OBPM lookup using an FCR reference without establishing the cross-product reference mapping or specifying a verified external-reference lookup.",
+          "The supplied notes require correlated submission request/response evidence and the returned OBPM reference before inferring handoff acceptance.",
+          "The broader request for correlated downstream messages and posted accounting is relevant to final outcome, but is less specific than the requested acceptance evidence.",
+          "The generated checks remain inspection requests; they do not execute financial actions."
+        ]
+      },
+      "limits": [
+        "Three individually supported status-label claims do not rescue the two false field attributions or the missing direct answer.",
+        "Reviewed source definitions do not verify the deployed implementation or the actual executed path.",
+        "This review concerns this exact saved response and supplied bundle; future responses may differ."
+      ]
+    }
+  ],
+  "globalLimits": [
+    "Hardware acceleration and successful schema validation do not establish source entailment.",
+    "Supplied local source notes describe possible code paths; installed-version agreement and the selected payment's executed path are not established by this review.",
+    "The existing CPU showcase, its saved responses and its previously reported factual failures remain preserved."
+  ],
+  "reviewer": "Codex source comparison; no human approval implied.",
+  "conclusion": "The synthetic controls pass their bounded checks, but the full evidence answer remains unsuitable for trusted payment analysis. Faster inference does not resolve the observed grounding errors.",
+  "websiteReview": {
+    "route": "separate-native-gpu-website-profile",
+    "structuralStatus": "saved-after-application-validation",
+    "semanticStatus": "failed",
+    "reviewBasis": "Generated claims, unknowns, next checks, composed answer, composition marker and citation objects exactly match the already reviewed full benchmark answer. The canonical request also matches; the same semantic findings therefore apply.",
+    "websiteReceiptSha256": "a04abbd1c401b679076f4f4c71ab060d1ad210f86f6d757f7b880bd9830c63df",
+    "requestHash": "bf572accb04663f58b475bebb296e43d64dbd87a5fbeab7a635b12c52c5a0977",
+    "savedInputHashMatchesCanonicalRequest": true,
+    "requestMatchesReviewedBenchmark": true,
+    "comparedFieldsEqual": {
+      "claims": true,
+      "unknowns": true,
+      "nextChecks": true,
+      "answer": true,
+      "answerComposition": true
+    },
+    "citationObjectsEqual": true,
+    "semanticContentSha256": "7d622f586366d659420e917a443a7b02f2a91bd230df5f7d9888ac1fe40090f2",
+    "benchmarkSemanticContentSha256": "7d622f586366d659420e917a443a7b02f2a91bd230df5f7d9888ac1fe40090f2",
+    "semanticHashDefinition": "SHA-256 of UTF-8 JSON containing claims, unknowns, nextChecks, answer and answerComposition, recursively sorted object keys, compact separators, unescaped Unicode and original array order.",
+    "reportedModelUsage": {
+      "durationMs": 109101,
+      "actualCalls": 1,
+      "promptTokens": 6474,
+      "completionTokens": 475
+    },
+    "findings": [
+      "The website reproduces both previously identified field-attribution errors.",
+      "The narrower handoff-acceptance question remains insufficiently answered despite uncertainty about final payment outcome.",
+      "The unverified cross-product reference lookup assumption remains in the first next check.",
+      "Faster end-to-end delivery and exact output composition do not cure those semantic defects."
+    ],
+    "limits": [
+      "The compared fields are identical, but the complete receipt is different because invocation timing and generated receipt metadata differ.",
+      "Model usage is recorded from the saved application response; this review makes no additional inference request.",
+      "Native device, network routing and deployment verification are recorded separately by the main task."
+    ]
+  }
+}

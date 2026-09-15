@@ -1,0 +1,35 @@
+{
+  "status": "PASS",
+  "recordedAt": "2026-09-12T11:00:50.598633+00:00",
+  "sourceReportSha256": "c3049371f96917271b7de5ad07ffe32179b91657a227b42ba006c1aa7c4e0a2a",
+  "reviewScope": "One supported synthetic timeout finding and two rule-owned abstentions; not an independent NEFT accuracy benchmark.",
+  "checks": [
+    "All model orders contain exactly four authorized mandatory tools",
+    "Timeout finding selected FACT-OBPM-ECA-TIMEOUT",
+    "Selected finding cites the actual current EC/T queue and matching request attempt",
+    "Selected finding cites RB-OBPM-ECA-TIMEOUT:v1 and explicitly limits its conclusion to a recorded timeout",
+    "Pending/unknown results have no model-generated finding and each uses one planner call"
+  ],
+  "finding": {
+    "id": "F-1",
+    "text": "The supplied NEFT queue snapshot has one current EC/T record observed at 2026-09-12T05:20:00Z, correlated to an ECA request made at 2026-09-12T05:00:30Z. This establishes a recorded ECA timeout only, not an external funds or settlement outcome.",
+    "evidenceIds": [
+      "DEMO-NEFT-0001-e03f9401-QUEUE-001",
+      "DEMO-NEFT-0001-e03f9401-REQUEST-001"
+    ],
+    "citationIds": [
+      "RB-OBPM-ECA-TIMEOUT:v1"
+    ]
+  },
+  "investigationIds": [
+    "INV-fb9fa421-4be4-44e6-9393-b0386bdb24ee",
+    "INV-afceea0b-bfce-492f-968d-bb6419ecda03",
+    "INV-dd9fd749-b848-4577-8ef6-afa11f10687f"
+  ],
+  "modelCalls": 4,
+  "limitations": [
+    "Initial live planner omission is preserved separately as failed development evidence",
+    "Assessment/action and displayed fact wording are deterministic service output",
+    "No Oracle connection, production payment, external-core outcome or business benefit was validated"
+  ]
+}

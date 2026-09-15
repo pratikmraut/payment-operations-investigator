@@ -1,0 +1,165 @@
+{
+  "acceptanceStatus": "FAILED_NO_FALLBACK",
+  "scope": "Selected synthetic full Java-to-Docker-worker live acceptance; read-only SQLite checkpoint extraction, no inference repeated.",
+  "javaRequestId": "32ae3645-af7a-4bef-a52c-ea20a16bbf4c",
+  "investigationId": "INV-aa66ee76-fb7f-4fe7-9c58-d712ad6c925f",
+  "checkpointId": "1f1ae1b5-5d7b-60ff-8004-2316a0c8f39b",
+  "mode": "ollama",
+  "caseId": "CASE-1002",
+  "question": "Investigate the observed payment state and recommend the next case action with evidence.",
+  "candidate": {
+    "outcome": "TIMEOUT_AFTER_SUCCESS",
+    "summary": "Transport timeout occurred, but provider confirms success and one matching ledger entry exists; payment completed.",
+    "confidence": "HIGH",
+    "findings": [
+      {
+        "id": "RB-TIMEOUT:v1",
+        "text": "Transport timeout observed with successful processor confirmation and one matching ledger capture; payment completed per policy.",
+        "evidenceIds": [
+          "EVT-1002-3",
+          "LED-1002-1",
+          "LED-1002-2",
+          "PROVIDER:PRV-1002"
+        ],
+        "citationIds": [
+          "EVT-1002-3",
+          "LED-1002-1",
+          "LED-1002-2",
+          "PROVIDER:PRV-1002"
+        ]
+      }
+    ],
+    "missingEvidence": [],
+    "proposal": {
+      "action": "RESOLVE_CASE",
+      "reason": "Payment successfully processed; no further action required; funds not moved."
+    }
+  },
+  "assessment": {
+    "outcome": "TIMEOUT_AFTER_SUCCESS",
+    "summary": "The request timed out at transport level, but the provider reports success and one matching ledger capture is present. Do not initiate another payment from this evidence.",
+    "evidenceIds": [
+      "EVT-1002-3",
+      "LED-1002-1",
+      "LED-1002-2",
+      "PROVIDER:PRV-1002"
+    ],
+    "query": "transport timeout succeeded successful capture idempotency retry",
+    "action": "RESOLVE_CASE",
+    "reason": "Record the observed successful processing and resolve the investigation without moving funds.",
+    "missingEvidence": []
+  },
+  "citations": [
+    {
+      "id": "RB-TIMEOUT:v1",
+      "documentId": "RB-TIMEOUT",
+      "version": 1,
+      "title": "Transport timeout after processing",
+      "excerpt": "A client transport timeout does not establish payment failure. Correlate the accepted request, idempotency key and processor payment reference. A SUCCEEDED processor confirmation plus exactly one matching capture ledger entry establishes completed capture for this simulated workflow. Reconcile the amount and currency before proposing case resolution. Explain that retrying without checking the original reference can create ambiguity. Never propose a second debit or an automatic refund from a timeout alone. If confirmation or matching ledger evidence is absent, request evidence instead.",
+      "source": "Original simulated operating policy",
+      "score": 1.152201
+    },
+    {
+      "id": "RB-REFUND:v1",
+      "documentId": "RB-REFUND",
+      "version": 1,
+      "title": "Refund posting and payout reconciliation",
+      "excerpt": "All values are integer minor units in a single currency. Compute ledger net as the signed sum of capture, fee and refund postings. For a succeeded payment, expected processor payout equals capture amount minus processor fee minus confirmed refunds. A confirmed processor refund that is absent from the ledger creates a difference equal to that refund when other postings agree. Preserve the processor refund reference, confirmation event, ledger snapshot cutoff and exact difference. Escalate the posting exception for a human reconciliation review. The investigator must not create a refund, repair a ledger or transfer money.",
+      "source": "Original simulated operating policy",
+      "score": 0.369203
+    },
+    {
+      "id": "RB-REVIEW:v1",
+      "documentId": "RB-REVIEW",
+      "version": 1,
+      "title": "Human review of case proposals",
+      "excerpt": "An investigator proposes RESOLVE_CASE, ESCALATE or REQUEST_EVIDENCE. Only a reviewer distinct from the investigation creator can approve or reject a stored proposal. Apply the stored proposal, check the current case version, and persist the decision and audit entry atomically. Reusing an idempotency key with the same request returns the original decision; a different request with that key must conflict. These actions change case workflow only and never change a payment.",
+      "source": "Original simulated operating policy",
+      "score": 0.264805
+    }
+  ],
+  "selectedTools": [
+    {
+      "name": "get_payment_timeline",
+      "args": {
+        "caseId": "CASE-1002"
+      }
+    },
+    {
+      "name": "compare_settlement",
+      "args": {
+        "caseId": "CASE-1002"
+      }
+    },
+    {
+      "name": "inspect_webhooks",
+      "args": {
+        "caseId": "CASE-1002"
+      }
+    },
+    {
+      "name": "check_refund",
+      "args": {
+        "caseId": "CASE-1002"
+      }
+    }
+  ],
+  "modelTimings": {
+    "toolSelectionMs": 23051.151,
+    "toolSelectionProvider": {
+      "model": "qwen3:4b-instruct",
+      "created_at": "2026-09-11T19:59:10.92193331Z",
+      "done": true,
+      "done_reason": "stop",
+      "total_duration": 23033864145,
+      "load_duration": 4077663996,
+      "prompt_eval_count": 507,
+      "prompt_eval_duration": 10234799000,
+      "eval_count": 108,
+      "eval_duration": 8703069000,
+      "logprobs": null,
+      "model_name": "qwen3:4b-instruct",
+      "model_provider": "ollama"
+    },
+    "synthesisMs": 34326.059,
+    "synthesisProvider": {
+      "model": "qwen3:4b-instruct",
+      "created_at": "2026-09-11T19:59:45.264139558Z",
+      "done": true,
+      "done_reason": "stop",
+      "total_duration": 34298418962,
+      "load_duration": 1472848,
+      "prompt_eval_count": 506,
+      "prompt_eval_duration": 13333239000,
+      "eval_count": 244,
+      "eval_duration": 20829862000,
+      "logprobs": null,
+      "model_name": "qwen3:4b-instruct",
+      "model_provider": "ollama"
+    }
+  },
+  "usage": {
+    "modelCalls": 2,
+    "inputTokens": 1013,
+    "outputTokens": 352
+  },
+  "errors": [
+    "InvalidModelResult('Finding cites missing, unauthorized or inapplicable policy evidence.')"
+  ],
+  "settings": {
+    "model": "qwen3:4b-instruct",
+    "modelThreads": 4,
+    "retrievalMode": "lexical",
+    "contextTokens": 4096,
+    "toolOutputTokens": 384,
+    "synthesisOutputTokens": 384,
+    "providerHttpTimeoutSeconds": 120.0,
+    "stream": false,
+    "think": false
+  },
+  "limitations": [
+    "The rejected candidate was not an accepted Java investigation.",
+    "One synthetic selected case is not an accuracy evaluation.",
+    "Model timings and completed stages are preserved even when validation fails."
+  ]
+}

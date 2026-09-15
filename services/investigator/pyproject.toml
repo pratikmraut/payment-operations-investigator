@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=75"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "payment-operations-investigator"
+version = "0.1.0"
+description = "Evidence-scoped LangGraph payment investigation worker"
+requires-python = ">=3.12"
+dependencies = [
+  "fastapi==0.141.1", "uvicorn==0.52.4", "langchain==1.4.0",
+  "langgraph==1.2.11", "langgraph-checkpoint-sqlite==3.1.1",
+  "langchain-ollama==1.1.0", "httpx==0.28.1", "pydantic==2.13.5",
+  "psycopg[binary]==3.3.5",
+]
+
+[project.optional-dependencies]
+test = ["pytest==9.1.1"]
+
+[tool.setuptools.packages.find]
+include = ["investigator*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+markers = ["integration: requires explicitly configured local PostgreSQL/pgvector"]

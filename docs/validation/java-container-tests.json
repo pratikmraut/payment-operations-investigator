@@ -1,0 +1,189 @@
+{
+  "status": "passed",
+  "evidenceCollectedAtUtc": "2026-09-11T22:57:59.809943+00:00",
+  "originalBuildCompletedAtUtc": "2026-09-11T22:55:48Z",
+  "originalBuildCommand": "docker compose --progress plain build api",
+  "mavenCommandInBuildStage": "mvn -B -ntp package",
+  "originalBuildExecutedTests": true,
+  "extractionCommand": "docker build --progress plain --target build --tag payment-operations-investigator-api-test-evidence:ledger-alignment services/api",
+  "extractionReusedCachedTestLayer": true,
+  "testsRerunDuringExtraction": false,
+  "builderImage": "maven:3.9.9-eclipse-temurin-17@sha256:f58d59b6273e785ac0a4477f6e9b5ba1d7731c75b906c0f7b34076f1851318cc",
+  "runtime": {
+    "java.version": "17.0.15",
+    "java.runtime.version": "17.0.15+6",
+    "java.vendor": "Eclipse Adoptium",
+    "os.name": "Linux",
+    "os.arch": "amd64",
+    "os.version": "6.18.33.1-microsoft-standard-WSL2",
+    "user.timezone": "Etc/UTC"
+  },
+  "totals": {
+    "tests": 35,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "suites": [
+    {
+      "name": "dev.pratik.poi.ApiIntegrationTest",
+      "tests": 25,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "durationSeconds": 5.592,
+      "reportPath": "services/api/runtime/container-tests-ledger-alignment/TEST-dev.pratik.poi.ApiIntegrationTest.xml",
+      "reportSha256": "ed64b6f765151466cf7d08200d15117c675bda41990f91cb93c6f8ed9632c245"
+    },
+    {
+      "name": "dev.pratik.poi.MoneyFactsTest",
+      "tests": 10,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "durationSeconds": 0.149,
+      "reportPath": "services/api/runtime/container-tests-ledger-alignment/TEST-dev.pratik.poi.MoneyFactsTest.xml",
+      "reportSha256": "a2a8bc94d03065831499cceacc9d42b7369ff14b8a4004b06cbd3667a44b9c21"
+    }
+  ],
+  "testedApiImage": "payment-operations-investigator-api:latest",
+  "testedApiImageManifestList": "sha256:f2b77ca3b3fd9b062d26ad120b8cd5ac713bdb22424c7eea7fa45240261f88fe",
+  "cachedBuildImage": "payment-operations-investigator-api-test-evidence:ledger-alignment",
+  "cachedBuildImageManifestList": "sha256:f5507a69353daa3eb8dadac09915a404fe2d5fcf45d8f605f0ca875848c34f0d",
+  "sourceProvenance": {
+    "method": "Copied /build/src and /build/pom.xml from the never-started cached build container; compared SHA-256 with working source.",
+    "allCopiedFilesMatchWorkingTree": true,
+    "filesCompared": 18,
+    "sourceFilesSha256": {
+      "services/api/src/main/java/dev/pratik/poi/Actor.java": "bb79480040fb0016ca4517d2f56bfa5dded2d936402e3cf64cfc04d97b4aeb1d",
+      "services/api/src/main/java/dev/pratik/poi/ApiController.java": "6295b7a3b9713ba8615fe0b316209fb23d2e7b928306d846ccce11b60d129813",
+      "services/api/src/main/java/dev/pratik/poi/ApiException.java": "86522fc2885d2f82ba1ed29fe18c9b28c930f47bcf5d0ad47fba23cccd4dfdc5",
+      "services/api/src/main/java/dev/pratik/poi/Application.java": "8c05a675c6ce0b45f7efaa992c4dab1f25d578c3eadc904c81969ae73624d5c9",
+      "services/api/src/main/java/dev/pratik/poi/AuthController.java": "2a058d1488a4d7eba2cc0f8e6636f0fca1bb009d9881c7c5c39150fb4e605e95",
+      "services/api/src/main/java/dev/pratik/poi/CaseStore.java": "c50280cebb7e6abc8d969be08c7c1becbaef9e69730a6ecfc9e85644718c1301",
+      "services/api/src/main/java/dev/pratik/poi/ErrorHandler.java": "a1ac4b6c2baa9f0341b9a069627c1446cf5dd9c7f767208c97e4e5c32be43e92",
+      "services/api/src/main/java/dev/pratik/poi/InvestigationService.java": "bfb4dce2b2a15b81a2b3511fee7dcd3c839f602724a1292667b8ff94e3d8e3de",
+      "services/api/src/main/java/dev/pratik/poi/JsonSupport.java": "25737aa83615383897faaf2b8f0e4b5aa86f402f5a139ec88dea8788da618bd0",
+      "services/api/src/main/java/dev/pratik/poi/MoneyFacts.java": "d5aea88949bf0d0bfe9cd599cc6cc5c9f3fe1b277895b40eb8e8f992bc8cfc78",
+      "services/api/src/main/java/dev/pratik/poi/SecurityConfig.java": "a42f7cc012e1445f4a2fa4d032fef7cdcc1463a999d6bc0feddfc9f41e3ad660",
+      "services/api/src/main/java/dev/pratik/poi/WorkerClient.java": "9ab07422abeb84c12a6a9f24e360f95b9e4b26eb45863052334e2dd1316aca4b",
+      "services/api/src/main/resources/application-postgres.yml": "1c00157aca0c4aed5b970ad650e2ef85f11c8ba0c9aa5e9a8c5384e235ec2a23",
+      "services/api/src/main/resources/application.yml": "146b963afec6522512ed8db054041b944eedc95e7bfce50901816741297b75df",
+      "services/api/src/main/resources/schema.sql": "2853a286ff0d83a4fc85c55bafc104fe1fb448102512903d825a5320f540df1f",
+      "services/api/src/test/java/dev/pratik/poi/ApiIntegrationTest.java": "869acf0ee00209d3dca21df2484c2be93a6ec6eb80603c4bd04c5b69f8fc069e",
+      "services/api/src/test/java/dev/pratik/poi/MoneyFactsTest.java": "ccb32db6d253342fe1d2a73f573b2aa8de454af2cc60b6d25eb866c563f714c6",
+      "services/api/pom.xml": "55ffabae4905895d14d83d7a551d1c2b1eac2b4e054f784c3a565fbaa47f6ab4"
+    },
+    "workingDockerfileSha256": "a3983ee78c673ce7515523b3b3584cb62badfa3765f3bbdf5e6142caef1c86c4",
+    "changedFilesSincePreviousReceipt": [
+      "services/api/src/main/java/dev/pratik/poi/MoneyFacts.java",
+      "services/api/src/test/java/dev/pratik/poi/ApiIntegrationTest.java",
+      "services/api/src/test/java/dev/pratik/poi/MoneyFactsTest.java"
+    ]
+  },
+  "changeScope": {
+    "description": "Align authoritative Java ledger classification and sign checks with worker facts; distinguish unknown/unavailable provider status from known zero payout.",
+    "normalization": "Locale.ROOT uppercase; dots and hyphens become underscores.",
+    "captureTypes": [
+      "CAPTURE",
+      "PAYMENT_CAPTURED",
+      "SALE"
+    ],
+    "refundTypes": [
+      "REFUND",
+      "REFUND_POSTED"
+    ],
+    "signs": {
+      "captures": "strictly positive",
+      "refunds": "strictly negative",
+      "FEE": "non-positive; zero permitted",
+      "otherTypes": "generic signed net; no capture/refund classification"
+    },
+    "invalidSignBehavior": "422 INVALID_AMOUNT before validMoney=true or import insertion",
+    "unavailableProviderStatus": "blank or normalized UNKNOWN/UNAVAILABLE: providerAvailable=false, providerPayoutMinor=null, discrepancyMinor=null",
+    "newTestsAdded": 5,
+    "dataFilesModified": false
+  },
+  "regressionCoverage": [
+    "Reject resolution for positive and negative known payout discrepancies.",
+    "Reject resolution for unknown or absent provider payout.",
+    "Preserve balanced timeout, duplicate-webhook and out-of-order resolution proposals.",
+    "Reject wrong/missing case and investigation IDs before rewriting worker provenance.",
+    "Recursively reject only the existing scenarioFamily/groundTruth/expectedOutcome import keys.",
+    "Preserve ordinary nested domain fields and label words inside prose.",
+    "Capture the outgoing worker HttpRequest and verify configured 390 seconds remains 390, oversized 10000 clamps to 390, and zero clamps to 1.",
+    "Normalize capture/refund aliases across case and dot/hyphen separators; preserve positive and negative generic adjustments.",
+    "REFUND_POSTED -10000 contributes authoritative refundMinor=10000, not zero, with balanced ledger/payout.",
+    "Reject zero/opposite signs for canonical and alias capture/refund types; reject positive FEE and permit zero FEE.",
+    "Case-insensitive UNKNOWN/UNAVAILABLE or blank provider status cannot turn a numeric zero payout into evidence; known succeeded zero remains available.",
+    "Import aliases and assert their authoritative reconciliation through authenticated HTTP; reject invalid-sign import without a case or audit insert."
+  ],
+  "timeoutAlignment": {
+    "providerHttpSeconds": 180,
+    "javaWorkerDefaultAndMaximumSeconds": 390,
+    "nginxProxyReadSeconds": 420,
+    "viteProxyTimeoutMilliseconds": 420000,
+    "transportLimitsAreNotDownstreamCancellationGuarantees": true
+  },
+  "buildLog": {
+    "path": "services/api/runtime/ledger-alignment-build.log",
+    "sha256": "9dc1ad241afe69e9f2282ddfbe38aa688c82c975691a4493845e2d4e3831b1d6"
+  },
+  "extractionLog": {
+    "path": "services/api/runtime/ledger-alignment-evidence-build.log",
+    "sha256": "d32eca1745c825320d51ee913d271410ec3074dc1632c76a205aeeecbc08378c"
+  },
+  "cleanup": {
+    "container": "poi-api-ledger-evidence-20260912-f2b7",
+    "stateBeforeRemoval": "created",
+    "started": false,
+    "removed": true,
+    "liveServicesRecreatedByThisBuildTask": false
+  },
+  "limitations": [
+    "The Linux package build executed 35 tests; subsequent report extraction reused the successful cached layer and was not another test execution.",
+    "JUnit uses Spring MockMvc, in-memory H2, a local HTTP stub and a mocked timeout transport; no model call or real payment integration.",
+    "This receipt covers the Java boundary correction and test fixtures. Final cross-service, PostgreSQL and live-model acceptance have separate evidence.",
+    "The coordinating task deployed the tested API separately; this build/extraction task did not recreate services.",
+    "Native Windows Maven classpath limitation remains as documented; no dependencies or test execution were weakened."
+  ],
+  "previousReceipt": {
+    "path": "docs/validation/java-container-tests-30-pre-ledger-alignment.json",
+    "sha256": "cfaa453c592faff721891de01c8115bb87671c90c39fce0ff0f65496742e8506",
+    "tests": 30,
+    "apiImageManifestList": "sha256:14240269eb77c3579c82046e817f55e2441b3d179afdf8c7160327600d9eabbb",
+    "rawReportsPreservedAt": "services/api/runtime/container-tests-knowledge-copy"
+  },
+  "ledgerMismatchBeforeAfter": {
+    "ledger": [
+      {
+        "type": "CAPTURE",
+        "amountMinor": 100000
+      },
+      {
+        "type": "FEE",
+        "amountMinor": -3000
+      },
+      {
+        "type": "REFUND_POSTED",
+        "amountMinor": -10000
+      }
+    ],
+    "providerPayoutMinor": 87000,
+    "previousRefundMinor": 0,
+    "correctedRefundMinor": 10000,
+    "correctedLedgerNetMinor": 87000,
+    "correctedDiscrepancyMinor": 0,
+    "evidence": "Previous value follows the preserved source which summed exact REFUND only. Corrected values passed the new MoneyFacts regression; no historical failing test run is claimed."
+  },
+  "dataProvenance": {
+    "method": "Compared the four checked-in data files with the independently verified pre-V6 candidate archive manifest.",
+    "filesUnchanged": true,
+    "filesSha256": {
+      "data/evaluation/labels.json": "c0e617e1e2e3b925dfb3276c4ada404662587e101ea42b0d2a40ff391c8d2d0c",
+      "data/fixtures/cases.json": "69b20aa628b7708033fee82bad8b0133986d889faba7a1900053b6365dcfe815",
+      "data/knowledge/runbooks.json": "003d306d04c03eaead6e8d891055b834ab94095a3760f6cf7e24d82e0ef601a6",
+      "data/manifest.json": "b467da9818fd0813665e06301b7ea5940b61d94c54ce04e3d34b1dc31223e140"
+    }
+  }
+}

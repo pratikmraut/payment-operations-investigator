@@ -1,0 +1,3933 @@
+{
+  "openapi": "3.1.0",
+  "jsonSchemaDialect": "https://spec.openapis.org/oas/3.1/dialect/base",
+  "info": {
+    "title": "Payment Operations Investigator — Public Java API",
+    "version": "0.1.0",
+    "description": "Source-derived local synthetic portfolio API. Session-bound tenant/role authorization, immutable investigation evidence and human review; no real-payment commands. Only public Java routes are documented, not internal Python worker endpoints. Request DTOs reject unknown fields. Response metadata that Java deliberately leaves extensible remains optional. Monetary values use exact JSON-safe integer INR minor units. HTTP 200 is used for successful login, investigation and decision creation. This document does not claim production authentication, live-model success or database-administrator tamper resistance. Implements bounded original-synthetic OBPM NEFT ECA evidence imports; no Oracle source connector or banking-side commands. Import-specific validation and error status differ from ordinary DTO routes. A separate local mock inquiry transport now fetches original synthetic ECA evidence; it is not an Oracle product connector."
+  },
+  "servers": [
+    {
+      "url": "http://127.0.0.1:8088",
+      "description": "Local Java API; web deployments normally proxy /api on the same origin."
+    }
+  ],
+  "security": [
+    {
+      "SessionCookie": []
+    }
+  ],
+  "tags": [
+    {
+      "name": "Authentication"
+    },
+    {
+      "name": "Cases"
+    },
+    {
+      "name": "Investigations"
+    },
+    {
+      "name": "Reviews"
+    },
+    {
+      "name": "Knowledge"
+    },
+    {
+      "name": "System"
+    },
+    {
+      "name": "OBPM evidence"
+    }
+  ],
+  "paths": {
+    "/api/health": {
+      "get": {
+        "operationId": "health",
+        "tags": [
+          "System"
+        ],
+        "summary": "Read public API liveness",
+        "description": "Reports this API process as UP. Does not prove database, worker or model availability; authenticated /api/system includes worker availability.",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Success.",
+            "headers": {
+              "X-Request-Id": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Health"
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        },
+        "security": []
+      }
+    },
+    "/api/auth/login": {
+      "post": {
+        "operationId": "login",
+        "tags": [
+          "Authentication"
+        ],
+        "summary": "Create or rotate a demo cookie session",
+        "description": "JSON-only login. Rotates the session ID and CSRF token on success. Current local usernames: analyst, reviewer, viewer, other; other maps to silverline, the rest to northstar. Session cookie is HttpOnly and SameSite=Strict, secure only when configured; no cross-origin CORS support. Sec-Fetch-Site: cross-site is explicitly rejected. Demo sessions are memory-backed, expire after 30 minutes of inactivity, and require login after API restart.",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Success.",
+            "headers": {
+              "X-Request-Id": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Set-Cookie": {
+                "description": "Establishes/rotates POI_SESSION; HttpOnly; SameSite=Strict. Secure is configurable for HTTPS.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthenticated"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        },
+        "security": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/me": {
+      "get": {
+        "operationId": "currentUser",
+        "tags": [
+          "Authentication"
+        ],
+        "summary": "Read current identity and CSRF token",
+        "description": "Returns the server-bound role/tenant and current session CSRF token.",
+        "x-roles": [
+          "ANALYST",
+          "REVIEWER",
+          "VIEWER"
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Success.",
+            "headers": {
+              "X-Request-Id": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthenticated"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        }
+      }
+    },
+    "/api/auth/logout": {
+      "post": {
+        "operationId": "logout",
+        "tags": [
+          "Authentication"
+        ],
+        "summary": "Invalidate the current session",
+        "description": "Invalidates the server session and expires the cookie.",
+        "x-roles": [
+          "ANALYST",
+          "REVIEWER",
+          "VIEWER"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/CsrfToken"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success.",
+            "headers": {
+              "X-Request-Id": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Set-Cookie": {
+                "description": "Expires POI_SESSION at path / with Max-Age=0.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LogoutResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthenticated"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        }
+      }
+    },
+    "/api/cases": {
+      "get": {
+        "operationId": "listCases",
+        "tags": [
+          "Cases"
+        ],
+        "summary": "List visible synthetic cases",
+        "description": "Tenant is derived from the authenticated session. Results are ordered by case ID; no pagination. Summaries omit events/ledgerEntries/webhooks/provider but include reconciliation. Unknown filter values return an empty list rather than validation errors.",
+        "x-roles": [
+          "ANALYST",
+          "REVIEWER",
+          "VIEWER"
+        ],
+        "parameters": [
+          {
+            "name": "search",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Case-insensitive trimmed substring across case ID, payment ID, title and merchant."
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Exact case-sensitive status string; omitted/blank means no filter."
+          },
+          {
+            "name": "priority",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Exact case-sensitive priority string; omitted/blank means no filter."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success.",
+            "headers": {
+              "X-Request-Id": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CaseList"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthenticated"
+          },
+          "422": {
+            "$ref": "#/components/responses/InvalidData"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        }
+      }
+    },
+    "/api/cases/{id}": {
+      "get": {
+        "operationId": "getCase",
+        "tags": [
+          "Cases"
+        ],
+        "summary": "Read a tenant-scoped case and monetary facts",
+        "description": "",
+        "x-roles": [
+          "ANALYST",
+          "REVIEWER",
+          "VIEWER"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/CaseId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success.",
+            "headers": {
+              "X-Request-Id": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CaseDetail"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthenticated"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "422": {
+            "$ref": "#/components/responses/InvalidData"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        }
+      }
+    },
+    "/api/cases/{id}/investigations": {
+      "post": {
+        "operationId": "createInvestigation",
+        "tags": [
+          "Investigations"
+        ],
+        "summary": "Create an immutable evidence-linked proposal",
+        "description": "Synchronous real worker call; success is HTTP 200, not 201/202. Java validates result evidence/schema, stamps identity/time/snapshot hash, stores the proposal and audit atomically, and changes the case to AWAITING_REVIEW with version+1. Before accepting RESOLVE_CASE, Java independently requires its authorized snapshot's valid money, available integer provider payout and known zero discrepancy; invalid resolution output returns 503 INVALID_WORKER_RESPONSE. The worker returns a valid INSUFFICIENT_EVIDENCE/REQUEST_EVIDENCE proposal for an otherwise supported timeout, duplicate-delivery or ordering case whose payout/reconciliation is unknown or nonzero. A sole supported confirmed missing-refund exception retains MISSING_REFUND/ESCALATE. Concurrent case changes reject the stale result. No client idempotency key is supported on this endpoint; repeated requests create separate investigations. The configured worker request deadline defaults/caps at 390 seconds. Failure records an INVESTIGATION_FAILED audit event without fabricating a proposal or changing case status/version; timeout does not prove downstream provider computation was cancelled. Current worker assessment fields (outcome, summary, confidence, missingEvidence and proposal) come from deterministic evidence rules. Ollama performs tool planning and typed selection of one or two authorized catalog facts for supported evidence. The service supplies exact selected fact sentences and their complete evidence/policy links, without adding unselected claims or repairing prose. Insufficient-evidence results deliberately skip the finding stage and return findings=[] after actual tool planning. Optional metrics record selection, wording and assessment origins plus catalog version/hash/selected IDs. Historical model-written findings remain unchanged. Stored proposals still require independent review. New Java results also persist the exact input caseSnapshot. OBPM_NEFT selects its separate ECA tools/rules and scoped policy catalog: only OBPM_ECA_TIMEOUT/INSUFFICIENT_EVIDENCE with REQUEST_EVIDENCE/ESCALATE are accepted; RESOLVE_CASE is rejected regardless of model or reconciliation fields. OBPM live planning returns a typed permutation of all four mandatory evidence tools; the model orders collection rather than deciding which required sources to omit. Invalid/incomplete plans fail, with no automatic completion, retry or replay fallback. Optional toolPlanningScope and orderedToolNames record this distinction.",
+        "x-roles": [
+          "ANALYST",
+          "REVIEWER"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/CaseId"
+          },
+          {
+            "$ref": "#/components/parameters/CsrfToken"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success.",
+            "headers": {
+              "X-Request-Id": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Investigation"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthenticated"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "422": {
+            "$ref": "#/components/responses/InvalidData"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          },
+          "503": {
+            "$ref": "#/components/responses/WorkerUnavailable"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InvestigateRequest"
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "operationId": "listInvestigations",
+        "tags": [
+          "Investigations"
+        ],
+        "summary": "List immutable proposals for a case",
+        "description": "Newest createdAt first, then descending ID. Stored proposal status remains AWAITING_REVIEW after review; obtain current case state and exported decisions separately.",
+        "x-roles": [
+          "ANALYST",
+          "REVIEWER",
+          "VIEWER"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/CaseId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success.",
+            "headers": {
+              "X-Request-Id": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvestigationList"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthenticated"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "422": {
+            "$ref": "#/components/responses/InvalidData"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        }
+      }
+    },
+    "/api/investigations/{id}": {
+      "get": {
+        "operationId": "getInvestigation",
+        "tags": [
+          "Investigations"
+        ],
+        "summary": "Read a stored tenant-scoped investigation",
+        "description": "",
+        "x-roles": [
+          "ANALYST",
+          "REVIEWER",
+          "VIEWER"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/InvestigationId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success.",
+            "headers": {
+              "X-Request-Id": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Investigation"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthenticated"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        }
+      }
+    },
+    "/api/cases/{id}/decisions": {
+      "post": {
+        "operationId": "reviewInvestigation",
+        "tags": [
+          "Reviews"
+        ],
+        "summary": "Approve or reject a stored case proposal once",
+        "description": "Reviewer must differ from investigation creator. The action comes only from the stored proposal; unknown request fields including action are rejected. Case and proposal versions must match expectedVersion. Exact command replay with the same reviewer/tenant/key is checked before version rejection and returns 200/replayed=true with the original decision ID/version, adding no audit/state change. A new decision atomically records reviewer/note/time, increments case version and appends audit. No payment or ledger values are mutated. An imported evidence refresh increments the case version and makes older proposals stale. OBPM proposals cannot resolve a case; approval only changes the local case workflow.",
+        "x-roles": [
+          "REVIEWER"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/CaseId"
+          },
+          {
+            "$ref": "#/components/parameters/CsrfToken"
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success.",
+            "headers": {
+              "X-Request-Id": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReviewDecision"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthenticated"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "422": {
+            "$ref": "#/components/responses/InvalidData"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DecisionRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/cases/{id}/audit": {
+      "get": {
+        "operationId": "listAudit",
+        "tags": [
+          "Reviews"
+        ],
+        "summary": "Read append-only application audit for a case",
+        "description": "Chronological occurredAt order, then ID. Application code provides no update/delete endpoint. This is not a claim of database-administrator tamper resistance.",
+        "x-roles": [
+          "ANALYST",
+          "REVIEWER",
+          "VIEWER"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/CaseId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success.",
+            "headers": {
+              "X-Request-Id": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuditList"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthenticated"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "422": {
+            "$ref": "#/components/responses/InvalidData"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        }
+      }
+    },
+    "/api/cases/{id}/export": {
+      "get": {
+        "operationId": "exportCase",
+        "tags": [
+          "Reviews"
+        ],
+        "summary": "Export an authorized evidence packet",
+        "description": "Returns JSON in the response body, without a guaranteed attachment filename. Includes case, immutable investigations, sanitized review decisions and audit; omits internal review command hashes/keys. Also includes evidenceVersions with full immutable OBPM snapshot payloads and saved per-investigation caseSnapshot when present; never substitutes current evidence for an older saved investigation.",
+        "x-roles": [
+          "ANALYST",
+          "REVIEWER",
+          "VIEWER"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/CaseId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success.",
+            "headers": {
+              "X-Request-Id": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Export"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthenticated"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "422": {
+            "$ref": "#/components/responses/InvalidData"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        }
+      }
+    },
+    "/api/dashboard": {
+      "get": {
+        "operationId": "dashboard",
+        "tags": [
+          "System"
+        ],
+        "summary": "Read tenant totals and recent activity",
+        "description": "Counts and total cover all visible cases. Java uses checked integer arithmetic and rejects an unsafe aggregate rather than returning a rounded or wrapped amount. These are imported-case metrics, not all-payment OBPM analytics or success rates.",
+        "x-roles": [
+          "ANALYST",
+          "REVIEWER",
+          "VIEWER"
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Success.",
+            "headers": {
+              "X-Request-Id": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Dashboard"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthenticated"
+          },
+          "422": {
+            "$ref": "#/components/responses/InvalidData"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        }
+      }
+    },
+    "/api/knowledge": {
+      "get": {
+        "operationId": "knowledge",
+        "tags": [
+          "Knowledge"
+        ],
+        "summary": "Read tenant-visible original runbooks",
+        "description": "Authenticated proxy to the worker. Java filters tenantId to the current tenant or shared *. Library may include expired/historical versions; it is not the date-filtered retrieval result.",
+        "x-roles": [
+          "ANALYST",
+          "REVIEWER",
+          "VIEWER"
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Success.",
+            "headers": {
+              "X-Request-Id": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/KnowledgeList"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthenticated"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          },
+          "503": {
+            "$ref": "#/components/responses/WorkerUnavailable"
+          }
+        }
+      }
+    },
+    "/api/system": {
+      "get": {
+        "operationId": "system",
+        "tags": [
+          "System"
+        ],
+        "summary": "Read dataset and dependency availability",
+        "description": "Worker/knowledge failure is represented in a successful response: workerStatus may be DOWN, and knowledgeAvailable=false makes runbookCount unavailable despite its numeric zero placeholder. supportedModes lists implemented modes and does not assert an installed model, successful inference, or semantic retrieval availability.",
+        "x-roles": [
+          "ANALYST",
+          "REVIEWER",
+          "VIEWER"
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Success.",
+            "headers": {
+              "X-Request-Id": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/System"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthenticated"
+          },
+          "422": {
+            "$ref": "#/components/responses/InvalidData"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        }
+      }
+    },
+    "/api/obpm/imports": {
+      "post": {
+        "operationId": "importObpmEvidence",
+        "tags": [
+          "OBPM evidence"
+        ],
+        "summary": "Import one original synthetic NEFT evidence snapshot",
+        "description": "Authenticated writer and session CSRF required. Tenant comes only from authenticated identity, never body/header fields. HTTP200 for CREATED/UPDATED/UNCHANGED. Stable case identity hashes tenant+deployment+host+branch+rail+direction+sourcePaymentId. New/changed evidence creates an immutable version, increments workflow version and sets OPEN. Changed content requires a strictly later extraction timestamp and an unused source snapshot ID. Exact canonical match to current evidence returns UNCHANGED without resetting case state or advancing versions, while recording a new receipt/audit. Object key ordering is ignored for hashing; array ordering, omitted/null fields and timestamp text are not normalized away. Refresh invalidates pending proposals through case-version checks; history remains immutable. This is one atomic local snapshot import, not an incremental source feed or arbitrary-file uploader. No client Idempotency-Key contract, payment execution or Oracle access. Body is limited to128KiB before parsing; one JSON object, no duplicate fields.",
+        "x-roles": [
+          "ANALYST",
+          "REVIEWER"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/CsrfToken"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success (HTTP 200).",
+            "headers": {
+              "X-Request-Id": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ObpmImportReceipt"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthenticated"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          },
+          "400": {
+            "$ref": "#/components/responses/ObpmMalformedJson"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "409": {
+            "$ref": "#/components/responses/ObpmConflict"
+          },
+          "413": {
+            "$ref": "#/components/responses/ImportTooLarge"
+          },
+          "422": {
+            "$ref": "#/components/responses/ObpmInvalidData"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "description": "One JSON snapshot; Content-Type application/json. Maximum encoded request body131072bytes.",
+          "x-max-bytes": 131072,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ObpmEvidenceSnapshot"
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "operationId": "listObpmImports",
+        "tags": [
+          "OBPM evidence"
+        ],
+        "summary": "List recent tenant-scoped import receipts",
+        "description": "Latest50 receipts ordered by importedAt descending then ID descending. Includes UNCHANGED receipts. No cursor/filter parameters are implemented.",
+        "x-roles": [
+          "ANALYST",
+          "REVIEWER",
+          "VIEWER"
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Success (HTTP 200).",
+            "headers": {
+              "X-Request-Id": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ObpmImportList"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthenticated"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        }
+      }
+    },
+    "/api/obpm/samples": {
+      "get": {
+        "operationId": "listObpmSamples",
+        "tags": [
+          "OBPM evidence"
+        ],
+        "summary": "List validated original synthetic sample payloads",
+        "description": "Authenticated read of up to20 sorted local JSON samples. Missing directory yields an empty list; nonregular/oversized files are skipped. An invalid/read-failed sample makes the catalog unavailable. No remote URL, credentials or employer data is accepted.",
+        "x-roles": [
+          "ANALYST",
+          "REVIEWER",
+          "VIEWER"
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Success (HTTP 200).",
+            "headers": {
+              "X-Request-Id": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ObpmSampleList"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthenticated"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          },
+          "503": {
+            "$ref": "#/components/responses/SampleCatalogUnavailable"
+          }
+        }
+      }
+    },
+    "/api/cases/{id}/evidence-versions": {
+      "get": {
+        "operationId": "listCaseEvidenceVersions",
+        "tags": [
+          "OBPM evidence"
+        ],
+        "summary": "List immutable evidence version metadata",
+        "description": "Tenant-scoped metadata ordered newest version first. Existing generic cases return an empty list. Missing or other-tenant case returns404. Full version payloads are available in the case export, not this list.",
+        "x-roles": [
+          "ANALYST",
+          "REVIEWER",
+          "VIEWER"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/CaseId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success (HTTP 200).",
+            "headers": {
+              "X-Request-Id": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ObpmEvidenceVersionList"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthenticated"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "422": {
+            "$ref": "#/components/responses/InvalidData"
+          }
+        }
+      }
+    },
+    "/api/obpm/inquiry": {
+      "get": {
+        "operationId": "getMockInquiryConfiguration",
+        "tags": [
+          "OBPM evidence"
+        ],
+        "summary": "Read local synthetic inquiry configuration and example references",
+        "description": "Authenticated configuration only. Does not expose URL, service key or perform an upstream health probe.",
+        "responses": {
+          "200": {
+            "description": "Success (HTTP 200).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ObpmInquiryConfiguration"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthenticated"
+          }
+        }
+      }
+    },
+    "/api/obpm/inquiries": {
+      "post": {
+        "operationId": "fetchAndImportMockNeftInquiry",
+        "tags": [
+          "OBPM evidence"
+        ],
+        "summary": "Fetch one original synthetic payment over HTTP and import its validated evidence",
+        "description": "Writer and session CSRF required. Calls only a server-configured local mock with fixed synthetic source scope. Validates neft-inquiry-v1, computes exact paise in Java and reuses immutable versioned imports. No sample fallback, user URL, Oracle connection, or automatic investigation. The source read is bounded to 128 KiB and a total configured 1–15 second deadline; at most four concurrent exchanges per Java process. Duplicate snapshots return UNCHANGED, preserving case state.",
+        "x-roles": [
+          "ANALYST",
+          "REVIEWER"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/CsrfToken"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "x-max-bytes": 1024,
+          "description": "One JSON object, at most 1 KiB; duplicate keys, extra fields and trailing values rejected.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ObpmInquiryRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success (HTTP 200).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ObpmImportReceipt"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "INVALID_REQUEST: malformed/duplicate JSON, extra fields or invalid payment reference.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthenticated"
+          },
+          "403": {
+            "description": "Role denied or missing/invalid CSRF; anonymous POST without a CSRF token also returns 403 before authentication.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "INQUIRY_NOT_FOUND: no matching original mock payment.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "$ref": "#/components/responses/ObpmConflict"
+          },
+          "413": {
+            "description": "INQUIRY_REQUEST_TOO_LARGE: more than 1024 encoded request bytes.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "INVALID_INQUIRY_RESPONSE or INQUIRY_UPSTREAM_ERROR; no case import from this failed source response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "INQUIRY_DISABLED, INQUIRY_BUSY or INQUIRY_UNAVAILABLE; no fallback.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "INQUIRY_TIMEOUT: deadline includes reading the response body.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "SessionCookie": {
+        "type": "apiKey",
+        "in": "cookie",
+        "name": "POI_SESSION",
+        "description": "Opaque HttpOnly SameSite=Strict cookie obtained via POST /api/auth/login. Authenticated mutations also require the separate X-CSRF-Token header. Do not send tenant/role headers as authorization."
+      }
+    },
+    "parameters": {
+      "CaseId": {
+        "name": "id",
+        "in": "path",
+        "required": true,
+        "description": "Case ID within the authenticated tenant.",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "InvestigationId": {
+        "name": "id",
+        "in": "path",
+        "required": true,
+        "description": "Immutable investigation ID within the authenticated tenant.",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "CsrfToken": {
+        "name": "X-CSRF-Token",
+        "in": "header",
+        "required": true,
+        "description": "Token returned by login or /api/auth/me, bound to the current session. Required for all protected POST operations.",
+        "schema": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "\\S"
+        }
+      },
+      "IdempotencyKey": {
+        "name": "Idempotency-Key",
+        "in": "header",
+        "required": true,
+        "description": "Unique review command key scoped to authenticated tenant and reviewer. Exact same body/key returns the original decision; a changed body with the same key returns 409.",
+        "schema": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 200,
+          "pattern": "^[A-Za-z0-9._:-]{8,200}$"
+        }
+      }
+    },
+    "responses": {
+      "BadRequest": {
+        "description": "400: malformed JSON, unknown request fields, invalid validation fields/mode/decision, or missing/invalid Idempotency-Key.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        },
+        "headers": {
+          "X-Request-Id": {
+            "schema": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "Unauthenticated": {
+        "description": "401: no valid authenticated session, or invalid login credentials.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        },
+        "headers": {
+          "X-Request-Id": {
+            "schema": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "Forbidden": {
+        "description": "403: missing/invalid CSRF, disallowed role, maker-checker violation, or cross-site login.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        },
+        "headers": {
+          "X-Request-Id": {
+            "schema": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "NotFound": {
+        "description": "404: record absent or outside the authenticated tenant; cross-tenant existence is not disclosed.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        },
+        "headers": {
+          "X-Request-Id": {
+            "schema": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "Conflict": {
+        "description": "409: stale/superseded proposal or case version, already-reviewed proposal, changed payload under the same idempotency key, or database concurrency conflict.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        },
+        "headers": {
+          "X-Request-Id": {
+            "schema": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "InvalidData": {
+        "description": "422: unsupported/invalid stored monetary data, mixed currencies, totals outside the JSON-safe range, or invalid stored proposal. No partial monetary result is returned.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        },
+        "headers": {
+          "X-Request-Id": {
+            "schema": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "WorkerUnavailable": {
+        "description": "503: worker/provider unavailable, timeout, non-200 worker response, or invalid worker schema/evidence. INVALID_WORKER_RESPONSE also covers a RESOLVE_CASE proposal without Java-authoritative valid money, available integer payout and known zero discrepancy. Worker errors are translated to 503; no replay fallback is fabricated.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        },
+        "headers": {
+          "X-Request-Id": {
+            "schema": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "InternalError": {
+        "description": "500: unexpected server/framework error; response does not expose stack traces.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        },
+        "headers": {
+          "X-Request-Id": {
+            "schema": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "ObpmInvalidData": {
+        "description": "422: INVALID_OBPM_EVIDENCE for unsupported fields/constants/timestamps/correlations/coverage, UNSUPPORTED_EVIDENCE for nonempty messages/accounting, INVALID_DATA for required textual data, or INVALID_AMOUNT/AMOUNT_OUT_OF_RANGE for monetary representation/range. Entire import is rejected, with no partial new version.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        },
+        "headers": {
+          "X-Request-Id": {
+            "schema": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "ObpmConflict": {
+        "description": "409: STALE_OBPM_SNAPSHOT when changed content is not later than current extraction; SNAPSHOT_ID_CONFLICT when a source snapshot ID names different content; VERSION_CONFLICT or CONFLICT on concurrent writes.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        },
+        "headers": {
+          "X-Request-Id": {
+            "schema": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "ImportTooLarge": {
+        "description": "413 IMPORT_TOO_LARGE: JSON body exceeds131072bytes (128KiB), including encoded field names and whitespace.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        },
+        "headers": {
+          "X-Request-Id": {
+            "schema": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "ObpmMalformedJson": {
+        "description": "400 INVALID_REQUEST: malformed JSON, duplicate object keys or more than one JSON value. Unknown typed fields use422 INVALID_OBPM_EVIDENCE instead.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        },
+        "headers": {
+          "X-Request-Id": {
+            "schema": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "SampleCatalogUnavailable": {
+        "description": "503 SAMPLE_CATALOG_UNAVAILABLE: configured original local sample files could not be read/validated. No URL fetch or Oracle connection is attempted.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        },
+        "headers": {
+          "X-Request-Id": {
+            "schema": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "schemas": {
+      "Mode": {
+        "type": "string",
+        "enum": [
+          "replay",
+          "ollama"
+        ],
+        "description": "Replay executes deterministic tools/graph with zero LLM calls. Ollama requires a real provider response; failure never silently falls back."
+      },
+      "Role": {
+        "type": "string",
+        "enum": [
+          "ANALYST",
+          "REVIEWER",
+          "VIEWER"
+        ]
+      },
+      "Outcome": {
+        "type": "string",
+        "enum": [
+          "TIMEOUT_AFTER_SUCCESS",
+          "DUPLICATE_WEBHOOK",
+          "OUT_OF_ORDER_WEBHOOK",
+          "MISSING_REFUND",
+          "INSUFFICIENT_EVIDENCE",
+          "PROVIDER_FAILURE",
+          "OBPM_ECA_TIMEOUT"
+        ],
+        "description": "OBPM_NEFT permits only OBPM_ECA_TIMEOUT or INSUFFICIENT_EVIDENCE. Generic cases cannot use OBPM_ECA_TIMEOUT."
+      },
+      "Action": {
+        "type": "string",
+        "enum": [
+          "RESOLVE_CASE",
+          "ESCALATE",
+          "REQUEST_EVIDENCE"
+        ]
+      },
+      "Confidence": {
+        "type": "string",
+        "enum": [
+          "HIGH",
+          "MEDIUM",
+          "INSUFFICIENT"
+        ],
+        "description": "Categorical assessment, not a calibrated probability."
+      },
+      "Decision": {
+        "type": "string",
+        "enum": [
+          "APPROVE",
+          "REJECT"
+        ]
+      },
+      "MinorAmount": {
+        "type": "integer",
+        "minimum": -9007199254740991,
+        "maximum": 9007199254740991,
+        "description": "Exact signed INR minor units; no fractional values. Imported amounts, nested monetary evidence, calculated reconciliation components/discrepancies and dashboard totals must stay within ±(2^53−1). No currency conversion is performed. Clients must preserve integer precision when rendering currency. The bundled React formatter uses BigInt quotient/remainder and Intl grouping, avoiding floating-point division that can lose paise near the allowed boundary."
+      },
+      "CaseAmount": {
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 9007199254740991,
+        "description": "Nonnegative original case amount, in INR minor units."
+      },
+      "CaseStatus": {
+        "type": "string",
+        "description": "The shipped dataset/state machine uses the listed known values. Imported status strings and list filters are not enum-validated by Java.",
+        "x-known-values": [
+          "OPEN",
+          "AWAITING_REVIEW",
+          "RESOLVED",
+          "ESCALATED",
+          "NEEDS_EVIDENCE"
+        ],
+        "examples": [
+          "OPEN",
+          "AWAITING_REVIEW",
+          "RESOLVED"
+        ]
+      },
+      "Priority": {
+        "type": "string",
+        "description": "Priority from the original synthetic fixture; Java applies exact string filtering without enum validation.",
+        "x-known-values": [
+          "HIGH",
+          "MEDIUM",
+          "LOW"
+        ],
+        "examples": [
+          "HIGH",
+          "MEDIUM"
+        ]
+      },
+      "Error": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "description": "Machine-readable application/security error code. The examples are not an exhaustive enum.",
+            "examples": [
+              "INVALID_REQUEST",
+              "UNAUTHENTICATED",
+              "INVALID_CREDENTIALS",
+              "FORBIDDEN",
+              "NOT_FOUND",
+              "MAKER_CHECKER_REQUIRED",
+              "VERSION_CONFLICT",
+              "IDEMPOTENCY_KEY_REQUIRED",
+              "IDEMPOTENCY_CONFLICT",
+              "ALREADY_REVIEWED",
+              "AMOUNT_OUT_OF_RANGE",
+              "CURRENCY_MISMATCH",
+              "WORKER_UNAVAILABLE",
+              "INVALID_WORKER_RESPONSE",
+              "INTERNAL_ERROR"
+            ]
+          },
+          "message": {
+            "type": "string",
+            "description": "Safe client-facing message; no database or provider stack trace."
+          },
+          "requestId": {
+            "type": "string",
+            "description": "Server-generated request correlation identifier."
+          }
+        },
+        "required": [
+          "code",
+          "message",
+          "requestId"
+        ],
+        "additionalProperties": false
+      },
+      "User": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Server-bound demo identity."
+          },
+          "name": {
+            "type": "string"
+          },
+          "role": {
+            "$ref": "#/components/schemas/Role"
+          },
+          "tenantId": {
+            "type": "string",
+            "description": "Server-bound tenant. Client tenant/role headers are ignored."
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "role",
+          "tenantId"
+        ],
+        "additionalProperties": false
+      },
+      "LoginRequest": {
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S",
+            "maxLength": 100
+          },
+          "password": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S",
+            "maxLength": 200
+          }
+        },
+        "required": [
+          "username",
+          "password"
+        ],
+        "additionalProperties": false
+      },
+      "AuthResponse": {
+        "type": "object",
+        "properties": {
+          "user": {
+            "$ref": "#/components/schemas/User"
+          },
+          "csrfToken": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S"
+          }
+        },
+        "required": [
+          "user",
+          "csrfToken"
+        ],
+        "additionalProperties": false
+      },
+      "Health": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "const": "UP"
+          },
+          "service": {
+            "type": "string",
+            "const": "payment-operations-api"
+          },
+          "mode": {
+            "type": "string",
+            "const": "synthetic"
+          }
+        },
+        "required": [
+          "status",
+          "service",
+          "mode"
+        ],
+        "additionalProperties": false
+      },
+      "LogoutResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "const": "SIGNED_OUT"
+          }
+        },
+        "required": [
+          "status"
+        ],
+        "additionalProperties": false
+      },
+      "InvestigateRequest": {
+        "type": "object",
+        "properties": {
+          "question": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S",
+            "maxLength": 2000
+          },
+          "mode": {
+            "$ref": "#/components/schemas/Mode"
+          }
+        },
+        "required": [
+          "question",
+          "mode"
+        ],
+        "additionalProperties": false
+      },
+      "DecisionRequest": {
+        "type": "object",
+        "properties": {
+          "investigationId": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S",
+            "maxLength": 100
+          },
+          "decision": {
+            "$ref": "#/components/schemas/Decision"
+          },
+          "note": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S",
+            "maxLength": 1000
+          },
+          "expectedVersion": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 1,
+            "description": "Must equal both the current case version and the stored proposal's caseVersion. Exact idempotency replay is checked before stale-version rejection."
+          }
+        },
+        "required": [
+          "investigationId",
+          "decision",
+          "note",
+          "expectedVersion"
+        ],
+        "additionalProperties": false
+      },
+      "Reconciliation": {
+        "type": "object",
+        "properties": {
+          "validMoney": {
+            "type": "boolean",
+            "const": true
+          },
+          "captureCount": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "captureMinor": {
+            "$ref": "#/components/schemas/MinorAmount"
+          },
+          "refundMinor": {
+            "$ref": "#/components/schemas/MinorAmount"
+          },
+          "ledgerNetMinor": {
+            "$ref": "#/components/schemas/MinorAmount"
+          },
+          "providerAvailable": {
+            "type": "boolean",
+            "description": "False when provider is absent, status is blank or normalized UNKNOWN/UNAVAILABLE, or payout is unknown. Status comparison is case-insensitive; zero is not substituted for missing evidence."
+          },
+          "providerPayoutMinor": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/MinorAmount"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "discrepancyMinor": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/MinorAmount"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "currency": {
+            "type": "string",
+            "const": "INR"
+          },
+          "calculatedBy": {
+            "type": "string",
+            "const": "java-api"
+          }
+        },
+        "required": [
+          "validMoney",
+          "captureCount",
+          "captureMinor",
+          "refundMinor",
+          "ledgerNetMinor",
+          "providerAvailable",
+          "providerPayoutMinor",
+          "discrepancyMinor",
+          "currency",
+          "calculatedBy"
+        ],
+        "additionalProperties": false,
+        "description": "Authoritative checked Java arithmetic. Ledger type codes are uppercased with dots/hyphens replaced by underscores. captureMinor/count aggregate CAPTURE, PAYMENT_CAPTURED and SALE entries; refundMinor negates and sums REFUND and REFUND_POSTED entries. Captures must be strictly positive, refunds strictly negative, and FEE non-positive (zero allowed); invalid signs produce 422 INVALID_AMOUNT instead of validMoney=true. Other signed entries, including ADJUSTMENT, retain signed-net behavior. ledgerNetMinor sums all entries; discrepancyMinor = ledgerNetMinor minus providerPayoutMinor. Provider payout and discrepancy are null when providerAvailable=false. Accepting RESOLVE_CASE independently requires calculatedBy=java-api, validMoney=true, providerAvailable=true, integer payout and known zero discrepancy."
+      },
+      "EvidenceAttributes": {
+        "type": "object",
+        "additionalProperties": true,
+        "properties": {
+          "amountMinor": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/MinorAmount"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "currency": {
+            "type": "string",
+            "const": "INR"
+          },
+          "idempotencyKey": {
+            "type": "string"
+          },
+          "providerPaymentId": {
+            "type": "string"
+          },
+          "httpStatus": {
+            "type": "integer"
+          }
+        },
+        "patternProperties": {
+          ".*Minor$": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/MinorAmount"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "description": "Optional original simulator metadata. Every non-null field ending in Minor is validated as an exact JSON-safe integer and any currency must match INR."
+      },
+      "PaymentEvent": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "occurredAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "type": {
+            "type": "string"
+          },
+          "source": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "summary": {
+            "type": "string"
+          },
+          "correlationId": {
+            "type": "string"
+          },
+          "attributes": {
+            "$ref": "#/components/schemas/EvidenceAttributes"
+          }
+        },
+        "required": [],
+        "additionalProperties": true,
+        "description": "Operational event fields from the original fixture. Java preserves nested evidence; the worker separately requires unique nonempty record IDs."
+      },
+      "LedgerEntry": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "description": "Type codes are normalized to uppercase with dots/hyphens replaced by underscores. Capture aliases: CAPTURE, PAYMENT_CAPTURED, SALE. Refund aliases: REFUND, REFUND_POSTED. FEE is a deduction; other types, including ADJUSTMENT, retain signed-net treatment."
+          },
+          "amountMinor": {
+            "$ref": "#/components/schemas/MinorAmount",
+            "description": "Exact signed minor units. Recognized captures require >0; refunds require <0; FEE requires <=0. Generic adjustments may have either sign. Invalid classified signs produce 422 INVALID_AMOUNT."
+          },
+          "currency": {
+            "type": "string",
+            "const": "INR"
+          },
+          "occurredAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "reference": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "amountMinor",
+          "currency"
+        ],
+        "additionalProperties": true
+      },
+      "Webhook": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "providerEventId": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          },
+          "occurredAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "receivedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "processingStatus": {
+            "type": "string"
+          },
+          "providerPaymentId": {
+            "type": "string"
+          }
+        },
+        "required": [],
+        "additionalProperties": true
+      },
+      "Provider": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "description": "Observed provider state; UNKNOWN means unavailable evidence."
+          },
+          "paymentId": {
+            "type": "string"
+          },
+          "amountMinor": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/MinorAmount"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "feeMinor": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/MinorAmount"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "refundMinor": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/MinorAmount"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "payoutMinor": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/MinorAmount"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "asOf": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [],
+        "additionalProperties": true,
+        "description": "Optional original provider snapshot; monetary fields may be absent or null."
+      },
+      "CaseSummary": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9_-]{1,100}$"
+          },
+          "tenantId": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9_-]{1,100}$"
+          },
+          "paymentId": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S"
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S"
+          },
+          "description": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S"
+          },
+          "priority": {
+            "$ref": "#/components/schemas/Priority"
+          },
+          "status": {
+            "$ref": "#/components/schemas/CaseStatus"
+          },
+          "amountMinor": {
+            "$ref": "#/components/schemas/CaseAmount"
+          },
+          "currency": {
+            "type": "string",
+            "const": "INR"
+          },
+          "rail": {
+            "type": "string"
+          },
+          "merchant": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "version": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 1
+          },
+          "policyDate": {
+            "type": "string",
+            "format": "date"
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "reconciliation": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/Reconciliation"
+              },
+              {
+                "$ref": "#/components/schemas/ObpmUnknownReconciliation"
+              }
+            ]
+          },
+          "domain": {
+            "type": "string",
+            "const": "OBPM_NEFT"
+          },
+          "obpm": {
+            "$ref": "#/components/schemas/ObpmEvidenceSnapshot"
+          },
+          "evidenceVersion": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "evidenceHash": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          }
+        },
+        "required": [
+          "id",
+          "tenantId",
+          "paymentId",
+          "title",
+          "description",
+          "priority",
+          "status",
+          "amountMinor",
+          "currency",
+          "createdAt",
+          "updatedAt",
+          "version",
+          "policyDate",
+          "reconciliation"
+        ],
+        "additionalProperties": false,
+        "description": "Tenant-scoped imported-case view. Legacy events/ledgerEntries/webhooks/provider are omitted; current OBPM summaries retain the normalized obpm snapshot and evidence version/hash. Status/version track local case workflow, not the native payment status.",
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "domain": {
+                  "const": "OBPM_NEFT"
+                }
+              },
+              "required": [
+                "domain"
+              ]
+            },
+            "then": {
+              "required": [
+                "rail",
+                "obpm",
+                "evidenceVersion",
+                "evidenceHash"
+              ],
+              "properties": {
+                "rail": {
+                  "type": "string",
+                  "const": "NEFT"
+                },
+                "reconciliation": {
+                  "$ref": "#/components/schemas/ObpmUnknownReconciliation"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "CaseDetail": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9_-]{1,100}$"
+          },
+          "tenantId": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9_-]{1,100}$"
+          },
+          "paymentId": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S"
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S"
+          },
+          "description": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S"
+          },
+          "priority": {
+            "$ref": "#/components/schemas/Priority"
+          },
+          "status": {
+            "$ref": "#/components/schemas/CaseStatus"
+          },
+          "amountMinor": {
+            "$ref": "#/components/schemas/CaseAmount"
+          },
+          "currency": {
+            "type": "string",
+            "const": "INR"
+          },
+          "rail": {
+            "type": "string"
+          },
+          "merchant": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "version": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 1
+          },
+          "policyDate": {
+            "type": "string",
+            "format": "date"
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "reconciliation": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/Reconciliation"
+              },
+              {
+                "$ref": "#/components/schemas/ObpmUnknownReconciliation"
+              }
+            ]
+          },
+          "events": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PaymentEvent"
+            }
+          },
+          "ledgerEntries": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LedgerEntry"
+            }
+          },
+          "webhooks": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Webhook"
+            }
+          },
+          "provider": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Provider"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "domain": {
+            "type": "string",
+            "const": "OBPM_NEFT"
+          },
+          "obpm": {
+            "$ref": "#/components/schemas/ObpmEvidenceSnapshot"
+          },
+          "evidenceVersion": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "evidenceHash": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          }
+        },
+        "required": [
+          "id",
+          "tenantId",
+          "paymentId",
+          "title",
+          "description",
+          "priority",
+          "status",
+          "amountMinor",
+          "currency",
+          "createdAt",
+          "updatedAt",
+          "version",
+          "policyDate",
+          "reconciliation",
+          "events",
+          "ledgerEntries",
+          "webhooks"
+        ],
+        "additionalProperties": false,
+        "description": "Current authorized case view with mutable workflow status/version and validated evidence. Generic fixtures retain their original shape. OBPM cases carry domain=OBPM_NEFT, a normalized obpm snapshot, immutable evidenceVersion/hash and unknown-only reconciliation; refreshing source evidence replaces the current pointer while preserving prior versions and saved investigations.",
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "domain": {
+                  "const": "OBPM_NEFT"
+                }
+              },
+              "required": [
+                "domain"
+              ]
+            },
+            "then": {
+              "required": [
+                "rail",
+                "obpm",
+                "evidenceVersion",
+                "evidenceHash",
+                "provider"
+              ],
+              "properties": {
+                "rail": {
+                  "type": "string",
+                  "const": "NEFT"
+                },
+                "reconciliation": {
+                  "$ref": "#/components/schemas/ObpmUnknownReconciliation"
+                },
+                "events": {
+                  "maxItems": 0
+                },
+                "ledgerEntries": {
+                  "maxItems": 0
+                },
+                "webhooks": {
+                  "maxItems": 0
+                },
+                "provider": {
+                  "type": "null"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "CaseList": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CaseSummary"
+            }
+          },
+          "total": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "items",
+          "total"
+        ],
+        "additionalProperties": false
+      },
+      "Finding": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "text": {
+            "type": "string"
+          },
+          "evidenceIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "description": "Authorized operational evidence identifier."
+            }
+          },
+          "citationIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "description": "Must reference an ID in the result citations array."
+            }
+          }
+        },
+        "required": [
+          "text",
+          "evidenceIds",
+          "citationIds"
+        ],
+        "additionalProperties": true
+      },
+      "Citation": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "documentId": {
+            "type": "string"
+          },
+          "version": {
+            "type": "integer"
+          },
+          "title": {
+            "type": "string"
+          },
+          "excerpt": {
+            "type": "string"
+          },
+          "source": {
+            "type": "string"
+          },
+          "score": {
+            "type": "number",
+            "description": "Retriever-specific ranking score, not confidence/probability."
+          }
+        },
+        "required": [
+          "id",
+          "documentId",
+          "version"
+        ],
+        "additionalProperties": true,
+        "description": "Document identity/version is checked by Java; optional presentation fields are normally supplied by the current worker. The worker validates corpus eligibility and policy-date scope."
+      },
+      "Proposal": {
+        "type": "object",
+        "properties": {
+          "action": {
+            "$ref": "#/components/schemas/Action"
+          },
+          "reason": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "action"
+        ],
+        "additionalProperties": true,
+        "description": "Stored case-management recommendation. Before storing RESOLVE_CASE, Java requires the authorized snapshot's reconciliation.calculatedBy=java-api, validMoney=true, providerAvailable=true, integer providerPayoutMinor and known integer discrepancyMinor=0. Resolution also requires a finding linked to both authorized evidence and a citation, and cannot accompany insufficient evidence/confidence. Unknown or nonzero payout reconciliation in an otherwise supported timeout, duplicate-delivery or ordering case produces REQUEST_EVIDENCE; a sole supported confirmed missing-refund exception remains ESCALATE. A newly stored proposal puts the case in AWAITING_REVIEW; approving REQUEST_EVIDENCE changes the case to NEEDS_EVIDENCE. The stored investigation remains immutable. No action initiates or changes a payment. Current worker derives action and reason from deterministic evidence rules; Ollama does not choose or rewrite them under the finding-only contract. Historical records retain their recorded provenance."
+      },
+      "ToolCall": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "durationMs": {
+            "type": "number",
+            "minimum": 0
+          },
+          "evidenceIds": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [],
+        "additionalProperties": true,
+        "description": "Worker-reported trace; optional fields and future trace metadata remain extensible."
+      },
+      "Metrics": {
+        "type": "object",
+        "properties": {
+          "durationMs": {
+            "type": "number",
+            "minimum": 0,
+            "description": "Recorded investigation wall duration; checkpoint-resumed results can include time between attempts. This is not an enforced whole-job deadline."
+          },
+          "retrievalMs": {
+            "type": "number",
+            "minimum": 0
+          },
+          "toolCount": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "modelCalls": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Recorded model usage from graph stages that successfully committed. A fresh current Ollama run normally records one planner stage when the finding stage is skipped, or two stages when typed fact selection succeeds. Service-rendered wording does not mean zero model calls. Failed/timeout or pre-commit rejected attempts may be absent; this is not complete provider billing/retry telemetry."
+          },
+          "inputTokens": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "outputTokens": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "retrievalMode": {
+            "type": "string",
+            "description": "Current worker supports lexical or hybrid retrieval. Hybrid combines genuine embeddings with lexical ranking; lexical mode has no semantic embedding inference. Historical/future metadata remains extensible."
+          },
+          "model": {
+            "type": "string"
+          },
+          "toolSelectionMs": {
+            "type": "number",
+            "minimum": 0
+          },
+          "synthesisMs": {
+            "type": "number",
+            "minimum": 0
+          },
+          "toolSelectionProvider": {
+            "type": "object",
+            "additionalProperties": true
+          },
+          "synthesisProvider": {
+            "type": "object",
+            "additionalProperties": true
+          },
+          "synthesisScope": {
+            "type": "string",
+            "examples": [
+              "fact-selection",
+              "finding-only",
+              "skipped-insufficient-evidence",
+              "deterministic-replay"
+            ],
+            "description": "Optional recorded worker provenance. Current fact-selection means actual Ollama tool planning and selection of one or two authorized catalog facts; their exact wording and complete links are supplied by the service. Historical finding-only means one model-written Finding and retains its saved prose. skipped-insufficient-evidence means actual planning with findings=[] and no second model stage. deterministic-replay means no language-model invocation. Missing and future values remain compatible and extensible."
+          },
+          "assessmentSource": {
+            "type": "string",
+            "examples": [
+              "deterministic-evidence-rules"
+            ],
+            "description": "Optional worker-reported origin of outcome, summary, confidence, missingEvidence and proposal. Current worker uses deterministic-evidence-rules; absence on historical records does not establish their origin. Java retains extensible metrics and does not independently recompute all worker assessment text."
+          },
+          "findingSource": {
+            "type": "string",
+            "examples": [
+              "service-rendered-facts"
+            ],
+            "description": "Optional worker-reported authorship of finding text. service-rendered-facts means exact sentences from the authorized fact catalog selected by the model, with predefined complete links. No unselected factual sentences are added. Historical records may omit this field; absence or an unknown value does not establish wording origin."
+          },
+          "factCatalogVersion": {
+            "type": "integer",
+            "minimum": 1,
+            "examples": [
+              1
+            ],
+            "description": "Optional worker-reported catalog format version for this fact-selection result."
+          },
+          "factCatalogHash": {
+            "type": "string",
+            "examples": [
+              "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+            ],
+            "description": "Optional SHA-256 digest of the authorized fact catalog retained in the worker checkpoint. Traceability metadata, not an authenticity guarantee; Java preserves it without independently rebuilding the catalog."
+          },
+          "selectedFactIds": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "examples": [
+              [
+                "FACT-1"
+              ]
+            ],
+            "description": "Optional recorded IDs of the catalog facts selected by the model. Current fact-selection accepts one or two authorized facts; complete evidence and policy links come from those facts. These are catalog identifiers, distinct from operational evidenceIds and citationIds."
+          },
+          "toolPlanningScope": {
+            "type": "string",
+            "const": "mandatory-evidence-order",
+            "description": "OBPM-only optional provenance: the model orders all four required snapshot evidence tools. The service fixes the authorized caseId; no omitted tool is appended and incomplete plans fail. Historical and generic results may omit this field."
+          },
+          "orderedToolNames": {
+            "type": "array",
+            "minItems": 4,
+            "maxItems": 4,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "enum": [
+                "inspect_obpm_payment",
+                "inspect_obpm_queue",
+                "inspect_obpm_eca_requests",
+                "inspect_obpm_coverage"
+              ]
+            },
+            "description": "The actual mandatory tool order returned by the OBPM planner and executed by LangChain, when toolPlanningScope identifies this contract."
+          }
+        },
+        "required": [],
+        "additionalProperties": true,
+        "description": "Worker metrics are extensible and optional. Java forces replay modelCalls/inputTokens/outputTokens=0 and model=deterministic-replay. Ollama output requires modelCalls >=1. Recorded synthesisScope, findingSource, assessmentSource and catalog metadata distinguish model selection, wording and assessment without relabeling historical records or implying review. Java retains this provenance but does not independently rebuild the worker fact catalog. Mode availability is not a success/latency guarantee, and usage is not complete failed-attempt telemetry."
+      },
+      "Investigation": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "caseId": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "createdBy": {
+            "type": "string"
+          },
+          "mode": {
+            "$ref": "#/components/schemas/Mode"
+          },
+          "status": {
+            "type": "string",
+            "const": "AWAITING_REVIEW",
+            "description": "Immutable proposal status; later review decisions and current case state are separate."
+          },
+          "outcome": {
+            "$ref": "#/components/schemas/Outcome"
+          },
+          "summary": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S",
+            "description": "Current worker supplies this from deterministic evidence rules when metrics.assessmentSource records that origin. Historical records retain their original summary."
+          },
+          "confidence": {
+            "$ref": "#/components/schemas/Confidence"
+          },
+          "findings": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Finding"
+            },
+            "description": "Current Ollama fact-selection results use exact service-rendered wording and link closure for facts selected by the model. No unselected factual sentences are added. skipped-insufficient-evidence returns findings=[]. Replay findings are deterministic. Historical finding-only records preserve their model-written prose. The public Finding shape remains unchanged; bounded wording does not prove catalog correctness, selection completeness or underlying record accuracy."
+          },
+          "missingEvidence": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "citations": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Citation"
+            }
+          },
+          "toolCalls": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ToolCall"
+            }
+          },
+          "proposal": {
+            "$ref": "#/components/schemas/Proposal"
+          },
+          "metrics": {
+            "$ref": "#/components/schemas/Metrics"
+          },
+          "warnings": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "caseVersion": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 1
+          },
+          "snapshotHash": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$",
+            "description": "SHA-256 of the exact authorized input case snapshot JSON."
+          },
+          "caseSnapshot": {
+            "$ref": "#/components/schemas/CaseDetail",
+            "description": "Exact authorized input snapshot copied by Java before investigation changes case workflow/version. Present on newly saved investigations; older saved results may omit it. It remains unchanged after later imports and its version can be one lower than the investigation caseVersion."
+          }
+        },
+        "required": [
+          "id",
+          "caseId",
+          "createdAt",
+          "createdBy",
+          "mode",
+          "status",
+          "outcome",
+          "summary",
+          "confidence",
+          "findings",
+          "missingEvidence",
+          "citations",
+          "toolCalls",
+          "proposal",
+          "metrics",
+          "warnings",
+          "caseVersion",
+          "snapshotHash"
+        ],
+        "additionalProperties": false,
+        "description": "Immutable proposal plus evidence provenance. New results preserve caseSnapshot; historical results remain readable without retroactively inventing a snapshot. All OBPM results are limited to REQUEST_EVIDENCE or ESCALATE, with no financial operation."
+      },
+      "InvestigationList": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Investigation"
+            }
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "additionalProperties": false
+      },
+      "ReviewDecision": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "caseId": {
+            "type": "string"
+          },
+          "investigationId": {
+            "type": "string"
+          },
+          "decision": {
+            "$ref": "#/components/schemas/Decision"
+          },
+          "action": {
+            "$ref": "#/components/schemas/Action"
+          },
+          "caseStatus": {
+            "type": "string",
+            "enum": [
+              "OPEN",
+              "RESOLVED",
+              "ESCALATED",
+              "NEEDS_EVIDENCE"
+            ]
+          },
+          "version": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 1
+          },
+          "replayed": {
+            "type": "boolean",
+            "description": "True only when this response is replayed from an existing exact idempotent command. Stored exported decisions retain false."
+          },
+          "reviewedBy": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "note": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "caseId",
+          "investigationId",
+          "decision",
+          "action",
+          "caseStatus",
+          "version",
+          "replayed",
+          "reviewedBy",
+          "createdAt",
+          "note"
+        ],
+        "additionalProperties": false,
+        "description": "APPROVE applies only the stored proposal: RESOLVE_CASE→RESOLVED, ESCALATE→ESCALATED, REQUEST_EVIDENCE→NEEDS_EVIDENCE. REJECT returns the case to OPEN. No payment/ledger values change."
+      },
+      "AuditEvent": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "occurredAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "actor": {
+            "type": "string"
+          },
+          "action": {
+            "type": "string",
+            "description": "Current values: FIXTURE_IMPORTED, INVESTIGATION_CREATED, INVESTIGATION_FAILED, REVIEW_APPROVE, REVIEW_REJECT."
+          },
+          "detail": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "occurredAt",
+          "actor",
+          "action",
+          "detail"
+        ],
+        "additionalProperties": false
+      },
+      "RecentActivity": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "occurredAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "actor": {
+            "type": "string"
+          },
+          "action": {
+            "type": "string",
+            "description": "Current values: FIXTURE_IMPORTED, INVESTIGATION_CREATED, INVESTIGATION_FAILED, REVIEW_APPROVE, REVIEW_REJECT."
+          },
+          "detail": {
+            "type": "string"
+          },
+          "caseId": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "occurredAt",
+          "actor",
+          "action",
+          "detail",
+          "caseId"
+        ],
+        "additionalProperties": false
+      },
+      "AuditList": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AuditEvent"
+            }
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "additionalProperties": false
+      },
+      "Dashboard": {
+        "type": "object",
+        "properties": {
+          "openCases": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "All tenant cases whose status is not RESOLVED, including awaiting review/escalated/needs evidence."
+          },
+          "highPriorityCases": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "HIGH-priority cases whose status is not RESOLVED."
+          },
+          "awaitingReview": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "resolvedCases": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "totalAmountMinor": {
+            "$ref": "#/components/schemas/CaseAmount",
+            "description": "Sum of all tenant case amounts, including resolved cases. Out-of-range aggregate returns 422."
+          },
+          "currency": {
+            "type": "string",
+            "const": "INR"
+          },
+          "recentActivity": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RecentActivity"
+            },
+            "maxItems": 10
+          },
+          "mode": {
+            "type": "string",
+            "const": "synthetic"
+          }
+        },
+        "required": [
+          "openCases",
+          "highPriorityCases",
+          "awaitingReview",
+          "resolvedCases",
+          "totalAmountMinor",
+          "currency",
+          "recentActivity",
+          "mode"
+        ],
+        "additionalProperties": false,
+        "description": "Imported-case workload analytics only. Counts and summed case amounts include synthetic fixture cases and imported OBPM cases; they do not measure all OBPM payments, payment success rate or settlement throughput."
+      },
+      "Runbook": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "version": {
+            "type": "integer"
+          },
+          "title": {
+            "type": "string"
+          },
+          "content": {
+            "type": "string"
+          },
+          "keywords": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "tenantId": {
+            "type": "string",
+            "description": "Either authenticated tenant or * for shared guidance."
+          },
+          "effectiveFrom": {
+            "type": "string",
+            "format": "date"
+          },
+          "effectiveTo": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "source": {
+            "type": "string"
+          },
+          "sourceUrl": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uri"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "domain": {
+            "type": "string",
+            "description": "Optional applicability metadata; required together for OBPM-only retrieval."
+          },
+          "rail": {
+            "type": "string",
+            "description": "Optional applicability metadata; required together for OBPM-only retrieval."
+          },
+          "direction": {
+            "type": "string",
+            "description": "Optional applicability metadata; required together for OBPM-only retrieval."
+          },
+          "releaseFamily": {
+            "type": "string",
+            "description": "Optional applicability metadata; required together for OBPM-only retrieval."
+          }
+        },
+        "required": [
+          "tenantId"
+        ],
+        "additionalProperties": true,
+        "description": "Read-only tenant-filtered original knowledge metadata proxied from the worker. Presentation fields are optional at the Java boundary. The library includes historical versions; investigation retrieval separately applies policy-date eligibility. OBPM sidecar guidance uses domain/rail/direction/releaseFamily as well as tenant/effective date during investigation retrieval; generic retrieval excludes those scoped policies."
+      },
+      "KnowledgeList": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Runbook"
+            }
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "additionalProperties": false
+      },
+      "System": {
+        "type": "object",
+        "properties": {
+          "datasetVersion": {
+            "type": "string"
+          },
+          "caseCount": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "runbookCount": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Zero is a placeholder when knowledgeAvailable=false; do not interpret it as an empty corpus then."
+          },
+          "knowledgeAvailable": {
+            "type": "boolean"
+          },
+          "workerStatus": {
+            "type": "string",
+            "enum": [
+              "UP",
+              "DOWN"
+            ]
+          },
+          "supportedModes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Mode"
+            }
+          },
+          "limitations": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "datasetVersion",
+          "caseCount",
+          "runbookCount",
+          "knowledgeAvailable",
+          "workerStatus",
+          "supportedModes",
+          "limitations"
+        ],
+        "additionalProperties": false
+      },
+      "Export": {
+        "type": "object",
+        "properties": {
+          "case": {
+            "$ref": "#/components/schemas/CaseDetail"
+          },
+          "investigations": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Investigation"
+            }
+          },
+          "decisions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ReviewDecision"
+            }
+          },
+          "audit": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AuditEvent"
+            }
+          },
+          "mode": {
+            "type": "string",
+            "const": "synthetic"
+          },
+          "datasetVersion": {
+            "type": "string"
+          },
+          "evidenceVersions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ObpmExportedEvidenceVersion"
+            }
+          }
+        },
+        "required": [
+          "case",
+          "investigations",
+          "decisions",
+          "audit",
+          "mode",
+          "datasetVersion",
+          "evidenceVersions"
+        ],
+        "additionalProperties": false,
+        "description": "Authorized evidence packet. Includes reviewer note/identity/time and decision ID, but no internal idempotency keys or request hashes. Original operational event attributes may contain their own synthetic payment idempotency reference; that is distinct from the review command key. Includes full immutable OBPM evidence versions (empty for legacy cases) and each investigation original caseSnapshot when recorded. Current case evidence can differ from an older investigation snapshot."
+      },
+      "ObpmIdentifier": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 100,
+        "pattern": "^[A-Za-z0-9._:-]{1,100}$"
+      },
+      "ObpmUtcTimestamp": {
+        "type": "string",
+        "format": "date-time",
+        "pattern": "^(?!0000)[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(\\.[0-9]{1,6})?Z$",
+        "description": "Valid UTC calendar timestamp ending in Z, year 0001-9999, at most six fractional-second digits. Offsets, naive times, leap seconds and finer precision are rejected by Java."
+      },
+      "ObpmDate": {
+        "type": "string",
+        "format": "date",
+        "pattern": "^(?!0000)[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+        "description": "Valid YYYY-MM-DD calendar date, year 0001-9999."
+      },
+      "ObpmSource": {
+        "type": "object",
+        "properties": {
+          "deploymentId": {
+            "type": "string",
+            "const": "SYNTHETIC-OBPM"
+          },
+          "releaseFamily": {
+            "type": "string",
+            "const": "14.7"
+          },
+          "exactMaintenanceRelease": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 200,
+                "pattern": "^(?=.*\\S)[^\\u0000-\\u001f\\u007f-\\u009f]+$"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "hostCode": {
+            "type": "string",
+            "const": "DEMO-HOST"
+          },
+          "branchCode": {
+            "type": "string",
+            "const": "DEMO-BRANCH"
+          }
+        },
+        "required": [
+          "deploymentId",
+          "releaseFamily",
+          "exactMaintenanceRelease",
+          "hostCode",
+          "branchCode"
+        ],
+        "additionalProperties": false,
+        "description": "Only the original synthetic source identity is accepted. exactMaintenanceRelease must be present; null means unknown and does not claim an installed patch."
+      },
+      "ObpmPayment": {
+        "type": "object",
+        "properties": {
+          "sourcePaymentId": {
+            "$ref": "#/components/schemas/ObpmIdentifier"
+          },
+          "rail": {
+            "type": "string",
+            "const": "NEFT"
+          },
+          "direction": {
+            "type": "string",
+            "const": "OUTBOUND"
+          },
+          "sourceAmountDecimal": {
+            "type": "string",
+            "pattern": "^(0|[1-9][0-9]{0,13})(\\.[0-9]{1,2})?$",
+            "description": "Nonnegative decimal INR string, no sign/exponent/leading zeroes except zero. Decimal value times100 must exactly equal amountMinor; cross-field equality is enforced by Java."
+          },
+          "amountMinor": {
+            "$ref": "#/components/schemas/CaseAmount",
+            "description": "Exact nonnegative INR paise, <=9007199254740991. Java additionally requires an integral JSON number token; floating-point/exponent tokens are rejected even if mathematically integral."
+          },
+          "currency": {
+            "type": "string",
+            "const": "INR"
+          },
+          "activationDate": {
+            "$ref": "#/components/schemas/ObpmDate"
+          },
+          "createdAt": {
+            "$ref": "#/components/schemas/ObpmUtcTimestamp"
+          },
+          "nativeTransactionStatus": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 80,
+                "pattern": "^(?=.*\\S)[^\\u0000-\\u001f\\u007f-\\u009f]+$"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "statusUnavailableReason": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 500,
+                "pattern": "^(?=.*\\S)[^\\u0000-\\u001f\\u007f-\\u009f]+$"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "sourcePaymentId",
+          "rail",
+          "direction",
+          "sourceAmountDecimal",
+          "amountMinor",
+          "currency",
+          "activationDate",
+          "createdAt",
+          "nativeTransactionStatus"
+        ],
+        "additionalProperties": false,
+        "description": "Native transaction status is separate from investigation case state. Unknown native strings are retained without bank-side success/failure inference.",
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "nativeTransactionStatus": {
+                  "type": "null"
+                }
+              },
+              "required": [
+                "nativeTransactionStatus"
+              ]
+            },
+            "then": {
+              "required": [
+                "statusUnavailableReason"
+              ],
+              "properties": {
+                "statusUnavailableReason": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 500,
+                  "pattern": "^(?=.*\\S)[^\\u0000-\\u001f\\u007f-\\u009f]+$"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "ObpmQueueRecord": {
+        "type": "object",
+        "properties": {
+          "evidenceId": {
+            "$ref": "#/components/schemas/ObpmIdentifier"
+          },
+          "sourcePaymentId": {
+            "$ref": "#/components/schemas/ObpmIdentifier"
+          },
+          "queueReference": {
+            "$ref": "#/components/schemas/ObpmIdentifier"
+          },
+          "requestAttemptId": {
+            "$ref": "#/components/schemas/ObpmIdentifier"
+          },
+          "nativeQueueCode": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80,
+            "pattern": "^(?=.*\\S)[^\\u0000-\\u001f\\u007f-\\u009f]+$"
+          },
+          "nativeResponseStatus": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80,
+            "pattern": "^(?=.*\\S)[^\\u0000-\\u001f\\u007f-\\u009f]+$"
+          },
+          "enteredAt": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ObpmUtcTimestamp"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "exitedAt": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ObpmUtcTimestamp"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "isCurrentQueueRecord": {
+            "type": "boolean"
+          },
+          "observedAt": {
+            "$ref": "#/components/schemas/ObpmUtcTimestamp"
+          }
+        },
+        "required": [
+          "evidenceId",
+          "sourcePaymentId",
+          "queueReference",
+          "requestAttemptId",
+          "nativeQueueCode",
+          "nativeResponseStatus",
+          "isCurrentQueueRecord",
+          "observedAt"
+        ],
+        "additionalProperties": false,
+        "description": "Unknown native queue/response codes are allowed. sourcePaymentId must match payment; requestAttemptId must reference a supplied ECA attempt. queueReference is unique within the snapshot. If enteredAt exists: request<=entry<=observation. Exit requires entry and entry<=exit<=observation; exited records cannot be current. Observations lie between payment creation and extraction. Multiple current flags remain evidence ambiguity for the worker; import does not choose the newest."
+      },
+      "ObpmEcaAttempt": {
+        "type": "object",
+        "properties": {
+          "evidenceId": {
+            "$ref": "#/components/schemas/ObpmIdentifier"
+          },
+          "requestAttemptId": {
+            "$ref": "#/components/schemas/ObpmIdentifier"
+          },
+          "sourcePaymentId": {
+            "$ref": "#/components/schemas/ObpmIdentifier"
+          },
+          "requestType": {
+            "type": "string",
+            "const": "ECA"
+          },
+          "requestedAt": {
+            "$ref": "#/components/schemas/ObpmUtcTimestamp"
+          },
+          "timeoutRecordedAt": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ObpmUtcTimestamp"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "externalSystemFinalOutcome": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 80,
+                "pattern": "^(?=.*\\S)[^\\u0000-\\u001f\\u007f-\\u009f]+$"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "evidenceId",
+          "requestAttemptId",
+          "sourcePaymentId",
+          "requestType",
+          "requestedAt",
+          "externalSystemFinalOutcome"
+        ],
+        "additionalProperties": false,
+        "description": "requestAttemptId is unique. sourcePaymentId must match payment. creation<=requestedAt<=extraction; if present, request<=timeoutRecordedAt<=extraction. externalSystemFinalOutcome must be present, null when unknown; unknown native strings are retained and require evidence instead of inferred completion."
+      },
+      "ObpmCoverage": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "COMPLETE",
+              "PARTIAL",
+              "UNAVAILABLE",
+              "NOT_REQUESTED"
+            ]
+          },
+          "scope": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 500,
+                "pattern": "^(?=.*\\S)[^\\u0000-\\u001f\\u007f-\\u009f]+$"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "asOf": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ObpmUtcTimestamp"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "paginationComplete": {
+            "type": "boolean"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 500,
+                "pattern": "^(?=.*\\S)[^\\u0000-\\u001f\\u007f-\\u009f]+$"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "status"
+        ],
+        "additionalProperties": false,
+        "description": "Completeness is confined to the declared query scope. Non-null asOf cannot exceed extraction. COMPLETE requires nonblank scope, asOf and paginationComplete=true; other states require a nonblank reason. Optional paginationComplete must be a JSON boolean if supplied, never null.",
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "status": {
+                  "const": "COMPLETE"
+                }
+              },
+              "required": [
+                "status"
+              ]
+            },
+            "then": {
+              "required": [
+                "scope",
+                "asOf",
+                "paginationComplete"
+              ],
+              "properties": {
+                "scope": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 500,
+                  "pattern": "^(?=.*\\S)[^\\u0000-\\u001f\\u007f-\\u009f]+$"
+                },
+                "asOf": {
+                  "$ref": "#/components/schemas/ObpmUtcTimestamp"
+                },
+                "paginationComplete": {
+                  "const": true
+                }
+              }
+            },
+            "else": {
+              "required": [
+                "reason"
+              ],
+              "properties": {
+                "reason": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 500,
+                  "pattern": "^(?=.*\\S)[^\\u0000-\\u001f\\u007f-\\u009f]+$"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "ObpmUnsupportedCoverage": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ObpmCoverage"
+          },
+          {
+            "properties": {
+              "status": {
+                "enum": [
+                  "UNAVAILABLE",
+                  "NOT_REQUESTED"
+                ]
+              }
+            }
+          }
+        ],
+        "description": "Messages/accounting are unsupported in this milestone, so their availability must be UNAVAILABLE or NOT_REQUESTED; neither COMPLETE nor PARTIAL is accepted."
+      },
+      "ObpmSourceCoverage": {
+        "type": "object",
+        "properties": {
+          "queueRecords": {
+            "$ref": "#/components/schemas/ObpmCoverage"
+          },
+          "messages": {
+            "$ref": "#/components/schemas/ObpmUnsupportedCoverage"
+          },
+          "externalCoreResponses": {
+            "$ref": "#/components/schemas/ObpmCoverage"
+          },
+          "accountingEntries": {
+            "$ref": "#/components/schemas/ObpmUnsupportedCoverage"
+          }
+        },
+        "required": [
+          "queueRecords",
+          "messages",
+          "externalCoreResponses",
+          "accountingEntries"
+        ],
+        "additionalProperties": false
+      },
+      "ObpmEvidenceSnapshot": {
+        "type": "object",
+        "properties": {
+          "schemaVersion": {
+            "type": "string",
+            "const": "obpm-evidence-v1"
+          },
+          "dataClassification": {
+            "type": "string",
+            "const": "SYNTHETIC"
+          },
+          "snapshotId": {
+            "$ref": "#/components/schemas/ObpmIdentifier"
+          },
+          "mappingVersion": {
+            "$ref": "#/components/schemas/ObpmIdentifier"
+          },
+          "extractedAt": {
+            "$ref": "#/components/schemas/ObpmUtcTimestamp"
+          },
+          "source": {
+            "$ref": "#/components/schemas/ObpmSource"
+          },
+          "payment": {
+            "$ref": "#/components/schemas/ObpmPayment"
+          },
+          "queueRecords": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ObpmQueueRecord"
+            },
+            "maxItems": 100
+          },
+          "externalRequestAttempts": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ObpmEcaAttempt"
+            },
+            "maxItems": 100
+          },
+          "messages": {
+            "type": "array",
+            "items": {},
+            "maxItems": 0
+          },
+          "accountingEntries": {
+            "type": "array",
+            "items": {},
+            "maxItems": 0
+          },
+          "sourceCoverage": {
+            "$ref": "#/components/schemas/ObpmSourceCoverage"
+          }
+        },
+        "required": [
+          "schemaVersion",
+          "dataClassification",
+          "snapshotId",
+          "mappingVersion",
+          "extractedAt",
+          "source",
+          "payment",
+          "queueRecords",
+          "externalRequestAttempts",
+          "messages",
+          "accountingEntries",
+          "sourceCoverage"
+        ],
+        "additionalProperties": false,
+        "description": "Normalized original-synthetic outbound NEFT/14.7 evidence, not arbitrary Oracle JSON. Maximum HTTP body131072bytes. Unknown fields at every typed object are rejected; tenant is never accepted from input. evidenceId values are unique across queue/attempt groups. IDs, reference correlations and chronological inequalities are checked in Java. Zero records, incomplete sources, unmapped native states and ambiguous current flags may import; later worker assessment requests evidence. Nonempty messages/accountingEntries produce422 UNSUPPORTED_EVIDENCE. A snapshot may not create/query/mutate any Oracle connection.",
+        "x-max-request-bytes": 131072
+      },
+      "ObpmImportReceipt": {
+        "type": "object",
+        "properties": {
+          "importId": {
+            "type": "string"
+          },
+          "caseId": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "CREATED",
+              "UPDATED",
+              "UNCHANGED"
+            ]
+          },
+          "evidenceVersion": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "evidenceHash": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "caseVersion": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "importedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "importId",
+          "caseId",
+          "status",
+          "evidenceVersion",
+          "evidenceHash",
+          "caseVersion",
+          "importedAt"
+        ],
+        "additionalProperties": false,
+        "description": "Every accepted import, including UNCHANGED, gets a new receipt and audit event. evidenceHash is SHA256 of key-sorted normalized JSON; array order and all field values remain significant."
+      },
+      "ObpmImportList": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ObpmImportReceipt"
+            },
+            "maxItems": 50
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "additionalProperties": false
+      },
+      "ObpmSample": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "payload": {
+            "$ref": "#/components/schemas/ObpmEvidenceSnapshot"
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "description",
+          "payload"
+        ],
+        "additionalProperties": false
+      },
+      "ObpmSampleList": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ObpmSample"
+            },
+            "maxItems": 20
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "additionalProperties": false
+      },
+      "ObpmEvidenceVersion": {
+        "type": "object",
+        "properties": {
+          "evidenceVersion": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "evidenceHash": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "sourceSnapshotId": {
+            "$ref": "#/components/schemas/ObpmIdentifier"
+          },
+          "extractedAt": {
+            "$ref": "#/components/schemas/ObpmUtcTimestamp"
+          },
+          "importedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "evidenceVersion",
+          "evidenceHash",
+          "sourceSnapshotId",
+          "extractedAt",
+          "importedAt"
+        ],
+        "additionalProperties": false,
+        "description": "Immutable version metadata, returned newest version first."
+      },
+      "ObpmEvidenceVersionList": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ObpmEvidenceVersion"
+            }
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "additionalProperties": false
+      },
+      "ObpmExportedEvidenceVersion": {
+        "type": "object",
+        "properties": {
+          "evidenceVersion": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "evidenceHash": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "sourceSnapshotId": {
+            "$ref": "#/components/schemas/ObpmIdentifier"
+          },
+          "extractedAt": {
+            "$ref": "#/components/schemas/ObpmUtcTimestamp"
+          },
+          "importedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "evidence": {
+            "$ref": "#/components/schemas/ObpmEvidenceSnapshot"
+          }
+        },
+        "required": [
+          "evidenceVersion",
+          "evidenceHash",
+          "sourceSnapshotId",
+          "extractedAt",
+          "importedAt",
+          "evidence"
+        ],
+        "additionalProperties": false,
+        "description": "Export includes the original immutable normalized evidence for each version; the ordinary version-list endpoint returns metadata only."
+      },
+      "ObpmUnknownReconciliation": {
+        "type": "object",
+        "properties": {
+          "validMoney": {
+            "type": "boolean",
+            "const": true
+          },
+          "providerAvailable": {
+            "type": "boolean",
+            "const": false
+          },
+          "currency": {
+            "type": "string",
+            "const": "INR"
+          },
+          "calculatedBy": {
+            "type": "string",
+            "const": "java-api"
+          },
+          "scope": {
+            "type": "string",
+            "const": "OBPM_EVIDENCE"
+          },
+          "captureCount": {
+            "type": "null"
+          },
+          "captureMinor": {
+            "type": "null"
+          },
+          "refundMinor": {
+            "type": "null"
+          },
+          "ledgerNetMinor": {
+            "type": "null"
+          },
+          "providerPayoutMinor": {
+            "type": "null"
+          },
+          "discrepancyMinor": {
+            "type": "null"
+          }
+        },
+        "required": [
+          "validMoney",
+          "providerAvailable",
+          "currency",
+          "calculatedBy",
+          "scope",
+          "captureCount",
+          "captureMinor",
+          "refundMinor",
+          "ledgerNetMinor",
+          "providerPayoutMinor",
+          "discrepancyMinor"
+        ],
+        "additionalProperties": false,
+        "description": "Java validated the imported payment amount. Legacy capture/refund/net/payout totals are explicitly unavailable, not zero. This object cannot establish OBPM funds, block, posting, credit or settlement completion and never permits RESOLVE_CASE."
+      },
+      "ObpmInquiryRequest": {
+        "type": "object",
+        "properties": {
+          "paymentReference": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,99}$"
+          }
+        },
+        "required": [
+          "paymentReference"
+        ],
+        "additionalProperties": false
+      },
+      "ObpmInquiryConfiguration": {
+        "type": "object",
+        "required": [
+          "enabled",
+          "mode",
+          "referenceType",
+          "examples"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "enabled": {
+            "type": "boolean",
+            "description": "Configured enablement only; does not probe source reachability."
+          },
+          "mode": {
+            "const": "SYNTHETIC_MOCK"
+          },
+          "referenceType": {
+            "const": "PAYMENT_REFERENCE"
+          },
+          "examples": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "reference",
+                "label"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "reference": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 100,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,99}$"
+                },
+                "label": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "x-source-files": [
+    "services/api/src/main/java/dev/pratik/poi/ApiController.java",
+    "services/api/src/main/java/dev/pratik/poi/AuthController.java",
+    "services/api/src/main/java/dev/pratik/poi/Actor.java",
+    "services/api/src/main/java/dev/pratik/poi/SecurityConfig.java",
+    "services/api/src/main/java/dev/pratik/poi/CaseStore.java",
+    "services/api/src/main/java/dev/pratik/poi/InvestigationService.java",
+    "services/api/src/main/java/dev/pratik/poi/MoneyFacts.java",
+    "services/api/src/main/java/dev/pratik/poi/JsonSupport.java",
+    "services/api/src/main/java/dev/pratik/poi/ErrorHandler.java"
+  ]
+}

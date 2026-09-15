@@ -1,0 +1,44 @@
+{
+  "milestone": "Offline UAT export preparation and metadata review",
+  "date": "2026-09-13",
+  "validationScope": "Original local test fixtures, supplied schema metadata and generated draft artifacts",
+  "checkerUnitTests": {"passed": 29, "failed": 0},
+  "actualTemplateCheck": {
+    "structurallyValid": false,
+    "expected": true,
+    "issues": 5,
+    "reason": "Unfilled deployment/timezone/reference/export time and no transaction records"
+  },
+  "inMemoryOriginalFixtureAgainstActualWorkbookContract": {
+    "structurallyValid": true,
+    "sourceAmountPreservedExactly": true,
+    "readyForDashboard": false,
+    "workbookModified": false
+  },
+  "workbook": {
+    "sheets": 15,
+    "sourceSheets": 11,
+    "renderedSectionsReviewed": 41,
+    "savedFileChecks": "passed",
+    "exportProcessAnomaly": "Nonzero process exit after successful save; independent saved-file checks passed"
+  },
+  "sqlStaticReview": {
+    "transactionSelectWorksheets": 11,
+    "selectedNativeColumnsComparedWithSuppliedMetadata": 159,
+    "originalFcrPackageTypedCursorFunctions": 4,
+    "obpmDependencyQueryResultSets": 4
+  },
+  "suppliedObpmMetadata": {"columnRows": 2377, "objects": 83, "views": 63, "tables": 20},
+  "oracleCompilationPerformed": false,
+  "oracleQueriesExecutedByCodex": 0,
+  "uatTransactionRecordsReceived": false,
+  "modelCalls": 0,
+  "uatDashboardIntegrationImplemented": false,
+  "remaining": [
+    "OBPM dependency/key metadata and view/current-record semantics",
+    "Source timezone, exact maintenance release and payment reference correlation",
+    "Actual bounded UAT transaction extract and source-screen reconciliation",
+    "Original inquiry package Oracle compilation and API wrapper integration",
+    "Typed UAT mapper, evidence rules and separate application deployment profile"
+  ]
+}

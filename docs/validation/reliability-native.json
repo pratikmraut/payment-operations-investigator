@@ -1,0 +1,779 @@
+{
+  "status": "passed",
+  "timestamp": "2026-09-11T19:18:00.812228+00:00",
+  "baseUrl": "http://127.0.0.1:8088",
+  "python": "3.12.14",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "configuration": {
+    "clients": 4,
+    "readRequests": 40,
+    "httpTimeoutSeconds": 5,
+    "maxResponseBytes": 2000000,
+    "automaticRetries": 0
+  },
+  "loadDurationSeconds": 0.437,
+  "checks": [
+    "API process health, server-generated request ID and no-store",
+    "Anonymous tenant/role headers cannot authenticate a protected read",
+    "Public login rejects malformed JSON",
+    "Public login rejects blank username",
+    "Public login rejects oversized username",
+    "Public login rejects unknown role field",
+    "Public login rejects trailing JSON value",
+    "Invalid credentials are rejected",
+    "Cross-site login hint is rejected before authentication",
+    "Failed login controls leave the guest unauthenticated",
+    "All demo identities have scoped case lists and HttpOnly SameSite=Strict sessions",
+    "Cross-tenant case reads return 404 in both directions",
+    "Authenticated role/tenant remain server-owned",
+    "Missing/wrong CSRF token cannot log out an authenticated session",
+    "40 authenticated reads passed at up to 4 concurrent clients",
+    "Valid logout invalidates all harness sessions"
+  ],
+  "checkCount": 16,
+  "durationSeconds": 1.763,
+  "httpRequestsObserved": 73,
+  "readRequestsCompleted": 40,
+  "uniqueRequestIds": 73,
+  "readLatency": {
+    "samples": 40,
+    "minMs": 5.555,
+    "medianMs": 17.481,
+    "p95Ms": 185.708,
+    "maxMs": 212.847,
+    "percentileMethod": "nearest rank; elapsed HTTP response read, no warm-up exclusion"
+  },
+  "perReadPath": {
+    "/api/cases": {
+      "samples": 8,
+      "minMs": 20.18,
+      "medianMs": 29.36,
+      "p95Ms": 92.501,
+      "maxMs": 92.501,
+      "percentileMethod": "nearest rank; elapsed HTTP response read, no warm-up exclusion"
+    },
+    "/api/cases/CASE-1001": {
+      "samples": 6,
+      "minMs": 6.478,
+      "medianMs": 8.987,
+      "p95Ms": 24.015,
+      "maxMs": 24.015,
+      "percentileMethod": "nearest rank; elapsed HTTP response read, no warm-up exclusion"
+    },
+    "/api/cases/CASE-1001/audit": {
+      "samples": 6,
+      "minMs": 5.555,
+      "medianMs": 8.637,
+      "p95Ms": 13.829,
+      "maxMs": 13.829,
+      "percentileMethod": "nearest rank; elapsed HTTP response read, no warm-up exclusion"
+    },
+    "/api/cases/CASE-1001/investigations": {
+      "samples": 6,
+      "minMs": 5.809,
+      "medianMs": 11.225,
+      "p95Ms": 96.699,
+      "maxMs": 96.699,
+      "percentileMethod": "nearest rank; elapsed HTTP response read, no warm-up exclusion"
+    },
+    "/api/cases/CASE-1005": {
+      "samples": 2,
+      "minMs": 11.828,
+      "medianMs": 14.403,
+      "p95Ms": 16.979,
+      "maxMs": 16.979,
+      "percentileMethod": "nearest rank; elapsed HTTP response read, no warm-up exclusion"
+    },
+    "/api/cases/CASE-1005/audit": {
+      "samples": 2,
+      "minMs": 26.672,
+      "medianMs": 106.19,
+      "p95Ms": 185.708,
+      "maxMs": 185.708,
+      "percentileMethod": "nearest rank; elapsed HTTP response read, no warm-up exclusion"
+    },
+    "/api/cases/CASE-1005/investigations": {
+      "samples": 2,
+      "minMs": 7.093,
+      "medianMs": 8.846,
+      "p95Ms": 10.6,
+      "maxMs": 10.6,
+      "percentileMethod": "nearest rank; elapsed HTTP response read, no warm-up exclusion"
+    },
+    "/api/dashboard": {
+      "samples": 8,
+      "minMs": 17.914,
+      "medianMs": 57.918,
+      "p95Ms": 212.847,
+      "maxMs": 212.847,
+      "percentileMethod": "nearest rank; elapsed HTTP response read, no warm-up exclusion"
+    }
+  },
+  "cleanupErrors": [],
+  "requests": [
+    {
+      "client": "anonymous",
+      "phase": "controls",
+      "method": "GET",
+      "path": "/api/health",
+      "status": 200,
+      "durationMs": 22.119,
+      "requestId": "21082617-7857-4d06-b030-4a522a107ab5"
+    },
+    {
+      "client": "anonymous",
+      "phase": "controls",
+      "method": "GET",
+      "path": "/api/cases",
+      "status": 401,
+      "durationMs": 4.731,
+      "requestId": "ef2103c6-ffa3-4f5e-b4a6-b69f712355d7"
+    },
+    {
+      "client": "anonymous",
+      "phase": "controls",
+      "method": "POST",
+      "path": "/api/auth/login",
+      "status": 400,
+      "durationMs": 18.663,
+      "requestId": "233ed380-8beb-4198-8b67-589d02b0179f"
+    },
+    {
+      "client": "anonymous",
+      "phase": "controls",
+      "method": "POST",
+      "path": "/api/auth/login",
+      "status": 400,
+      "durationMs": 85.037,
+      "requestId": "7d0d8f86-f63b-44b7-b900-282ea508bb40"
+    },
+    {
+      "client": "anonymous",
+      "phase": "controls",
+      "method": "POST",
+      "path": "/api/auth/login",
+      "status": 400,
+      "durationMs": 12.96,
+      "requestId": "dd5b3dde-4736-4b7b-8e06-fb1c4b7e453b"
+    },
+    {
+      "client": "anonymous",
+      "phase": "controls",
+      "method": "POST",
+      "path": "/api/auth/login",
+      "status": 400,
+      "durationMs": 8.48,
+      "requestId": "6b1e8bed-b761-4735-8fe1-dbd575ddfb25"
+    },
+    {
+      "client": "anonymous",
+      "phase": "controls",
+      "method": "POST",
+      "path": "/api/auth/login",
+      "status": 400,
+      "durationMs": 6.302,
+      "requestId": "de6b1077-84b7-4b74-905c-09bc85c0e4f6"
+    },
+    {
+      "client": "anonymous",
+      "phase": "controls",
+      "method": "POST",
+      "path": "/api/auth/login",
+      "status": 401,
+      "durationMs": 108.798,
+      "requestId": "92609c9a-79f5-43f8-ad66-0cae68910673"
+    },
+    {
+      "client": "anonymous",
+      "phase": "controls",
+      "method": "POST",
+      "path": "/api/auth/login",
+      "status": 403,
+      "durationMs": 8.471,
+      "requestId": "97a5a52f-cbdc-4901-93e5-65485089c533"
+    },
+    {
+      "client": "anonymous",
+      "phase": "controls",
+      "method": "GET",
+      "path": "/api/auth/me",
+      "status": 401,
+      "durationMs": 3.647,
+      "requestId": "51eb669f-3d2b-4fdb-babb-0c5f7d3769f2"
+    },
+    {
+      "client": "analyst",
+      "phase": "controls",
+      "method": "POST",
+      "path": "/api/auth/login",
+      "status": 200,
+      "durationMs": 94.39,
+      "requestId": "bd6773b3-bb13-4007-8216-2df8af5c1c65"
+    },
+    {
+      "client": "analyst",
+      "phase": "controls",
+      "method": "GET",
+      "path": "/api/cases",
+      "status": 200,
+      "durationMs": 58.314,
+      "requestId": "30b4b964-042b-40cd-afda-0c38b05dbf0c"
+    },
+    {
+      "client": "viewer",
+      "phase": "controls",
+      "method": "POST",
+      "path": "/api/auth/login",
+      "status": 200,
+      "durationMs": 86.561,
+      "requestId": "1aa27b8c-dcc7-46d7-9a42-ca977ddb77a1"
+    },
+    {
+      "client": "viewer",
+      "phase": "controls",
+      "method": "GET",
+      "path": "/api/cases",
+      "status": 200,
+      "durationMs": 44.941,
+      "requestId": "ddad0fe0-3a2f-47f7-a5c9-71abd3e3d8bd"
+    },
+    {
+      "client": "reviewer",
+      "phase": "controls",
+      "method": "POST",
+      "path": "/api/auth/login",
+      "status": 200,
+      "durationMs": 86.191,
+      "requestId": "cb7b9870-e161-4d08-8d0c-8725795ba8ff"
+    },
+    {
+      "client": "reviewer",
+      "phase": "controls",
+      "method": "GET",
+      "path": "/api/cases",
+      "status": 200,
+      "durationMs": 18.185,
+      "requestId": "960b73aa-5d03-4f4c-af96-df57f4e2bad2"
+    },
+    {
+      "client": "other",
+      "phase": "controls",
+      "method": "POST",
+      "path": "/api/auth/login",
+      "status": 200,
+      "durationMs": 86.968,
+      "requestId": "94d49453-3ee1-4438-ab65-95255911f9a5"
+    },
+    {
+      "client": "other",
+      "phase": "controls",
+      "method": "GET",
+      "path": "/api/cases",
+      "status": 200,
+      "durationMs": 10.301,
+      "requestId": "9b4a0aa6-a6cc-435e-aef6-5a9c8217a904"
+    },
+    {
+      "client": "other",
+      "phase": "controls",
+      "method": "GET",
+      "path": "/api/cases/CASE-1001",
+      "status": 404,
+      "durationMs": 8.997,
+      "requestId": "7334e71e-9097-4f30-a221-7a5f1c81ab07"
+    },
+    {
+      "client": "analyst",
+      "phase": "controls",
+      "method": "GET",
+      "path": "/api/cases/CASE-1005",
+      "status": 404,
+      "durationMs": 5.858,
+      "requestId": "a4cc7850-b5c4-4cc0-8d12-1e6d0e0b7599"
+    },
+    {
+      "client": "viewer",
+      "phase": "controls",
+      "method": "GET",
+      "path": "/api/auth/me",
+      "status": 200,
+      "durationMs": 4.72,
+      "requestId": "580f5f45-125b-45a3-93ba-fdd7c0cb8ebe"
+    },
+    {
+      "client": "analyst",
+      "phase": "controls",
+      "method": "POST",
+      "path": "/api/auth/logout",
+      "status": 403,
+      "durationMs": 5.632,
+      "requestId": "d6706404-7f67-4872-8323-7fe9029eab09"
+    },
+    {
+      "client": "analyst",
+      "phase": "controls",
+      "method": "GET",
+      "path": "/api/auth/me",
+      "status": 200,
+      "durationMs": 5.655,
+      "requestId": "27bfeede-7a49-4b59-96ea-aeccd0f575c3"
+    },
+    {
+      "client": "analyst",
+      "phase": "controls",
+      "method": "POST",
+      "path": "/api/auth/logout",
+      "status": 403,
+      "durationMs": 3.696,
+      "requestId": "5f1a5764-7a4d-41de-9280-1de85ba98730"
+    },
+    {
+      "client": "analyst",
+      "phase": "controls",
+      "method": "GET",
+      "path": "/api/auth/me",
+      "status": 200,
+      "durationMs": 5.01,
+      "requestId": "21b67b6c-f529-4872-9c02-d3bcb36eccb7"
+    },
+    {
+      "client": "reviewer",
+      "phase": "load",
+      "method": "GET",
+      "path": "/api/cases/CASE-1001",
+      "status": 200,
+      "durationMs": 10.283,
+      "requestId": "58821eb2-759e-4faa-802b-319be883fb2a"
+    },
+    {
+      "client": "other",
+      "phase": "load",
+      "method": "GET",
+      "path": "/api/cases/CASE-1005/investigations",
+      "status": 200,
+      "durationMs": 10.6,
+      "requestId": "fb88bacf-1d23-4dfb-a8d5-278e282429f7"
+    },
+    {
+      "client": "analyst",
+      "phase": "load",
+      "method": "GET",
+      "path": "/api/cases",
+      "status": 200,
+      "durationMs": 29.117,
+      "requestId": "5d2dbe2c-7e5b-4c66-9edd-99d18c2bf605"
+    },
+    {
+      "client": "reviewer",
+      "phase": "load",
+      "method": "GET",
+      "path": "/api/cases/CASE-1001/investigations",
+      "status": 200,
+      "durationMs": 96.699,
+      "requestId": "d0c96b5b-8f16-48e8-87a4-e12e5432bb18"
+    },
+    {
+      "client": "reviewer",
+      "phase": "load",
+      "method": "GET",
+      "path": "/api/cases/CASE-1001/audit",
+      "status": 200,
+      "durationMs": 6.318,
+      "requestId": "9ee7b324-6ab1-4b20-8158-f2e84ce55cd8"
+    },
+    {
+      "client": "reviewer",
+      "phase": "load",
+      "method": "GET",
+      "path": "/api/cases",
+      "status": 200,
+      "durationMs": 29.603,
+      "requestId": "42b162ca-c6ce-490f-8013-ce5922143c2f"
+    },
+    {
+      "client": "other",
+      "phase": "load",
+      "method": "GET",
+      "path": "/api/cases/CASE-1005/audit",
+      "status": 200,
+      "durationMs": 185.708,
+      "requestId": "b8bc45e8-f9ab-44d8-9f6d-7aa8ce7059ae"
+    },
+    {
+      "client": "viewer",
+      "phase": "load",
+      "method": "GET",
+      "path": "/api/dashboard",
+      "status": 200,
+      "durationMs": 212.847,
+      "requestId": "90648055-0b26-4c62-aa44-3fc390d44de9"
+    },
+    {
+      "client": "analyst",
+      "phase": "load",
+      "method": "GET",
+      "path": "/api/dashboard",
+      "status": 200,
+      "durationMs": 188.393,
+      "requestId": "b0369b1c-fc8b-499f-b820-6c4ce846e174"
+    },
+    {
+      "client": "viewer",
+      "phase": "load",
+      "method": "GET",
+      "path": "/api/cases/CASE-1001",
+      "status": 200,
+      "durationMs": 6.478,
+      "requestId": "9ff25c40-94ed-4fc4-82c0-21de02c4059e"
+    },
+    {
+      "client": "other",
+      "phase": "load",
+      "method": "GET",
+      "path": "/api/cases",
+      "status": 200,
+      "durationMs": 20.18,
+      "requestId": "3ed44166-5411-42af-80b6-cd8596454650"
+    },
+    {
+      "client": "analyst",
+      "phase": "load",
+      "method": "GET",
+      "path": "/api/cases/CASE-1001",
+      "status": 200,
+      "durationMs": 6.587,
+      "requestId": "ade6bcde-31ca-460e-bcf6-d310898dc62a"
+    },
+    {
+      "client": "viewer",
+      "phase": "load",
+      "method": "GET",
+      "path": "/api/cases/CASE-1001/investigations",
+      "status": 200,
+      "durationMs": 9.269,
+      "requestId": "8a63df79-6ed6-49a3-acce-01c20d4eeea2"
+    },
+    {
+      "client": "analyst",
+      "phase": "load",
+      "method": "GET",
+      "path": "/api/cases/CASE-1001/investigations",
+      "status": 200,
+      "durationMs": 5.809,
+      "requestId": "10cecd58-e78d-4a01-a574-eba0dcab90d9"
+    },
+    {
+      "client": "viewer",
+      "phase": "load",
+      "method": "GET",
+      "path": "/api/cases/CASE-1001/audit",
+      "status": 200,
+      "durationMs": 5.555,
+      "requestId": "56a23129-6155-41b1-b289-e522eea115d6"
+    },
+    {
+      "client": "reviewer",
+      "phase": "load",
+      "method": "GET",
+      "path": "/api/dashboard",
+      "status": 200,
+      "durationMs": 89.942,
+      "requestId": "28d155a9-ba1f-4201-bafd-466c43431f55"
+    },
+    {
+      "client": "other",
+      "phase": "load",
+      "method": "GET",
+      "path": "/api/dashboard",
+      "status": 200,
+      "durationMs": 17.914,
+      "requestId": "02894f44-3478-4f6a-8aff-612ca18fe5e2"
+    },
+    {
+      "client": "reviewer",
+      "phase": "load",
+      "method": "GET",
+      "path": "/api/cases/CASE-1001",
+      "status": 200,
+      "durationMs": 7.691,
+      "requestId": "9050087e-fb28-497e-a003-3f0a6f83d6fa"
+    },
+    {
+      "client": "analyst",
+      "phase": "load",
+      "method": "GET",
+      "path": "/api/cases/CASE-1001/audit",
+      "status": 200,
+      "durationMs": 13.016,
+      "requestId": "67981ee8-da4c-478f-805d-8835c8e2f84b"
+    },
+    {
+      "client": "other",
+      "phase": "load",
+      "method": "GET",
+      "path": "/api/cases/CASE-1005",
+      "status": 200,
+      "durationMs": 11.828,
+      "requestId": "77376ee7-4601-4a47-8f90-ec0ede29aa9a"
+    },
+    {
+      "client": "reviewer",
+      "phase": "load",
+      "method": "GET",
+      "path": "/api/cases/CASE-1001/investigations",
+      "status": 200,
+      "durationMs": 13.181,
+      "requestId": "b3b5b6d1-485b-4b23-aa8f-cbcadb03085b"
+    },
+    {
+      "client": "other",
+      "phase": "load",
+      "method": "GET",
+      "path": "/api/cases/CASE-1005/investigations",
+      "status": 200,
+      "durationMs": 7.093,
+      "requestId": "ffbf2756-7782-4b22-b5ba-6680fab4cd9e"
+    },
+    {
+      "client": "reviewer",
+      "phase": "load",
+      "method": "GET",
+      "path": "/api/cases/CASE-1001/audit",
+      "status": 200,
+      "durationMs": 13.829,
+      "requestId": "e0eb73c2-5171-415f-aabd-b854ffde41ca"
+    },
+    {
+      "client": "other",
+      "phase": "load",
+      "method": "GET",
+      "path": "/api/cases/CASE-1005/audit",
+      "status": 200,
+      "durationMs": 26.672,
+      "requestId": "c909589c-3dca-48bf-a272-21b08f37db2f"
+    },
+    {
+      "client": "other",
+      "phase": "load",
+      "method": "GET",
+      "path": "/api/cases",
+      "status": 200,
+      "durationMs": 23.122,
+      "requestId": "8290e4e3-5f2c-4e62-96b2-43b90fe07ec4"
+    },
+    {
+      "client": "analyst",
+      "phase": "load",
+      "method": "GET",
+      "path": "/api/cases",
+      "status": 200,
+      "durationMs": 74.227,
+      "requestId": "447c49ac-17b5-4503-b26b-7b85d6f391be"
+    },
+    {
+      "client": "reviewer",
+      "phase": "load",
+      "method": "GET",
+      "path": "/api/cases",
+      "status": 200,
+      "durationMs": 50.611,
+      "requestId": "ead9d691-1977-427e-85e5-540d31fdd887"
+    },
+    {
+      "client": "viewer",
+      "phase": "load",
+      "method": "GET",
+      "path": "/api/cases",
+      "status": 200,
+      "durationMs": 92.501,
+      "requestId": "341addb1-4a7c-4bde-ab51-2b338467cb6a"
+    },
+    {
+      "client": "other",
+      "phase": "load",
+      "method": "GET",
+      "path": "/api/dashboard",
+      "status": 200,
+      "durationMs": 33.975,
+      "requestId": "48798a77-d0fe-4a2d-bf3a-9d9c40403e4d"
+    },
+    {
+      "client": "other",
+      "phase": "load",
+      "method": "GET",
+      "path": "/api/cases/CASE-1005",
+      "status": 200,
+      "durationMs": 16.979,
+      "requestId": "17e82ff7-28cd-4c8f-8aca-487a35d4906e"
+    },
+    {
+      "client": "reviewer",
+      "phase": "load",
+      "method": "GET",
+      "path": "/api/dashboard",
+      "status": 200,
+      "durationMs": 47.129,
+      "requestId": "e80de67e-eb4e-4ee3-b969-1d3db820e318"
+    },
+    {
+      "client": "viewer",
+      "phase": "load",
+      "method": "GET",
+      "path": "/api/dashboard",
+      "status": 200,
+      "durationMs": 41.684,
+      "requestId": "a37c32da-52be-4b6e-a3b4-363eba670b03"
+    },
+    {
+      "client": "viewer",
+      "phase": "load",
+      "method": "GET",
+      "path": "/api/cases/CASE-1001",
+      "status": 200,
+      "durationMs": 10.502,
+      "requestId": "f77ce456-418e-47ff-9207-7618ae971789"
+    },
+    {
+      "client": "analyst",
+      "phase": "load",
+      "method": "GET",
+      "path": "/api/dashboard",
+      "status": 200,
+      "durationMs": 68.707,
+      "requestId": "ee0c5792-0ee6-4ec3-97ba-a6bd8364e061"
+    },
+    {
+      "client": "viewer",
+      "phase": "load",
+      "method": "GET",
+      "path": "/api/cases/CASE-1001/investigations",
+      "status": 200,
+      "durationMs": 17.048,
+      "requestId": "fffa712e-1d26-4f20-b326-d05224c5de0c"
+    },
+    {
+      "client": "viewer",
+      "phase": "load",
+      "method": "GET",
+      "path": "/api/cases/CASE-1001/audit",
+      "status": 200,
+      "durationMs": 9.325,
+      "requestId": "ac7a63d0-3d9a-48f3-9179-cfc69d81f880"
+    },
+    {
+      "client": "analyst",
+      "phase": "load",
+      "method": "GET",
+      "path": "/api/cases/CASE-1001",
+      "status": 200,
+      "durationMs": 24.015,
+      "requestId": "ec909fa9-cd72-43a4-a716-abd2df2f3e9f"
+    },
+    {
+      "client": "analyst",
+      "phase": "load",
+      "method": "GET",
+      "path": "/api/cases/CASE-1001/investigations",
+      "status": 200,
+      "durationMs": 8.439,
+      "requestId": "95ab4b37-7d0e-4cbc-acda-cb1bf7fb6419"
+    },
+    {
+      "client": "analyst",
+      "phase": "load",
+      "method": "GET",
+      "path": "/api/cases/CASE-1001/audit",
+      "status": 200,
+      "durationMs": 7.95,
+      "requestId": "8b8c2aee-3ba8-48e7-af85-4716c26093c5"
+    },
+    {
+      "client": "viewer",
+      "phase": "load",
+      "method": "GET",
+      "path": "/api/cases",
+      "status": 200,
+      "durationMs": 21.552,
+      "requestId": "959ddf3d-efe2-4953-9c75-5c5f78088c87"
+    },
+    {
+      "client": "analyst",
+      "phase": "cleanup",
+      "method": "POST",
+      "path": "/api/auth/logout",
+      "status": 200,
+      "durationMs": 6.325,
+      "requestId": "ada4997c-9131-42e7-8bd5-7e4e390bbee7"
+    },
+    {
+      "client": "analyst",
+      "phase": "cleanup",
+      "method": "GET",
+      "path": "/api/auth/me",
+      "status": 401,
+      "durationMs": 4.163,
+      "requestId": "701b94ad-5599-40db-9100-9de84a311c93"
+    },
+    {
+      "client": "viewer",
+      "phase": "cleanup",
+      "method": "POST",
+      "path": "/api/auth/logout",
+      "status": 200,
+      "durationMs": 9.14,
+      "requestId": "d5eba6e8-eadc-4b14-a1df-a125c1316ec7"
+    },
+    {
+      "client": "viewer",
+      "phase": "cleanup",
+      "method": "GET",
+      "path": "/api/auth/me",
+      "status": 401,
+      "durationMs": 3.435,
+      "requestId": "86559804-ab1a-40e3-a811-2fdd1056c8d7"
+    },
+    {
+      "client": "reviewer",
+      "phase": "cleanup",
+      "method": "POST",
+      "path": "/api/auth/logout",
+      "status": 200,
+      "durationMs": 4.173,
+      "requestId": "a5323295-82ac-4c3b-ad0a-07b13eaba0ff"
+    },
+    {
+      "client": "reviewer",
+      "phase": "cleanup",
+      "method": "GET",
+      "path": "/api/auth/me",
+      "status": 401,
+      "durationMs": 2.978,
+      "requestId": "94ddfabf-9873-4d1e-b27c-4cf771c6b9ed"
+    },
+    {
+      "client": "other",
+      "phase": "cleanup",
+      "method": "POST",
+      "path": "/api/auth/logout",
+      "status": 200,
+      "durationMs": 8.702,
+      "requestId": "eb782f26-0beb-4c2e-bce9-7d57e8642975"
+    },
+    {
+      "client": "other",
+      "phase": "cleanup",
+      "method": "GET",
+      "path": "/api/auth/me",
+      "status": 401,
+      "durationMs": 3.638,
+      "requestId": "95b1e0b3-506e-4602-b541-e4446c627457"
+    }
+  ],
+  "limitations": [
+    "Small local read sample, not a capacity, scalability, percentile-SLO or production-security benchmark.",
+    "Only login/logout mutations. No investigation, decision, worker, model, outage or restart requests.",
+    "Control/cleanup requests are additional to the bounded 40-read workload and excluded from read latency.",
+    "Session inactivity expiry, TLS, distributed replicas, durable recovery and sustained overload are not tested.",
+    "HTTP operation timeouts are socket limits, not automatic cancellation of server work."
+  ]
+}

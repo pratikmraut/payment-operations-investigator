@@ -1,0 +1,898 @@
+{
+  "timestamp": "2026-09-11T19:50:04.395457+00:00",
+  "split": "test",
+  "mode": "replay",
+  "sampleSize": 30,
+  "datasetManifestSha256": "b467da9818fd0813665e06301b7ea5940b61d94c54ce04e3d34b1dc31223e140",
+  "rates": {
+    "outcomeCorrect": 1.0,
+    "actionCorrect": 1.0,
+    "relevantCitationRetrieved": 1.0,
+    "abstentionCorrect": 1.0,
+    "evidenceReferencesValid": 1.0
+  },
+  "latencyMs": {
+    "p50": 51.688,
+    "p95": 116.859
+  },
+  "failures": 0,
+  "modelCalls": 0,
+  "limitations": [
+    "Template variants share scenario structure; scores do not establish real-world generalization.",
+    "Identifier validation checks citation existence, not semantic entailment of generated prose.",
+    "This worker benchmark bypasses Java; HTTP acceptance separately validates authentication, Java reconciliation and review.",
+    "Replay is a deterministic evidence baseline, not a language-model result."
+  ],
+  "rows": [
+    {
+      "caseId": "CASE-1006",
+      "expectedOutcome": "TIMEOUT_AFTER_SUCCESS",
+      "expectedAction": "RESOLVE_CASE",
+      "outcome": "TIMEOUT_AFTER_SUCCESS",
+      "action": "RESOLVE_CASE",
+      "outcomeCorrect": true,
+      "actionCorrect": true,
+      "relevantCitationRetrieved": true,
+      "abstentionCorrect": true,
+      "metrics": {
+        "durationMs": 29.967,
+        "retrievalMs": 6.099,
+        "toolCount": 4,
+        "modelCalls": 0,
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "retrievalMode": "lexical",
+        "model": "deterministic-replay"
+      },
+      "warnings": [
+        "Synthetic data only; proposals change case disposition, never payment or ledger balances.",
+        "Deterministic replay mode; actual LangGraph and LangChain tools executed, but no LLM inference was used.",
+        "Lexical retrieval baseline; semantic embeddings are not enabled."
+      ],
+      "error": null,
+      "evidenceReferencesValid": true,
+      "wallMs": 208.527
+    },
+    {
+      "caseId": "CASE-1007",
+      "expectedOutcome": "TIMEOUT_AFTER_SUCCESS",
+      "expectedAction": "RESOLVE_CASE",
+      "outcome": "TIMEOUT_AFTER_SUCCESS",
+      "action": "RESOLVE_CASE",
+      "outcomeCorrect": true,
+      "actionCorrect": true,
+      "relevantCitationRetrieved": true,
+      "abstentionCorrect": true,
+      "metrics": {
+        "durationMs": 22.957,
+        "retrievalMs": 16.259,
+        "toolCount": 4,
+        "modelCalls": 0,
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "retrievalMode": "lexical",
+        "model": "deterministic-replay"
+      },
+      "warnings": [
+        "Synthetic data only; proposals change case disposition, never payment or ledger balances.",
+        "Deterministic replay mode; actual LangGraph and LangChain tools executed, but no LLM inference was used.",
+        "Lexical retrieval baseline; semantic embeddings are not enabled."
+      ],
+      "error": null,
+      "evidenceReferencesValid": true,
+      "wallMs": 116.859
+    },
+    {
+      "caseId": "CASE-1008",
+      "expectedOutcome": "TIMEOUT_AFTER_SUCCESS",
+      "expectedAction": "RESOLVE_CASE",
+      "outcome": "TIMEOUT_AFTER_SUCCESS",
+      "action": "RESOLVE_CASE",
+      "outcomeCorrect": true,
+      "actionCorrect": true,
+      "relevantCitationRetrieved": true,
+      "abstentionCorrect": true,
+      "metrics": {
+        "durationMs": 21.201,
+        "retrievalMs": 10.758,
+        "toolCount": 4,
+        "modelCalls": 0,
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "retrievalMode": "lexical",
+        "model": "deterministic-replay"
+      },
+      "warnings": [
+        "Synthetic data only; proposals change case disposition, never payment or ledger balances.",
+        "Deterministic replay mode; actual LangGraph and LangChain tools executed, but no LLM inference was used.",
+        "Lexical retrieval baseline; semantic embeddings are not enabled."
+      ],
+      "error": null,
+      "evidenceReferencesValid": true,
+      "wallMs": 64.284
+    },
+    {
+      "caseId": "CASE-1009",
+      "expectedOutcome": "TIMEOUT_AFTER_SUCCESS",
+      "expectedAction": "RESOLVE_CASE",
+      "outcome": "TIMEOUT_AFTER_SUCCESS",
+      "action": "RESOLVE_CASE",
+      "outcomeCorrect": true,
+      "actionCorrect": true,
+      "relevantCitationRetrieved": true,
+      "abstentionCorrect": true,
+      "metrics": {
+        "durationMs": 12.444,
+        "retrievalMs": 4.332,
+        "toolCount": 4,
+        "modelCalls": 0,
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "retrievalMode": "lexical",
+        "model": "deterministic-replay"
+      },
+      "warnings": [
+        "Synthetic data only; proposals change case disposition, never payment or ledger balances.",
+        "Deterministic replay mode; actual LangGraph and LangChain tools executed, but no LLM inference was used.",
+        "Lexical retrieval baseline; semantic embeddings are not enabled."
+      ],
+      "error": null,
+      "evidenceReferencesValid": true,
+      "wallMs": 99.774
+    },
+    {
+      "caseId": "CASE-1010",
+      "expectedOutcome": "TIMEOUT_AFTER_SUCCESS",
+      "expectedAction": "RESOLVE_CASE",
+      "outcome": "TIMEOUT_AFTER_SUCCESS",
+      "action": "RESOLVE_CASE",
+      "outcomeCorrect": true,
+      "actionCorrect": true,
+      "relevantCitationRetrieved": true,
+      "abstentionCorrect": true,
+      "metrics": {
+        "durationMs": 11.398,
+        "retrievalMs": 4.353,
+        "toolCount": 4,
+        "modelCalls": 0,
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "retrievalMode": "lexical",
+        "model": "deterministic-replay"
+      },
+      "warnings": [
+        "Synthetic data only; proposals change case disposition, never payment or ledger balances.",
+        "Deterministic replay mode; actual LangGraph and LangChain tools executed, but no LLM inference was used.",
+        "Lexical retrieval baseline; semantic embeddings are not enabled."
+      ],
+      "error": null,
+      "evidenceReferencesValid": true,
+      "wallMs": 52.328
+    },
+    {
+      "caseId": "CASE-1016",
+      "expectedOutcome": "DUPLICATE_WEBHOOK",
+      "expectedAction": "RESOLVE_CASE",
+      "outcome": "DUPLICATE_WEBHOOK",
+      "action": "RESOLVE_CASE",
+      "outcomeCorrect": true,
+      "actionCorrect": true,
+      "relevantCitationRetrieved": true,
+      "abstentionCorrect": true,
+      "metrics": {
+        "durationMs": 10.671,
+        "retrievalMs": 3.543,
+        "toolCount": 4,
+        "modelCalls": 0,
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "retrievalMode": "lexical",
+        "model": "deterministic-replay"
+      },
+      "warnings": [
+        "Synthetic data only; proposals change case disposition, never payment or ledger balances.",
+        "Deterministic replay mode; actual LangGraph and LangChain tools executed, but no LLM inference was used.",
+        "Lexical retrieval baseline; semantic embeddings are not enabled."
+      ],
+      "error": null,
+      "evidenceReferencesValid": true,
+      "wallMs": 47.591
+    },
+    {
+      "caseId": "CASE-1017",
+      "expectedOutcome": "DUPLICATE_WEBHOOK",
+      "expectedAction": "RESOLVE_CASE",
+      "outcome": "DUPLICATE_WEBHOOK",
+      "action": "RESOLVE_CASE",
+      "outcomeCorrect": true,
+      "actionCorrect": true,
+      "relevantCitationRetrieved": true,
+      "abstentionCorrect": true,
+      "metrics": {
+        "durationMs": 11.008,
+        "retrievalMs": 3.414,
+        "toolCount": 4,
+        "modelCalls": 0,
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "retrievalMode": "lexical",
+        "model": "deterministic-replay"
+      },
+      "warnings": [
+        "Synthetic data only; proposals change case disposition, never payment or ledger balances.",
+        "Deterministic replay mode; actual LangGraph and LangChain tools executed, but no LLM inference was used.",
+        "Lexical retrieval baseline; semantic embeddings are not enabled."
+      ],
+      "error": null,
+      "evidenceReferencesValid": true,
+      "wallMs": 47.89
+    },
+    {
+      "caseId": "CASE-1018",
+      "expectedOutcome": "DUPLICATE_WEBHOOK",
+      "expectedAction": "RESOLVE_CASE",
+      "outcome": "DUPLICATE_WEBHOOK",
+      "action": "RESOLVE_CASE",
+      "outcomeCorrect": true,
+      "actionCorrect": true,
+      "relevantCitationRetrieved": true,
+      "abstentionCorrect": true,
+      "metrics": {
+        "durationMs": 11.399,
+        "retrievalMs": 4.405,
+        "toolCount": 4,
+        "modelCalls": 0,
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "retrievalMode": "lexical",
+        "model": "deterministic-replay"
+      },
+      "warnings": [
+        "Synthetic data only; proposals change case disposition, never payment or ledger balances.",
+        "Deterministic replay mode; actual LangGraph and LangChain tools executed, but no LLM inference was used.",
+        "Lexical retrieval baseline; semantic embeddings are not enabled."
+      ],
+      "error": null,
+      "evidenceReferencesValid": true,
+      "wallMs": 48.273
+    },
+    {
+      "caseId": "CASE-1019",
+      "expectedOutcome": "DUPLICATE_WEBHOOK",
+      "expectedAction": "RESOLVE_CASE",
+      "outcome": "DUPLICATE_WEBHOOK",
+      "action": "RESOLVE_CASE",
+      "outcomeCorrect": true,
+      "actionCorrect": true,
+      "relevantCitationRetrieved": true,
+      "abstentionCorrect": true,
+      "metrics": {
+        "durationMs": 13.103,
+        "retrievalMs": 5.873,
+        "toolCount": 4,
+        "modelCalls": 0,
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "retrievalMode": "lexical",
+        "model": "deterministic-replay"
+      },
+      "warnings": [
+        "Synthetic data only; proposals change case disposition, never payment or ledger balances.",
+        "Deterministic replay mode; actual LangGraph and LangChain tools executed, but no LLM inference was used.",
+        "Lexical retrieval baseline; semantic embeddings are not enabled."
+      ],
+      "error": null,
+      "evidenceReferencesValid": true,
+      "wallMs": 49.11
+    },
+    {
+      "caseId": "CASE-1020",
+      "expectedOutcome": "DUPLICATE_WEBHOOK",
+      "expectedAction": "RESOLVE_CASE",
+      "outcome": "DUPLICATE_WEBHOOK",
+      "action": "RESOLVE_CASE",
+      "outcomeCorrect": true,
+      "actionCorrect": true,
+      "relevantCitationRetrieved": true,
+      "abstentionCorrect": true,
+      "metrics": {
+        "durationMs": 9.988,
+        "retrievalMs": 3.439,
+        "toolCount": 4,
+        "modelCalls": 0,
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "retrievalMode": "lexical",
+        "model": "deterministic-replay"
+      },
+      "warnings": [
+        "Synthetic data only; proposals change case disposition, never payment or ledger balances.",
+        "Deterministic replay mode; actual LangGraph and LangChain tools executed, but no LLM inference was used.",
+        "Lexical retrieval baseline; semantic embeddings are not enabled."
+      ],
+      "error": null,
+      "evidenceReferencesValid": true,
+      "wallMs": 42.885
+    },
+    {
+      "caseId": "CASE-1026",
+      "expectedOutcome": "OUT_OF_ORDER_WEBHOOK",
+      "expectedAction": "RESOLVE_CASE",
+      "outcome": "OUT_OF_ORDER_WEBHOOK",
+      "action": "RESOLVE_CASE",
+      "outcomeCorrect": true,
+      "actionCorrect": true,
+      "relevantCitationRetrieved": true,
+      "abstentionCorrect": true,
+      "metrics": {
+        "durationMs": 15.621,
+        "retrievalMs": 8.341,
+        "toolCount": 4,
+        "modelCalls": 0,
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "retrievalMode": "lexical",
+        "model": "deterministic-replay"
+      },
+      "warnings": [
+        "Synthetic data only; proposals change case disposition, never payment or ledger balances.",
+        "Deterministic replay mode; actual LangGraph and LangChain tools executed, but no LLM inference was used.",
+        "Lexical retrieval baseline; semantic embeddings are not enabled."
+      ],
+      "error": null,
+      "evidenceReferencesValid": true,
+      "wallMs": 56.3
+    },
+    {
+      "caseId": "CASE-1027",
+      "expectedOutcome": "OUT_OF_ORDER_WEBHOOK",
+      "expectedAction": "RESOLVE_CASE",
+      "outcome": "OUT_OF_ORDER_WEBHOOK",
+      "action": "RESOLVE_CASE",
+      "outcomeCorrect": true,
+      "actionCorrect": true,
+      "relevantCitationRetrieved": true,
+      "abstentionCorrect": true,
+      "metrics": {
+        "durationMs": 10.376,
+        "retrievalMs": 3.565,
+        "toolCount": 4,
+        "modelCalls": 0,
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "retrievalMode": "lexical",
+        "model": "deterministic-replay"
+      },
+      "warnings": [
+        "Synthetic data only; proposals change case disposition, never payment or ledger balances.",
+        "Deterministic replay mode; actual LangGraph and LangChain tools executed, but no LLM inference was used.",
+        "Lexical retrieval baseline; semantic embeddings are not enabled."
+      ],
+      "error": null,
+      "evidenceReferencesValid": true,
+      "wallMs": 45.4
+    },
+    {
+      "caseId": "CASE-1028",
+      "expectedOutcome": "OUT_OF_ORDER_WEBHOOK",
+      "expectedAction": "RESOLVE_CASE",
+      "outcome": "OUT_OF_ORDER_WEBHOOK",
+      "action": "RESOLVE_CASE",
+      "outcomeCorrect": true,
+      "actionCorrect": true,
+      "relevantCitationRetrieved": true,
+      "abstentionCorrect": true,
+      "metrics": {
+        "durationMs": 9.359,
+        "retrievalMs": 2.779,
+        "toolCount": 4,
+        "modelCalls": 0,
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "retrievalMode": "lexical",
+        "model": "deterministic-replay"
+      },
+      "warnings": [
+        "Synthetic data only; proposals change case disposition, never payment or ledger balances.",
+        "Deterministic replay mode; actual LangGraph and LangChain tools executed, but no LLM inference was used.",
+        "Lexical retrieval baseline; semantic embeddings are not enabled."
+      ],
+      "error": null,
+      "evidenceReferencesValid": true,
+      "wallMs": 28.994
+    },
+    {
+      "caseId": "CASE-1029",
+      "expectedOutcome": "OUT_OF_ORDER_WEBHOOK",
+      "expectedAction": "RESOLVE_CASE",
+      "outcome": "OUT_OF_ORDER_WEBHOOK",
+      "action": "RESOLVE_CASE",
+      "outcomeCorrect": true,
+      "actionCorrect": true,
+      "relevantCitationRetrieved": true,
+      "abstentionCorrect": true,
+      "metrics": {
+        "durationMs": 14.534,
+        "retrievalMs": 7.163,
+        "toolCount": 4,
+        "modelCalls": 0,
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "retrievalMode": "lexical",
+        "model": "deterministic-replay"
+      },
+      "warnings": [
+        "Synthetic data only; proposals change case disposition, never payment or ledger balances.",
+        "Deterministic replay mode; actual LangGraph and LangChain tools executed, but no LLM inference was used.",
+        "Lexical retrieval baseline; semantic embeddings are not enabled."
+      ],
+      "error": null,
+      "evidenceReferencesValid": true,
+      "wallMs": 33.811
+    },
+    {
+      "caseId": "CASE-1030",
+      "expectedOutcome": "OUT_OF_ORDER_WEBHOOK",
+      "expectedAction": "RESOLVE_CASE",
+      "outcome": "OUT_OF_ORDER_WEBHOOK",
+      "action": "RESOLVE_CASE",
+      "outcomeCorrect": true,
+      "actionCorrect": true,
+      "relevantCitationRetrieved": true,
+      "abstentionCorrect": true,
+      "metrics": {
+        "durationMs": 10.434,
+        "retrievalMs": 3.46,
+        "toolCount": 4,
+        "modelCalls": 0,
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "retrievalMode": "lexical",
+        "model": "deterministic-replay"
+      },
+      "warnings": [
+        "Synthetic data only; proposals change case disposition, never payment or ledger balances.",
+        "Deterministic replay mode; actual LangGraph and LangChain tools executed, but no LLM inference was used.",
+        "Lexical retrieval baseline; semantic embeddings are not enabled."
+      ],
+      "error": null,
+      "evidenceReferencesValid": true,
+      "wallMs": 50.171
+    },
+    {
+      "caseId": "CASE-1036",
+      "expectedOutcome": "MISSING_REFUND",
+      "expectedAction": "ESCALATE",
+      "outcome": "MISSING_REFUND",
+      "action": "ESCALATE",
+      "outcomeCorrect": true,
+      "actionCorrect": true,
+      "relevantCitationRetrieved": true,
+      "abstentionCorrect": true,
+      "metrics": {
+        "durationMs": 10.692,
+        "retrievalMs": 2.96,
+        "toolCount": 4,
+        "modelCalls": 0,
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "retrievalMode": "lexical",
+        "model": "deterministic-replay"
+      },
+      "warnings": [
+        "Synthetic data only; proposals change case disposition, never payment or ledger balances.",
+        "Deterministic replay mode; actual LangGraph and LangChain tools executed, but no LLM inference was used.",
+        "Lexical retrieval baseline; semantic embeddings are not enabled."
+      ],
+      "error": null,
+      "evidenceReferencesValid": true,
+      "wallMs": 52.137
+    },
+    {
+      "caseId": "CASE-1037",
+      "expectedOutcome": "MISSING_REFUND",
+      "expectedAction": "ESCALATE",
+      "outcome": "MISSING_REFUND",
+      "action": "ESCALATE",
+      "outcomeCorrect": true,
+      "actionCorrect": true,
+      "relevantCitationRetrieved": true,
+      "abstentionCorrect": true,
+      "metrics": {
+        "durationMs": 8.893,
+        "retrievalMs": 2.729,
+        "toolCount": 4,
+        "modelCalls": 0,
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "retrievalMode": "lexical",
+        "model": "deterministic-replay"
+      },
+      "warnings": [
+        "Synthetic data only; proposals change case disposition, never payment or ledger balances.",
+        "Deterministic replay mode; actual LangGraph and LangChain tools executed, but no LLM inference was used.",
+        "Lexical retrieval baseline; semantic embeddings are not enabled."
+      ],
+      "error": null,
+      "evidenceReferencesValid": true,
+      "wallMs": 52.262
+    },
+    {
+      "caseId": "CASE-1038",
+      "expectedOutcome": "MISSING_REFUND",
+      "expectedAction": "ESCALATE",
+      "outcome": "MISSING_REFUND",
+      "action": "ESCALATE",
+      "outcomeCorrect": true,
+      "actionCorrect": true,
+      "relevantCitationRetrieved": true,
+      "abstentionCorrect": true,
+      "metrics": {
+        "durationMs": 14.179,
+        "retrievalMs": 7.615,
+        "toolCount": 4,
+        "modelCalls": 0,
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "retrievalMode": "lexical",
+        "model": "deterministic-replay"
+      },
+      "warnings": [
+        "Synthetic data only; proposals change case disposition, never payment or ledger balances.",
+        "Deterministic replay mode; actual LangGraph and LangChain tools executed, but no LLM inference was used.",
+        "Lexical retrieval baseline; semantic embeddings are not enabled."
+      ],
+      "error": null,
+      "evidenceReferencesValid": true,
+      "wallMs": 59.511
+    },
+    {
+      "caseId": "CASE-1039",
+      "expectedOutcome": "MISSING_REFUND",
+      "expectedAction": "ESCALATE",
+      "outcome": "MISSING_REFUND",
+      "action": "ESCALATE",
+      "outcomeCorrect": true,
+      "actionCorrect": true,
+      "relevantCitationRetrieved": true,
+      "abstentionCorrect": true,
+      "metrics": {
+        "durationMs": 28.788,
+        "retrievalMs": 22.293,
+        "toolCount": 4,
+        "modelCalls": 0,
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "retrievalMode": "lexical",
+        "model": "deterministic-replay"
+      },
+      "warnings": [
+        "Synthetic data only; proposals change case disposition, never payment or ledger balances.",
+        "Deterministic replay mode; actual LangGraph and LangChain tools executed, but no LLM inference was used.",
+        "Lexical retrieval baseline; semantic embeddings are not enabled."
+      ],
+      "error": null,
+      "evidenceReferencesValid": true,
+      "wallMs": 64.824
+    },
+    {
+      "caseId": "CASE-1040",
+      "expectedOutcome": "MISSING_REFUND",
+      "expectedAction": "ESCALATE",
+      "outcome": "MISSING_REFUND",
+      "action": "ESCALATE",
+      "outcomeCorrect": true,
+      "actionCorrect": true,
+      "relevantCitationRetrieved": true,
+      "abstentionCorrect": true,
+      "metrics": {
+        "durationMs": 41.369,
+        "retrievalMs": 35.711,
+        "toolCount": 4,
+        "modelCalls": 0,
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "retrievalMode": "lexical",
+        "model": "deterministic-replay"
+      },
+      "warnings": [
+        "Synthetic data only; proposals change case disposition, never payment or ledger balances.",
+        "Deterministic replay mode; actual LangGraph and LangChain tools executed, but no LLM inference was used.",
+        "Lexical retrieval baseline; semantic embeddings are not enabled."
+      ],
+      "error": null,
+      "evidenceReferencesValid": true,
+      "wallMs": 85.412
+    },
+    {
+      "caseId": "CASE-1046",
+      "expectedOutcome": "INSUFFICIENT_EVIDENCE",
+      "expectedAction": "REQUEST_EVIDENCE",
+      "outcome": "INSUFFICIENT_EVIDENCE",
+      "action": "REQUEST_EVIDENCE",
+      "outcomeCorrect": true,
+      "actionCorrect": true,
+      "relevantCitationRetrieved": true,
+      "abstentionCorrect": true,
+      "metrics": {
+        "durationMs": 12.43,
+        "retrievalMs": 6.603,
+        "toolCount": 4,
+        "modelCalls": 0,
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "retrievalMode": "lexical",
+        "model": "deterministic-replay"
+      },
+      "warnings": [
+        "Synthetic data only; proposals change case disposition, never payment or ledger balances.",
+        "Deterministic replay mode; actual LangGraph and LangChain tools executed, but no LLM inference was used.",
+        "Lexical retrieval baseline; semantic embeddings are not enabled."
+      ],
+      "error": null,
+      "evidenceReferencesValid": true,
+      "wallMs": 54.091
+    },
+    {
+      "caseId": "CASE-1047",
+      "expectedOutcome": "INSUFFICIENT_EVIDENCE",
+      "expectedAction": "REQUEST_EVIDENCE",
+      "outcome": "INSUFFICIENT_EVIDENCE",
+      "action": "REQUEST_EVIDENCE",
+      "outcomeCorrect": true,
+      "actionCorrect": true,
+      "relevantCitationRetrieved": true,
+      "abstentionCorrect": true,
+      "metrics": {
+        "durationMs": 11.257,
+        "retrievalMs": 5.16,
+        "toolCount": 4,
+        "modelCalls": 0,
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "retrievalMode": "lexical",
+        "model": "deterministic-replay"
+      },
+      "warnings": [
+        "Synthetic data only; proposals change case disposition, never payment or ledger balances.",
+        "Deterministic replay mode; actual LangGraph and LangChain tools executed, but no LLM inference was used.",
+        "Lexical retrieval baseline; semantic embeddings are not enabled."
+      ],
+      "error": null,
+      "evidenceReferencesValid": true,
+      "wallMs": 51.688
+    },
+    {
+      "caseId": "CASE-1048",
+      "expectedOutcome": "INSUFFICIENT_EVIDENCE",
+      "expectedAction": "REQUEST_EVIDENCE",
+      "outcome": "INSUFFICIENT_EVIDENCE",
+      "action": "REQUEST_EVIDENCE",
+      "outcomeCorrect": true,
+      "actionCorrect": true,
+      "relevantCitationRetrieved": true,
+      "abstentionCorrect": true,
+      "metrics": {
+        "durationMs": 11.321,
+        "retrievalMs": 5.694,
+        "toolCount": 4,
+        "modelCalls": 0,
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "retrievalMode": "lexical",
+        "model": "deterministic-replay"
+      },
+      "warnings": [
+        "Synthetic data only; proposals change case disposition, never payment or ledger balances.",
+        "Deterministic replay mode; actual LangGraph and LangChain tools executed, but no LLM inference was used.",
+        "Lexical retrieval baseline; semantic embeddings are not enabled."
+      ],
+      "error": null,
+      "evidenceReferencesValid": true,
+      "wallMs": 46.124
+    },
+    {
+      "caseId": "CASE-1049",
+      "expectedOutcome": "INSUFFICIENT_EVIDENCE",
+      "expectedAction": "REQUEST_EVIDENCE",
+      "outcome": "INSUFFICIENT_EVIDENCE",
+      "action": "REQUEST_EVIDENCE",
+      "outcomeCorrect": true,
+      "actionCorrect": true,
+      "relevantCitationRetrieved": true,
+      "abstentionCorrect": true,
+      "metrics": {
+        "durationMs": 8.673,
+        "retrievalMs": 3.123,
+        "toolCount": 4,
+        "modelCalls": 0,
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "retrievalMode": "lexical",
+        "model": "deterministic-replay"
+      },
+      "warnings": [
+        "Synthetic data only; proposals change case disposition, never payment or ledger balances.",
+        "Deterministic replay mode; actual LangGraph and LangChain tools executed, but no LLM inference was used.",
+        "Lexical retrieval baseline; semantic embeddings are not enabled."
+      ],
+      "error": null,
+      "evidenceReferencesValid": true,
+      "wallMs": 44.786
+    },
+    {
+      "caseId": "CASE-1050",
+      "expectedOutcome": "INSUFFICIENT_EVIDENCE",
+      "expectedAction": "REQUEST_EVIDENCE",
+      "outcome": "INSUFFICIENT_EVIDENCE",
+      "action": "REQUEST_EVIDENCE",
+      "outcomeCorrect": true,
+      "actionCorrect": true,
+      "relevantCitationRetrieved": true,
+      "abstentionCorrect": true,
+      "metrics": {
+        "durationMs": 9.231,
+        "retrievalMs": 2.9,
+        "toolCount": 4,
+        "modelCalls": 0,
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "retrievalMode": "lexical",
+        "model": "deterministic-replay"
+      },
+      "warnings": [
+        "Synthetic data only; proposals change case disposition, never payment or ledger balances.",
+        "Deterministic replay mode; actual LangGraph and LangChain tools executed, but no LLM inference was used.",
+        "Lexical retrieval baseline; semantic embeddings are not enabled."
+      ],
+      "error": null,
+      "evidenceReferencesValid": true,
+      "wallMs": 48.782
+    },
+    {
+      "caseId": "CASE-1056",
+      "expectedOutcome": "PROVIDER_FAILURE",
+      "expectedAction": "ESCALATE",
+      "outcome": "PROVIDER_FAILURE",
+      "action": "ESCALATE",
+      "outcomeCorrect": true,
+      "actionCorrect": true,
+      "relevantCitationRetrieved": true,
+      "abstentionCorrect": true,
+      "metrics": {
+        "durationMs": 24.922,
+        "retrievalMs": 19.734,
+        "toolCount": 4,
+        "modelCalls": 0,
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "retrievalMode": "lexical",
+        "model": "deterministic-replay"
+      },
+      "warnings": [
+        "Synthetic data only; proposals change case disposition, never payment or ledger balances.",
+        "Deterministic replay mode; actual LangGraph and LangChain tools executed, but no LLM inference was used.",
+        "Lexical retrieval baseline; semantic embeddings are not enabled."
+      ],
+      "error": null,
+      "evidenceReferencesValid": true,
+      "wallMs": 56.175
+    },
+    {
+      "caseId": "CASE-1057",
+      "expectedOutcome": "PROVIDER_FAILURE",
+      "expectedAction": "ESCALATE",
+      "outcome": "PROVIDER_FAILURE",
+      "action": "ESCALATE",
+      "outcomeCorrect": true,
+      "actionCorrect": true,
+      "relevantCitationRetrieved": true,
+      "abstentionCorrect": true,
+      "metrics": {
+        "durationMs": 15.514,
+        "retrievalMs": 3.872,
+        "toolCount": 4,
+        "modelCalls": 0,
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "retrievalMode": "lexical",
+        "model": "deterministic-replay"
+      },
+      "warnings": [
+        "Synthetic data only; proposals change case disposition, never payment or ledger balances.",
+        "Deterministic replay mode; actual LangGraph and LangChain tools executed, but no LLM inference was used.",
+        "Lexical retrieval baseline; semantic embeddings are not enabled."
+      ],
+      "error": null,
+      "evidenceReferencesValid": true,
+      "wallMs": 75.641
+    },
+    {
+      "caseId": "CASE-1058",
+      "expectedOutcome": "PROVIDER_FAILURE",
+      "expectedAction": "ESCALATE",
+      "outcome": "PROVIDER_FAILURE",
+      "action": "ESCALATE",
+      "outcomeCorrect": true,
+      "actionCorrect": true,
+      "relevantCitationRetrieved": true,
+      "abstentionCorrect": true,
+      "metrics": {
+        "durationMs": 19.496,
+        "retrievalMs": 13.88,
+        "toolCount": 4,
+        "modelCalls": 0,
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "retrievalMode": "lexical",
+        "model": "deterministic-replay"
+      },
+      "warnings": [
+        "Synthetic data only; proposals change case disposition, never payment or ledger balances.",
+        "Deterministic replay mode; actual LangGraph and LangChain tools executed, but no LLM inference was used.",
+        "Lexical retrieval baseline; semantic embeddings are not enabled."
+      ],
+      "error": null,
+      "evidenceReferencesValid": true,
+      "wallMs": 35.912
+    },
+    {
+      "caseId": "CASE-1059",
+      "expectedOutcome": "PROVIDER_FAILURE",
+      "expectedAction": "ESCALATE",
+      "outcome": "PROVIDER_FAILURE",
+      "action": "ESCALATE",
+      "outcomeCorrect": true,
+      "actionCorrect": true,
+      "relevantCitationRetrieved": true,
+      "abstentionCorrect": true,
+      "metrics": {
+        "durationMs": 9.997,
+        "retrievalMs": 4.555,
+        "toolCount": 4,
+        "modelCalls": 0,
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "retrievalMode": "lexical",
+        "model": "deterministic-replay"
+      },
+      "warnings": [
+        "Synthetic data only; proposals change case disposition, never payment or ledger balances.",
+        "Deterministic replay mode; actual LangGraph and LangChain tools executed, but no LLM inference was used.",
+        "Lexical retrieval baseline; semantic embeddings are not enabled."
+      ],
+      "error": null,
+      "evidenceReferencesValid": true,
+      "wallMs": 32.168
+    },
+    {
+      "caseId": "CASE-1060",
+      "expectedOutcome": "PROVIDER_FAILURE",
+      "expectedAction": "ESCALATE",
+      "outcome": "PROVIDER_FAILURE",
+      "action": "ESCALATE",
+      "outcomeCorrect": true,
+      "actionCorrect": true,
+      "relevantCitationRetrieved": true,
+      "abstentionCorrect": true,
+      "metrics": {
+        "durationMs": 12.78,
+        "retrievalMs": 4.167,
+        "toolCount": 4,
+        "modelCalls": 0,
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "retrievalMode": "lexical",
+        "model": "deterministic-replay"
+      },
+      "warnings": [
+        "Synthetic data only; proposals change case disposition, never payment or ledger balances.",
+        "Deterministic replay mode; actual LangGraph and LangChain tools executed, but no LLM inference was used.",
+        "Lexical retrieval baseline; semantic embeddings are not enabled."
+      ],
+      "error": null,
+      "evidenceReferencesValid": true,
+      "wallMs": 118.419
+    }
+  ]
+}

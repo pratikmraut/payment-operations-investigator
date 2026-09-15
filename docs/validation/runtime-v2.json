@@ -1,0 +1,184 @@
+{
+  "capturedAt": "2026-09-11T20:42:27.457962+00:00",
+  "status": "running",
+  "modeAtCapture": "lexical retrieval; live acceptance v2 in progress",
+  "services": [
+    {
+      "service": "postgres",
+      "containerId": "87cbbb327b98ec28d6c49ba47b44819f294985ecc78898b201fb2f9d5acf676f",
+      "image": "pgvector/pgvector:0.8.6-pg17-trixie",
+      "imageId": "sha256:724a4041afdb1750446e3f6b5cfa8f3b0ac5a2cf538ddfa6bfee4f94c2fa85c6",
+      "startedAt": "2026-09-11T19:43:36.211821154Z",
+      "running": true,
+      "health": "healthy",
+      "ports": {
+        "5432/tcp": [
+          {
+            "HostIp": "127.0.0.1",
+            "HostPort": "5438"
+          }
+        ]
+      },
+      "selectedNonSecretEnvironment": []
+    },
+    {
+      "service": "ollama",
+      "containerId": "4f6c76fdd9ef312ebad8ae76e84336da0038a96ef5fb9dcefe0cb1b928765aab",
+      "image": "ollama/ollama:0.34.0",
+      "imageId": "sha256:684d8674b4315fa18f4f0e973a118ec2652ed96f67563277839985175858e0ba",
+      "startedAt": "2026-09-11T18:40:59.296140216Z",
+      "running": true,
+      "health": null,
+      "ports": {
+        "11434/tcp": [
+          {
+            "HostIp": "127.0.0.1",
+            "HostPort": "11438"
+          }
+        ]
+      },
+      "selectedNonSecretEnvironment": [
+        "OLLAMA_MAX_LOADED_MODELS=1",
+        "OLLAMA_NUM_PARALLEL=1"
+      ]
+    },
+    {
+      "service": "investigator",
+      "containerId": "0542bc66eabff3f1dbde3e7b9c29b2dad753ccb4e59388d53bdb982453e63ed1",
+      "image": "payment-operations-investigator-investigator",
+      "imageId": "sha256:7ba4be9208d9f6e9777d7463b2974d3944fdbe00d949d136152895fdee7fcea5",
+      "startedAt": "2026-09-11T20:40:27.528664864Z",
+      "running": true,
+      "health": "healthy",
+      "ports": {
+        "8091/tcp": [
+          {
+            "HostIp": "127.0.0.1",
+            "HostPort": "8091"
+          }
+        ]
+      },
+      "selectedNonSecretEnvironment": [
+        "POI_MODEL_TIMEOUT_SECONDS=180",
+        "POI_MODEL_THREADS=4",
+        "POI_RETRIEVAL_MODE=lexical"
+      ]
+    },
+    {
+      "service": "api",
+      "containerId": "30e40047543baaf295a04c289f7de36708cdad7895869699f0196e8d446be46a",
+      "image": "payment-operations-investigator-api",
+      "imageId": "sha256:3abfddb122af722121c46ece25f58ee11e436b0c4c177cf4fbadff9659519c84",
+      "startedAt": "2026-09-11T20:40:33.399874697Z",
+      "running": true,
+      "health": null,
+      "ports": {
+        "8088/tcp": [
+          {
+            "HostIp": "127.0.0.1",
+            "HostPort": "8088"
+          }
+        ]
+      },
+      "selectedNonSecretEnvironment": [
+        "POI_WORKER_TIMEOUT_SECONDS=390"
+      ]
+    },
+    {
+      "service": "web",
+      "containerId": "c51b949846811f1950cc295d405470d6659475078c5bbe74f3ea3a4f4735baea",
+      "image": "payment-operations-investigator-web",
+      "imageId": "sha256:2ca6ddd6938e596f45886bd7458012d8e2dd29daf74702af7e40c0bf062e9b33",
+      "startedAt": "2026-09-11T20:40:33.540533613Z",
+      "running": true,
+      "health": null,
+      "ports": {
+        "80/tcp": [
+          {
+            "HostIp": "127.0.0.1",
+            "HostPort": "5178"
+          }
+        ]
+      },
+      "selectedNonSecretEnvironment": []
+    }
+  ],
+  "downloadedModels": {
+    "models": [
+      {
+        "name": "qwen3:4b-instruct",
+        "model": "qwen3:4b-instruct",
+        "modified_at": "2026-09-11T18:55:19.455692817Z",
+        "size": 2497293803,
+        "digest": "0edcdef34593eac1aa2be9c7d06c432dcf81945adca5eca2f27662c18f168ba0",
+        "details": {
+          "parent_model": "",
+          "format": "gguf",
+          "family": "qwen3",
+          "families": [
+            "qwen3"
+          ],
+          "parameter_size": "4.0B",
+          "quantization_level": "Q4_K_M",
+          "context_length": 262144,
+          "embedding_length": 2560
+        },
+        "capabilities": [
+          "completion",
+          "tools"
+        ]
+      },
+      {
+        "name": "nomic-embed-text:v1.5",
+        "model": "nomic-embed-text:v1.5",
+        "modified_at": "2026-09-11T18:51:30.043723825Z",
+        "size": 274302450,
+        "digest": "0a109f422b47e3a30ba2b10eca18548e944e8a23073ee3f3e947efcf3c45e59f",
+        "details": {
+          "parent_model": "",
+          "format": "gguf",
+          "family": "nomic-bert",
+          "families": [
+            "nomic-bert"
+          ],
+          "parameter_size": "137M",
+          "quantization_level": "F16",
+          "context_length": 2048,
+          "embedding_length": 768
+        },
+        "capabilities": [
+          "embedding"
+        ]
+      }
+    ]
+  },
+  "workerHealth": {
+    "status": "UP",
+    "service": "investigator",
+    "supportedModes": [
+      "replay",
+      "ollama"
+    ],
+    "retrievalMode": "lexical",
+    "vectorStorage": "disabled",
+    "liveModelConfigured": "qwen3:4b-instruct",
+    "limitations": [
+      "Health does not assert an Ollama server/model or vector database is available.",
+      "SQLite graph execution is serialized for this local deployment."
+    ]
+  },
+  "localConfigurationSha256": {
+    "compose.yaml": "2b8eba29148e1b7482de71d7bd1b273c3f92068674c07ab58a9add7137f77d0f",
+    "services/api/src/main/resources/application.yml": "146b963afec6522512ed8db054041b944eedc95e7bfce50901816741297b75df",
+    "apps/web/nginx.conf": "b3f39e28e4e295e02b88f6e22ced7c8ccfeb39b9a4e659566ae9bde5b897e0c7",
+    "apps/web/vite.config.ts": "33666f715738218ce6f0fb1661a64bffcbccd06112b97b7ab4f6971d4a6db5ab",
+    "services/investigator/investigator/config.py": "d660f8ce92e00ef8a7a00dd3790f6fa8cf3f5e2b46f698ab057ef453fd6024b0",
+    "services/investigator/investigator/graph.py": "642edbaf8443ef6742aaf5d502c5606401a692e8d7a078008c86e79276f58c47",
+    "services/investigator/requirements.txt": "fd3bc3e05ba5925401cd18b051428f582e17fd4543e378c9aa69e8edf25bf4e2"
+  },
+  "limitations": [
+    "Read-only deployment/configuration snapshot, not proof of successful inference or end-to-end readiness.",
+    "Docker health does not assert model availability; model tags describe files present at capture.",
+    "Only selected non-secret environment variables are included. Historical reports retain earlier revisions."
+  ]
+}

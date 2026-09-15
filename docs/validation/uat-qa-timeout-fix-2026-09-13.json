@@ -1,0 +1,113 @@
+{
+  "recordedAt": "2026-09-13T10:34:36.769416+00:00",
+  "classification": "sanitized-development-receipt",
+  "scope": "Repair of missing UAT response caused by cold CPU inference exceeding the old provider deadline.",
+  "priorFailure": {
+    "promptTokens": 6474,
+    "oldTimeoutSeconds": 360,
+    "cachedPromptTokensAtStart": 0,
+    "tokensProcessedAt343Seconds": 6144,
+    "requestCancelledAtTimeout": true,
+    "noFallback": true
+  },
+  "configuration": {
+    "uatReadTimeoutSeconds": 900,
+    "uatJavaDeadlineSeconds": 930,
+    "uatProxyWaitSeconds": 960,
+    "uatKeepAliveSeconds": 1800,
+    "connectWritePoolSeconds": [
+      5,
+      30,
+      5
+    ],
+    "originalCaseProviderTimeoutSeconds": 180,
+    "originalCaseJavaDeadlineSeconds": 390,
+    "originalCaseProxyWaitSeconds": 420
+  },
+  "componentChecks": {
+    "javaFullBuild": {
+      "passed": 93,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "workerTargetedRegression": {
+      "passed": 126,
+      "scope": "UAT answer, configuration and existing graph service"
+    },
+    "reactFocusedUat": {
+      "passed": 21,
+      "productionBuild": "passed"
+    },
+    "nginxConfiguration": "passed"
+  },
+  "browserRetry": {
+    "question": "Did OBPM accept it?",
+    "coldModelVerifiedBeforeSubmission": true,
+    "initialPromptCacheTokens": 0,
+    "providerPromptTokens": 6474,
+    "mode": "model-generated",
+    "generatedAt": "2026-09-13T10:31:28.873349Z",
+    "model": {
+      "provider": "ollama",
+      "name": "qwen3:8b",
+      "actualCalls": 1,
+      "promptTokens": 6474,
+      "completionTokens": 460,
+      "durationMs": 640306
+    },
+    "elapsedTimerObservedAtSeconds": [
+      232,
+      442
+    ],
+    "questionPreservedWhilePending": true,
+    "liveInferenceCalls": 1,
+    "noAutomaticRetryOrFallback": true
+  },
+  "evidenceIntegrity": {
+    "sameDocumentsAsBeforeRepair": true,
+    "exactCitationSourceObjects": true,
+    "canonicalStoredInputHashVerified": true,
+    "exactGeneratedClaimComposition": true
+  },
+  "runtime": {
+    "apiImage": "sha256:2ca79c2bd111830a1c6a3a275fdef34e35a3a2705f70df25536dbaedc8b7cf26",
+    "workerImage": "sha256:57cdbaed144a5bd738d4806681a18bf4c89f55d3cb25f37bc1aaf464441be771",
+    "webImage": "sha256:497f6523d8a4d3a1b90ef50c7522f1ad64cec22dba034f660e71958d3a3de810",
+    "apiJarSha256": "daa06371dbd16b8bbf435a88facdab2c31a3fded066e62b9e234572bb5383be9",
+    "servedWebAssets": [
+      "index-CKC7VjJf.js",
+      "index-CCdnAJrI.css"
+    ],
+    "verifiedWorkerModuleSha256": {
+      "uat_answer.py": "bcea6c6042c2afd376cc8cc56a1be661142555db8765fc9d5116415a5240312c",
+      "config.py": "28599f491e7295cba122c6c0b7f14dcf92f67dd00c6c1557ccae263a1d7cf4fd",
+      "main.py": "e0a1438cd019370282cce0a7b472f289b12cb30b032b64978708e6e93cd2a296",
+      "errors.py": "0630070f22db001a71252e89a50e6c87d7f12eed6b182ed01d4629419bd35b60"
+    }
+  },
+  "semanticReview": {
+    "status": "failed",
+    "independentReviewAgreed": true,
+    "issues": [
+      "A claim names HOST.MSGSTATUS, but that source record contains MSG_STAT.",
+      "An uncertainty statement assigns status 11 to TXN_STAT, whose recorded value is 2.",
+      "The claims do not directly answer the acceptance question or cite the two possible writers and SPS-response caveat.",
+      "Next checks omit the specific acceptance evidence: correlated SPS request/response and returned native OBPM ID."
+    ],
+    "supportedConclusion": "OBPM acceptance is not established by the supplied exports; this does not establish rejection.",
+    "scope": "Independent manual source review of one generated answer, not an accuracy benchmark."
+  },
+  "browserResult": {
+    "answerDisplayed": true,
+    "savedHistoryContainsQuestion": true,
+    "generationButtonEnabledAfterCompletion": true,
+    "pendingIndicatorRemovedAfterCompletion": true
+  },
+  "limitations": [
+    "A successful response is not a factual-accuracy benchmark.",
+    "This remains a synchronous request; no resumable background job was implemented.",
+    "No bank connection, payment action, external model transfer or prepared answer was added.",
+    "Earlier factual model failures remain preserved."
+  ]
+}

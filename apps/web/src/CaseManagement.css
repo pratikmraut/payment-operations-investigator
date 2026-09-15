@@ -1,0 +1,148 @@
+.case-management {
+  padding: 24px;
+  margin: 24px 0;
+  min-width: 0;
+}
+.case-lifecycle .case-delete-button {
+  color: #b42318;
+}
+.case-lifecycle .section-title {
+  margin-top: 18px;
+}
+.case-lifecycle .notice p {
+  margin: 0;
+}
+.payment-lifecycle-filter {
+  display: grid;
+  gap: 8px;
+  min-width: 160px;
+  align-self: flex-start;
+}
+.payment-lifecycle-filter select {
+  min-height: 44px;
+}
+.case-management .section-title {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.case-management .queue-tabs {
+  margin: 18px 0;
+  overflow-x: auto;
+}
+.case-management form {
+  display: grid;
+  gap: 12px;
+  margin: 18px 0;
+}
+.case-management label {
+  display: grid;
+  gap: 7px;
+  font-size: 12px;
+}
+.case-management input,
+.case-management select,
+.case-management textarea {
+  width: 100%;
+  min-width: 0;
+}
+.case-management textarea {
+  min-height: 90px;
+}
+.case-management form > button {
+  justify-self: start;
+}
+.case-management article {
+  border-top: 1px solid #e5ecf5;
+  padding: 16px 0;
+}
+.case-management article p,
+.case-management li p {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.case-management small {
+  display: block;
+  color: #7185a0;
+  font-size: 11px;
+  overflow-wrap: anywhere;
+}
+.case-management code {
+  overflow-wrap: anywhere;
+}
+.case-export-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 8px;
+  color: #285eca;
+  font-weight: 600;
+  font-size: 12px;
+  white-space: nowrap;
+}
+.case-investigation .heading-actions {
+  flex-wrap: wrap;
+}
+.case-management dd,
+.case-management h3,
+.case-management li,
+.case-management-choice span,
+.case-management blockquote {
+  overflow-wrap: anywhere;
+}
+.case-report > label,
+.case-report > fieldset,
+.case-report-preview {
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+.case-management-facts,
+.case-management-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+}
+.case-management-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.case-management-facts dt {
+  font-size: 11px;
+  color: #7185a0;
+}
+.case-management-facts dd {
+  margin: 5px 0;
+}
+.case-management fieldset {
+  border: 1px solid #e3eaf4;
+  border-radius: 8px;
+  padding: 14px;
+  min-width: 0;
+}
+.case-management .case-management-choice {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin: 10px 0;
+}
+.case-management-choice input {
+  width: 17px;
+  min-height: 17px;
+  margin-top: 2px;
+  flex: none;
+}
+@media (max-width: 620px) {
+  .case-management {
+    padding: 16px;
+  }
+  .case-management-facts,
+  .case-management-grid {
+    grid-template-columns: 1fr;
+  }
+  .case-management .queue-tabs {
+    flex-wrap: wrap;
+  }
+  .case-management .queue-tabs button {
+    white-space: normal;
+  }
+}

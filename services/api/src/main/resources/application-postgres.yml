@@ -1,0 +1,6 @@
+spring:
+  datasource:
+    url: ${POI_DB_URL:jdbc:postgresql://localhost:5438/poi}
+    username: ${POI_DB_USER:poi}
+    password: ${POI_DB_PASSWORD:poi-local-only}
+    driver-class-name: org.postgresql.Driver

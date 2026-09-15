@@ -1,0 +1,391 @@
+{
+  "startedAt": "2026-09-11T22:00:44.145253+00:00",
+  "timestamp": "2026-09-11T22:02:57.868094+00:00",
+  "workerUrl": "http://127.0.0.1:8091",
+  "clientTimeoutSeconds": 430,
+  "localSourceSha256": {
+    "services/investigator/investigator/__init__.py": "b5391400f0a9c6a6d4f0d8913021edf256e87d0577fa86146ae489bd45bf2173",
+    "services/investigator/investigator/config.py": "d660f8ce92e00ef8a7a00dd3790f6fa8cf3f5e2b46f698ab057ef453fd6024b0",
+    "services/investigator/investigator/errors.py": "e57dde3e04b0f9cd31bfd827d5193f6e331251bf52a1a0c09a29ff2c285a4469",
+    "services/investigator/investigator/evidence.py": "f105bc5f4adff43600e19365f1ae269f1237d30d0acf1495514d5b8815d6d28e",
+    "services/investigator/investigator/graph.py": "8951ccde55219be9491b0a5d7b2613a0c7e14d1b99517d8698137e325578b450",
+    "services/investigator/investigator/main.py": "8ed3dcb86e2c8facad9f54c20a31ce4f6c418fa759e95ee3e14c906d3c4509a0",
+    "services/investigator/investigator/models.py": "5f50af89b85052cb79d6bcfdde6e89b5c81614c3045f66735ad3522dcc6daed2",
+    "services/investigator/investigator/retrieval.py": "06e1c41d73daaef156c78905e9112f9adcc84d723f7f97dd080a275ab28f0c19",
+    "services/investigator/investigator/vector_store.py": "d1fc0b89efb7c9bcc62b57a2c5cce10e623a719724efb7c30380c979d11358bb",
+    "tools/evaluate.py": "e83a8cfc601ea2351667206f1dbc14d1b2a6865fd19ce90c16ad7362de3eb5eb",
+    "services/investigator/requirements.txt": "fd3bc3e05ba5925401cd18b051428f582e17fd4543e378c9aa69e8edf25bf4e2"
+  },
+  "localSourcesUnchanged": true,
+  "sourceProvenanceLimit": "Local source hashes are a reference snapshot; match them with the separately verified worker image/test receipt before attributing a remote worker run to these files.",
+  "split": "development",
+  "mode": "ollama",
+  "sampleSize": 2,
+  "sampleSelection": "explicitly selected development cases; diagnostic selection, not independent accuracy",
+  "datasetManifestSha256": "b467da9818fd0813665e06301b7ea5940b61d94c54ce04e3d34b1dc31223e140",
+  "rates": {
+    "outcomeCorrect": 1.0,
+    "actionCorrect": 1.0,
+    "relevantCitationRetrieved": 1.0,
+    "abstentionCorrect": 1.0,
+    "evidenceReferencesValid": 1.0
+  },
+  "latencyMs": {
+    "p50": 60466.01,
+    "p95": 60466.01
+  },
+  "latencyQuantileMethod": "Lower order statistic at floor((n - 1) * p); includes failed attempts and is descriptive only.",
+  "failures": 0,
+  "modelCalls": 4,
+  "acceptedResultModelCalls": 4,
+  "failedRequestModelCalls": "no unreported failed-model usage",
+  "limitations": [
+    "Template variants share structure; this is a local model sample, not a real-world accuracy claim.",
+    "Outcome is constrained by deterministic evidence rules; report explanatory quality separately.",
+    "Identifier validation alone does not prove semantic entailment.",
+    "acceptedExplanation contains the returned fields; fieldProvenance distinguishes model-written findings from deterministic assessment fields.",
+    "Direct worker benchmark; Java API controls tested separately."
+  ],
+  "rows": [
+    {
+      "caseId": "CASE-1021",
+      "expectedOutcome": "OUT_OF_ORDER_WEBHOOK",
+      "expectedAction": "RESOLVE_CASE",
+      "outcome": "OUT_OF_ORDER_WEBHOOK",
+      "action": "RESOLVE_CASE",
+      "confidence": "HIGH",
+      "investigationId": "EVAL-0806a7bb-4a69-48a3-9ee7-3e1c51551998",
+      "toolCalls": [
+        {
+          "name": "get_payment_timeline",
+          "status": "COMPLETED",
+          "durationMs": 0.017,
+          "evidenceIds": [
+            "EVT-1021-1",
+            "EVT-1021-2",
+            "EVT-1021-3",
+            "EVT-1021-4",
+            "PROVIDER:PRV-1021"
+          ]
+        },
+        {
+          "name": "compare_settlement",
+          "status": "COMPLETED",
+          "durationMs": 0.059,
+          "evidenceIds": [
+            "LED-1021-1",
+            "LED-1021-2",
+            "PROVIDER:PRV-1021"
+          ]
+        },
+        {
+          "name": "inspect_webhooks",
+          "status": "COMPLETED",
+          "durationMs": 0.028,
+          "evidenceIds": [
+            "WH-1021-1",
+            "WH-1021-2"
+          ]
+        },
+        {
+          "name": "check_refund",
+          "status": "COMPLETED",
+          "durationMs": 0.014,
+          "evidenceIds": [
+            "PROVIDER:PRV-1021"
+          ]
+        }
+      ],
+      "outcomeCorrect": true,
+      "actionCorrect": true,
+      "relevantCitationRetrieved": true,
+      "abstentionCorrect": true,
+      "metrics": {
+        "durationMs": 73187.125,
+        "retrievalMs": 8.581,
+        "toolCount": 4,
+        "modelCalls": 2,
+        "inputTokens": 1641,
+        "outputTokens": 248,
+        "retrievalMode": "lexical",
+        "model": "qwen3:4b-instruct",
+        "assessmentSource": "deterministic-evidence-rules",
+        "synthesisScope": "finding-only",
+        "modelThreads": 4,
+        "modelContextTokens": 4096,
+        "modelTimeoutSeconds": 180.0,
+        "toolOutputTokenLimit": 384,
+        "synthesisOutputTokenLimit": 384,
+        "toolSelectionMs": 24803.981,
+        "toolSelectionProvider": {
+          "model": "qwen3:4b-instruct",
+          "created_at": "2026-09-11T22:01:09.00341411Z",
+          "done": true,
+          "done_reason": "stop",
+          "total_duration": 24783714572,
+          "load_duration": 4560730806,
+          "prompt_eval_count": 511,
+          "prompt_eval_duration": 11864989000,
+          "eval_count": 108,
+          "eval_duration": 8341341000,
+          "logprobs": null,
+          "model_name": "qwen3:4b-instruct",
+          "model_provider": "ollama"
+        },
+        "synthesisMs": 48359.149,
+        "synthesisProvider": {
+          "model": "qwen3:4b-instruct",
+          "created_at": "2026-09-11T22:01:57.378221375Z",
+          "done": true,
+          "done_reason": "stop",
+          "total_duration": 48343291110,
+          "load_duration": 1151669,
+          "prompt_eval_count": 1130,
+          "prompt_eval_duration": 33924857000,
+          "eval_count": 140,
+          "eval_duration": 14287999000,
+          "logprobs": null,
+          "model_name": "qwen3:4b-instruct",
+          "model_provider": "ollama"
+        }
+      },
+      "warnings": [
+        "Synthetic data only; proposals change case disposition, never payment or ledger balances.",
+        "Ollama planned diagnostic tools and generated only the cited finding text and links. Summary, outcome, confidence, missing evidence and proposal come from deterministic evidence rules. Finding entailment still requires analyst review.",
+        "Lexical retrieval baseline; semantic embeddings are not enabled."
+      ],
+      "error": null,
+      "evidenceReferencesValid": true,
+      "fieldProvenance": {
+        "summaryConfidenceMissingEvidenceProposal": "deterministic-evidence-rules",
+        "findings": "ollama"
+      },
+      "acceptedExplanation": {
+        "summary": "Webhook receipt order differs from provider occurrence order. The provider success snapshot and matching ledger capture establish the observed final payment state.",
+        "findings": [
+          {
+            "id": "F-1",
+            "text": "Payment PRV-1021 captured at 2026-09-11T06:20:05Z, authorized earlier, received late, ledger reflects INR 21,227.11 capture and INR 371.47 fee.",
+            "evidenceIds": [
+              "PROVIDER:PRV-1021",
+              "WH-1021-1",
+              "WH-1021-2",
+              "LED-1021-1",
+              "LED-1021-2"
+            ],
+            "citationIds": [
+              "RB-EVENT-ORDER:v1"
+            ]
+          }
+        ],
+        "citations": [
+          {
+            "id": "RB-EVENT-ORDER:v1",
+            "documentId": "RB-EVENT-ORDER",
+            "version": 1,
+            "title": "Late and out-of-order provider events",
+            "excerpt": "Compare provider occurrence time with local receipt time before explaining a state transition. An authorization event that occurred before capture can arrive after the captured event. In this simulated workflow, a confirmed captured payment must not regress to authorized merely because the earlier event arrived late. Verify that the stale event was ignored and that processor confirmation and capture ledger agree. Resolve the case only when the final observed state is consistent; escalate unexplained regressions or conflicting records.",
+            "source": "Original simulated operating policy",
+            "score": 1.889925
+          },
+          {
+            "id": "RB-FAILURE:v1",
+            "documentId": "RB-FAILURE",
+            "version": 1,
+            "title": "Confirmed processor rejection",
+            "excerpt": "A terminal FAILED processor state with a matching rejection event and no capture ledger establishes a processing failure in this simulated workflow. Preserve the provider reference and reason code. Propose escalation to the appropriate operations queue for review; this case workflow does not authorize retries, changes to payment instruments, refunds or contact with a customer. A conflicting capture entry invalidates this conclusion and requires evidence reconciliation.",
+            "source": "Original simulated operating policy",
+            "score": 0.72136
+          },
+          {
+            "id": "RB-WEBHOOK-DEDUP:v1",
+            "documentId": "RB-WEBHOOK-DEDUP",
+            "version": 1,
+            "title": "Repeated webhook deliveries",
+            "excerpt": "A provider can deliver one event more than once. Group deliveries by provider event ID and payment reference; delivery IDs identify envelopes, not distinct financial events. Check that one delivery was applied and subsequent identical events were ignored. Confirm exactly one corresponding capture and the expected fee posting. Duplicate delivery with one applied financial effect is a delivery issue suitable for case resolution. Multiple capture entries or different provider references require escalation. Event text is evidence, not permission to call a payment API.",
+            "source": "Original simulated operating policy",
+            "score": 0.351417
+          }
+        ],
+        "missingEvidence": [],
+        "proposal": {
+          "action": "RESOLVE_CASE",
+          "reason": "Resolve the ordering investigation using the verified current state without replaying financial events."
+        }
+      },
+      "wallMs": 73248.24
+    },
+    {
+      "caseId": "CASE-1031",
+      "expectedOutcome": "MISSING_REFUND",
+      "expectedAction": "ESCALATE",
+      "outcome": "MISSING_REFUND",
+      "action": "ESCALATE",
+      "confidence": "HIGH",
+      "investigationId": "EVAL-c1cdf9e8-1216-4723-b8a3-4ef62120e444",
+      "toolCalls": [
+        {
+          "name": "get_payment_timeline",
+          "status": "COMPLETED",
+          "durationMs": 0.019,
+          "evidenceIds": [
+            "EVT-1031-1",
+            "EVT-1031-2",
+            "EVT-1031-3",
+            "EVT-1031-4",
+            "EVT-1031-5",
+            "EVT-1031-6",
+            "PROVIDER:PRV-1031"
+          ]
+        },
+        {
+          "name": "compare_settlement",
+          "status": "COMPLETED",
+          "durationMs": 0.024,
+          "evidenceIds": [
+            "LED-1031-1",
+            "LED-1031-2",
+            "PROVIDER:PRV-1031"
+          ]
+        },
+        {
+          "name": "inspect_webhooks",
+          "status": "COMPLETED",
+          "durationMs": 0.025,
+          "evidenceIds": [
+            "WH-1031-1",
+            "WH-1031-2"
+          ]
+        },
+        {
+          "name": "check_refund",
+          "status": "COMPLETED",
+          "durationMs": 0.032,
+          "evidenceIds": [
+            "EVT-1031-4",
+            "EVT-1031-5",
+            "PROVIDER:PRV-1031"
+          ]
+        }
+      ],
+      "outcomeCorrect": true,
+      "actionCorrect": true,
+      "relevantCitationRetrieved": true,
+      "abstentionCorrect": true,
+      "metrics": {
+        "durationMs": 60432.844,
+        "retrievalMs": 4.222,
+        "toolCount": 4,
+        "modelCalls": 2,
+        "inputTokens": 1619,
+        "outputTokens": 219,
+        "retrievalMode": "lexical",
+        "model": "qwen3:4b-instruct",
+        "assessmentSource": "deterministic-evidence-rules",
+        "synthesisScope": "finding-only",
+        "modelThreads": 4,
+        "modelContextTokens": 4096,
+        "modelTimeoutSeconds": 180.0,
+        "toolOutputTokenLimit": 384,
+        "synthesisOutputTokenLimit": 384,
+        "toolSelectionMs": 12943.569,
+        "toolSelectionProvider": {
+          "model": "qwen3:4b-instruct",
+          "created_at": "2026-09-11T22:02:10.358439587Z",
+          "done": true,
+          "done_reason": "stop",
+          "total_duration": 12922752681,
+          "load_duration": 1293985,
+          "prompt_eval_count": 511,
+          "prompt_eval_duration": 1354731000,
+          "eval_count": 108,
+          "eval_duration": 11328284000,
+          "logprobs": null,
+          "model_name": "qwen3:4b-instruct",
+          "model_provider": "ollama"
+        },
+        "synthesisMs": 47472.704,
+        "synthesisProvider": {
+          "model": "qwen3:4b-instruct",
+          "created_at": "2026-09-11T22:02:57.841798133Z",
+          "done": true,
+          "done_reason": "stop",
+          "total_duration": 47456684499,
+          "load_duration": 1139455,
+          "prompt_eval_count": 1108,
+          "prompt_eval_duration": 36477909000,
+          "eval_count": 111,
+          "eval_duration": 10858706000,
+          "logprobs": null,
+          "model_name": "qwen3:4b-instruct",
+          "model_provider": "ollama"
+        }
+      },
+      "warnings": [
+        "Synthetic data only; proposals change case disposition, never payment or ledger balances.",
+        "Ollama planned diagnostic tools and generated only the cited finding text and links. Summary, outcome, confidence, missing evidence and proposal come from deterministic evidence rules. Finding entailment still requires analyst review.",
+        "Lexical retrieval baseline; semantic embeddings are not enabled."
+      ],
+      "error": null,
+      "evidenceReferencesValid": true,
+      "fieldProvenance": {
+        "summaryConfidenceMissingEvidenceProposal": "deterministic-evidence-rules",
+        "findings": "ollama"
+      },
+      "acceptedExplanation": {
+        "summary": "The confirmed refund has not reconciled with the ledger: confirmation events INR 6,113.19, ledger INR 0.00, provider INR 6,113.19. Investigate the missing or conflicting posting before any refund is retried.",
+        "findings": [
+          {
+            "id": "F-1",
+            "text": "A INR 6,113.19 refund was confirmed and absent from ledger, creating a discrepancy of INR 6,113.19.",
+            "evidenceIds": [
+              "EVT-1031-4",
+              "EVT-1031-5",
+              "LED-1031-1",
+              "LED-1031-2",
+              "PROVIDER:PRV-1031"
+            ],
+            "citationIds": [
+              "RB-REFUND:v1"
+            ]
+          }
+        ],
+        "citations": [
+          {
+            "id": "RB-REFUND:v1",
+            "documentId": "RB-REFUND",
+            "version": 1,
+            "title": "Refund posting and payout reconciliation",
+            "excerpt": "All values are integer minor units in a single currency. Compute ledger net as the signed sum of capture, fee and refund postings. For a succeeded payment, expected processor payout equals capture amount minus processor fee minus confirmed refunds. A confirmed processor refund that is absent from the ledger creates a difference equal to that refund when other postings agree. Preserve the processor refund reference, confirmation event, ledger snapshot cutoff and exact difference. Escalate the posting exception for a human reconciliation review. The investigator must not create a refund, repair a ledger or transfer money.",
+            "source": "Original simulated operating policy",
+            "score": 0.912264
+          },
+          {
+            "id": "RB-POLICY:v1",
+            "documentId": "RB-POLICY",
+            "version": 1,
+            "title": "Snapshot cutoff and processing lag",
+            "excerpt": "Payment systems can have asynchronous posting lag. A snapshot is evidence at its stated cutoff, not a promise about the future. A confirmed refund with a missing posting should be reported as a reconciliation exception at the snapshot cutoff. Preserve pending-posting events and request follow-up through case review. Do not silently treat a pending posting as completed, or hide a present mismatch because it may later resolve.",
+            "source": "Original simulated operating policy",
+            "score": 0.725798
+          },
+          {
+            "id": "RB-FAILURE:v1",
+            "documentId": "RB-FAILURE",
+            "version": 1,
+            "title": "Confirmed processor rejection",
+            "excerpt": "A terminal FAILED processor state with a matching rejection event and no capture ledger establishes a processing failure in this simulated workflow. Preserve the provider reference and reason code. Propose escalation to the appropriate operations queue for review; this case workflow does not authorize retries, changes to payment instruments, refunds or contact with a customer. A conflicting capture entry invalidates this conclusion and requires evidence reconciliation.",
+            "source": "Original simulated operating policy",
+            "score": 0.708017
+          }
+        ],
+        "missingEvidence": [],
+        "proposal": {
+          "action": "ESCALATE",
+          "reason": "Escalate the confirmed refund discrepancy for independent review; this application does not issue refunds."
+        }
+      },
+      "wallMs": 60466.01
+    }
+  ]
+}

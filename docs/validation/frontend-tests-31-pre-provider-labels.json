@@ -1,0 +1,118 @@
+{
+  "status": "passed",
+  "evidenceCollectedAtUtc": "2026-09-11T20:57:29.185493+00:00",
+  "collectionMethod": "Transcribed the already completed Vitest/native-build console output and extracted the local Docker build log; no tests were rerun to create this receipt.",
+  "revision": "Exact INR display using integer BigInt quotient and remainder; retains synthesis provenance UI.",
+  "frontendTests": {
+    "command": "npm test",
+    "workingDirectory": "apps/web",
+    "vitestVersion": "5.0.0",
+    "startedAtLocal": "2026-09-12T02:24:34+05:30",
+    "observedDurationSeconds": 3.61,
+    "testFilesPassed": 2,
+    "testsPassed": 31,
+    "failed": 0,
+    "commandExitCode": 0,
+    "rawJUnitGenerated": false,
+    "rawVitestReportGenerated": false,
+    "evidence": "Agent tool console result, not a JUnit/XML report.",
+    "testsRerunDuringReceiptCreation": false
+  },
+  "formatting": {
+    "command": "node node_modules/prettier/bin/prettier.cjs --write src/api.ts src/api.test.ts",
+    "status": "passed"
+  },
+  "nativeProductionBuild": {
+    "command": "npm run build",
+    "status": "passed",
+    "commandExitCode": 0,
+    "viteVersion": "8.3.0",
+    "observedViteBuildMilliseconds": 291,
+    "javascriptBundle": "dist/assets/index-Cb1gU5K5.js",
+    "javascriptBundleSha256": "70158ab63411a0e4a4f65831488369c96f8fbf59177fceffbcf96fe71687c2c2"
+  },
+  "dockerBuild": {
+    "command": "docker compose --progress plain build web",
+    "status": "passed",
+    "commandExitCode": 0,
+    "image": "payment-operations-investigator-web:latest",
+    "imageManifestList": "sha256:978d5fb67a8159dfd9af46b75d509ba3d414c67b76809983bf5479c5a8f9868b",
+    "buildExecutedNpmRunBuild": true,
+    "dependencyInstallUsedCachedLayer": true,
+    "observedViteBuildMilliseconds": 208,
+    "logPath": "apps/web/runtime-money-build.log",
+    "logSha256": "04a77c57f5796ed7a344ca6e15a397fa5f155966d66b22c86f73f6cc96527a72",
+    "relevantObservedLines": [
+      "#13 [build 6/6] RUN npm run build",
+      "#13 0.970 dist/assets/index-Cb1gU5K5.js   276.51 kB │ gzip: 84.38 kB",
+      "#13 0.971 ✓ built in 208ms",
+      "#16 exporting manifest list sha256:978d5fb67a8159dfd9af46b75d509ba3d414c67b76809983bf5479c5a8f9868b 0.0s done",
+      " Image payment-operations-investigator-web Built "
+    ]
+  },
+  "moneyRegression": {
+    "previousAlgorithm": "Intl.NumberFormat(...).format(minorUnits / 100)",
+    "newAlgorithm": "Validate Number.isSafeInteger; BigInt quotient/remainder; Intl.formatToParts on exact whole rupees; replace fraction with the exact two-digit remainder.",
+    "currencyScope": "INR with Indian grouping and two decimal digits.",
+    "addedTests": 7,
+    "amountExamplesChecked": 26,
+    "demonstratedBeforeAfter": [
+      {
+        "minorUnits": 9007199254740982,
+        "before": "₹9,00,71,99,25,47,409.81",
+        "after": "₹9,00,71,99,25,47,409.82"
+      },
+      {
+        "minorUnits": 9007199254740991,
+        "before": "₹9,00,71,99,25,47,409.90",
+        "after": "₹9,00,71,99,25,47,409.91"
+      }
+    ],
+    "beforeEvidence": "Coordinating agent reproduced the prior Number-division formatter in Node before requesting this fix.",
+    "afterEvidence": "Exact string assertions passed in this 31-test run.",
+    "coverage": [
+      "Both positive safe-integer boundary examples and their negative equivalents.",
+      "Zero, one paise, original CASE-1001/1002/1003 amounts and Indian lakh/crore grouping.",
+      "Negative zero and -1, -9, -82, -99, -100 and -101 paise retain their sign and two digits.",
+      "Unsafe integers, fractional numbers, NaN and infinities render Invalid amount."
+    ],
+    "invalidInputDisplay": "Invalid amount"
+  },
+  "sourceProvenance": {
+    "method": "SHA-256 of working source/configuration after the passing checks. No application source changed between those checks and this receipt; README additions occurred afterward. This is not a source extraction from the Docker image.",
+    "filesHashed": 17,
+    "filesSha256": {
+      "apps/web/.dockerignore": "ed2fa12d7d82715b94448c2a8fdf65c7af47f15f16f5054b13a5108e0cf98324",
+      "apps/web/Dockerfile": "8d94bcac77609093c01f2c18acfaa499dd1cc5061393fa3ca49f9f060b884f11",
+      "apps/web/index.html": "7a88f99132d1d8cbf147fbee5de6fcf9285136b912a8f8074f47168f50c11c32",
+      "apps/web/nginx.conf": "b3f39e28e4e295e02b88f6e22ced7c8ccfeb39b9a4e659566ae9bde5b897e0c7",
+      "apps/web/package-lock.json": "4136fea4dcb470fb3f83ff680f5b6dfc651bbc65a83d0dc23431a509b22da08c",
+      "apps/web/package.json": "591bb352b21ce96b85941efcff2815f9416dcfd918e2cd46c575122a608042b0",
+      "apps/web/src/api.test.ts": "0cb66e69ee2ce5cc5627675832131bc2e84daade80dc032d3d8b556f7abd7f0d",
+      "apps/web/src/api.ts": "a2408d993295cdbbca8636d1f7c93511ae4f347f000f6b87f02fe57161cfa9ce",
+      "apps/web/src/App.test.tsx": "7704bd4c56ae660e7e72175ca9b3e6b55cb105d787fb7ee4f7a06840e2c61ebb",
+      "apps/web/src/App.tsx": "98d78ebd4c3d691c8c763bee5b1359b4f17593dfc6f10852b27a7b2999979eeb",
+      "apps/web/src/main.tsx": "b8c1e566187ea5d53bf9b4c2f4cd8fc8193b4958afa219e57d39b76153f4fb20",
+      "apps/web/src/styles.css": "bbcaf6cc7a45dcb0596a70069675e37eeec20932fbd4eac80b3aa014c06f4822",
+      "apps/web/src/test-setup.ts": "475c7500129ce15530c7b8070b2838a840f96ac75ce83a0a413ef66ae24b5d64",
+      "apps/web/src/types.ts": "7c36799d35c9629d4d56186cb719ee795274cf04996e13abf45f903f6c0506ee",
+      "apps/web/src/vite-env.d.ts": "65996936fbb042915f7b74a200fcdde7e410f32a669b1ab9597cfaa4b0faddb5",
+      "apps/web/tsconfig.json": "23090ea4d94a9e5399789123db2620215ec5c26f8430171dd3d399618d17a4bf",
+      "apps/web/vite.config.ts": "33666f715738218ce6f0fb1661a64bffcbccd06112b97b7ab4f6971d4a6db5ab"
+    }
+  },
+  "previousProvenanceRevision": {
+    "testsPassed": 24,
+    "imageManifestList": "sha256:de9516b58d68fc2495f704693e3fd80cc19c63c29ca483efc3a61a9724596578",
+    "logPath": "apps/web/runtime-synthesis-build.log",
+    "logSha256": "bcb27a00529be64b0682a9ed2a6bef180459275380051314e68233de8aaaf884",
+    "status": "historical; precedes exact-money fix"
+  },
+  "limitations": [
+    "No raw JUnit/Vitest report was produced for these frontend checks; the test result is preserved from the executed console output.",
+    "Build logs and generated bundles are local runtime artifacts excluded from source packaging; this receipt preserves their identities and observed summaries.",
+    "No browser journey was rerun for this money change; earlier browser observations remain separately scoped.",
+    "No service deployment or model call was performed in this frontend task.",
+    "Java/API money validation remains authoritative; this change prevents display rounding and visibly rejects invalid frontend inputs."
+  ]
+}

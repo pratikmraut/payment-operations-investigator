@@ -1,0 +1,45 @@
+{
+  "status": "passed",
+  "timestamp": "2026-09-11T23:16:09.845069+00:00",
+  "mode": "replay",
+  "baseUrl": "http://127.0.0.1:5178",
+  "checks": [
+    "health",
+    "anonymous access denied",
+    "all four demo roles authenticate",
+    "tenant-scoped list",
+    "cross-tenant detail denied",
+    "viewer mutation denied",
+    "CSRF required",
+    "actual worker investigation with evidence and citations",
+    "case version/state refreshed",
+    "analyst cannot approve",
+    "stale version rejected",
+    "review persisted and idempotent retry returned same decision",
+    "idempotency key payload conflict",
+    "authorized export contains durable evidence without labels",
+    "audit trail",
+    "maker-checker self review denied",
+    "knowledge library tenant scope"
+  ],
+  "durationSeconds": 0.706,
+  "caseId": "CASE-1002",
+  "investigationId": "INV-7c75bfb9-5622-4e8d-aba3-45d9770e4cd2",
+  "decisionId": "DEC-c3f8c064-1060-4b31-a279-3355e72e2fd2",
+  "modelMetrics": {
+    "durationMs": 10.933,
+    "retrievalMs": 3.348,
+    "toolCount": 4,
+    "modelCalls": 0,
+    "inputTokens": 0,
+    "outputTokens": 0,
+    "retrievalMode": "lexical",
+    "model": "deterministic-replay",
+    "assessmentSource": "deterministic-evidence-rules",
+    "synthesisScope": "deterministic-replay"
+  },
+  "limitations": [
+    "Local demo authentication; this acceptance run does not establish production security.",
+    "Acceptance scenarios are development cases, not held-out benchmark results."
+  ]
+}

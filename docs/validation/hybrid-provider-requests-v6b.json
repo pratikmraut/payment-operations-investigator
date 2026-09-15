@@ -1,0 +1,22 @@
+{
+  "status": "passed",
+  "timestamp": "2026-09-11T23:28:38.5615705Z",
+  "probe": "docs/validation/live-hybrid-java-v6b.json",
+  "probeSha256": "3c80cdcd62bdfabbb8b1fc82546cd708fb9beee1f469bed3b3369f5284bdf1b6",
+  "providerLog": "runtime/ollama-hybrid-v6b.log",
+  "providerLogSha256": "458ac8fc511ad233ed7071547db6957eb106102834bc6b32ce01182b6f9276c8",
+  "requestLines": [
+    "ollama-1  | [GIN] 2026/09/11 - 23:19:13 | 200 |  8.067132919s |      172.19.0.6 | POST     \"/api/chat\"",
+    "ollama-1  | [GIN] 2026/09/11 - 23:19:13 | 200 |  630.305071ms |      172.19.0.6 | POST     \"/api/embed\"",
+    "ollama-1  | [GIN] 2026/09/11 - 23:19:41 | 200 | 28.025919353s |      172.19.0.6 | POST     \"/api/chat\""
+  ],
+  "successfulChatRequests": 2,
+  "successfulEmbeddingRequests": 1,
+  "runtime": "docs/validation/runtime-v6b-hybrid.json",
+  "savedResultAndVectorReview": "docs/validation/v6b-live-planner-hybrid-review.json",
+  "limitations": [
+    "Server log lines corroborate the known serial probe window; no distributed request identifier joins these requests.",
+    "Investigation modelCalls counts chat stages and excludes the embedding request.",
+    "The original provider log is local runtime evidence and excluded from the portable source archive; exact request lines and its digest are retained here."
+  ]
+}

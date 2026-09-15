@@ -1,0 +1,95 @@
+{
+  "recordedAt": "2026-09-12T10:33:56.006946+00:00",
+  "scope": "Synthetic OBPM NEFT component/build evidence plus approved coordinator web-only deployment and browser served-bundle/label verification; no real Oracle connection.",
+  "tests": {
+    "command": "npm test",
+    "passed": 44,
+    "failed": 0,
+    "files": 3,
+    "evidence": "runtime/obpm-copy-tests.log",
+    "sha256": "790cd6c03acc5bc0c0c5f17b14df411e63c16a3e6a3fa13c828e2839d53453f6"
+  },
+  "nativeBuild": {
+    "command": "npm run build",
+    "status": "passed",
+    "evidence": "runtime/obpm-copy-build.log",
+    "sha256": "8b8fcc70b304b4c1a0867384d56c00d106664f4d50e5e65ad46085e3b880d312"
+  },
+  "dockerBuild": {
+    "command": "docker compose --progress plain build web",
+    "status": "blocked",
+    "reason": "Docker Hub base metadata HTTPS i/o timeout; node:22-alpine and nginx:alpine are not locally tagged images",
+    "evidence": "runtime-obpm-docker-build.log",
+    "sha256": "be9b24bc798bbc076a46b581cddfcfc7c49023604328dbd5129e80ee844c982b",
+    "imageId": null
+  },
+  "sourceHashes": {
+    "src/App.tsx": "8f23717b660985b4c7680f26b3b751ede6829a6d2b631807818532a5ce8a8b59",
+    "src/Obpm.tsx": "ae3d78e79cf89992470c6c9b81d85481cf72081faf2514cc4ae72ea2fcb532df",
+    "src/Obpm.test.tsx": "f709d10643ccbc53fb9a024a31e95249a89ba323335f579c157115583c1ba638",
+    "src/types.ts": "eef8e5a69bca9fdac39b4e5e5a973cba1fd55bf8045a39dee5a02f62940acdc1",
+    "src/styles.css": "7e926f818c1a9a6b0eef6f62df19fe30c108981cf835112a5bcd2c7e97579e3c",
+    "src/api.ts": "a2408d993295cdbbca8636d1f7c93511ae4f347f000f6b87f02fe57161cfa9ce",
+    "package.json": "591bb352b21ce96b85941efcff2815f9416dcfd918e2cd46c575122a608042b0",
+    "package-lock.json": "4136fea4dcb470fb3f83ff680f5b6dfc651bbc65a83d0dc23431a509b22da08c",
+    "README.md": "509a6b58409e7d6d2a6f791f54c6a1b4c2477d10f0ec6a67744fd8855b4284cf"
+  },
+  "bundleHashes": {
+    "dist/assets/index-C01pCy0K.css": "b63d9ebeb8d16f77b5b6b4c3349ac69c75770367943b8a890d59736068fe698b",
+    "dist/assets/index-DWrrXBGX.js": "b4249be6d5c6ebe2c59336d729e01d4218eafdd42048549ada5cd46975cc29aa",
+    "dist/index.html": "891cd31c8f8ff631622c1b851cbe26cd0fb57d870c207f347b4d31706b657cf6"
+  },
+  "historicalRelease": {
+    "tests": 34,
+    "imageId": "sha256:ab12ff1818841ed981deff5ede030b40bdbae6dc2c4fe8fb2d64445729c6aaa8",
+    "receipt": "../../docs/validation/frontend-tests.json",
+    "preserved": true
+  },
+  "limits": [
+    "Offline packaging uses the tested native bundle; not a fresh Linux npm build.",
+    "Initial-helper copy is verified by component behavior test and packaged bundle; no extra case was imported merely to render that empty state in browser.",
+    "Full 16-check OBPM browser workflow preceded the two copy changes and is preserved separately; no functional replay or model rerun was needed for copy recheck.",
+    "Real Oracle mapping and live Oracle connection are unverified."
+  ],
+  "updatedAt": "2026-09-12T10:58:11.697020+00:00",
+  "offlineImage": {
+    "status": "passed",
+    "tag": "payment-operations-investigator-web:obpm-v1-copy",
+    "imageId": "sha256:ce018424d275f4cf051283f0fca95311e603f17240c51c5e86699f0569827312",
+    "baseImageId": "sha256:35b1bb4a44220395f791d7d6b1816d03a7eb51af552ceec0348cdf55e79b28b6",
+    "command": "DOCKER_BUILDKIT=0 docker build --pull=false --network=none -t payment-operations-investigator-web:obpm-v1-copy runtime/offline-web-copy",
+    "method": "Copy the tested native static bundle into the current local web image; no fresh Linux npm build.",
+    "buildKitScope": "Previous process environment restored",
+    "log": "runtime/obpm-copy-offline-image-build.log",
+    "logSha256": "e083f1bc39083a80149e1dd8a858086e2db6df05d00dbed21193cb8405301676",
+    "recipe": "runtime/offline-web-copy/Dockerfile",
+    "recipeSha256": "3235c18f08c8fc3f1738a0604281c14fa713229271e80fe1d49a83e54875d8b1",
+    "verification": {
+      "bundleHashMatch": true,
+      "nginxConfig": "nginx -t passed in network-none temporary container, api:127.0.0.1 mapping for config parsing"
+    },
+    "deployed": true
+  },
+  "historicalObpmReceipt": {
+    "path": "validation-obpm-pre-copy.json",
+    "sha256": "0a6cbb1234bcc50fb88d76f4001b053b44865400bd6d2dc551e1483515e1b6fe"
+  },
+  "deployment": {
+    "status": "deployed-and-observed",
+    "runningImageId": "sha256:ce018424d275f4cf051283f0fca95311e603f17240c51c5e86699f0569827312",
+    "runningContainerId": "17fe3fb1175453ae1ea2eafb65f3b155f19be860243cb1457c81486d9dc86797",
+    "executedBy": "Coordinating root agent after automatic approval",
+    "authorizationHistory": {
+      "initialRejection": {
+        "status": "blocked-by-automatic-approval-review",
+        "runningImageId": "sha256:35b1bb4a44220395f791d7d6b1816d03a7eb51af552ceec0348cdf55e79b28b6",
+        "pendingImageId": "sha256:ce018424d275f4cf051283f0fca95311e603f17240c51c5e86699f0569827312",
+        "reason": "Automatic review described latest retag and web restart as unrequested deployment beyond build/QA scope. No retag or restart executed. Root is resolving recorded authorization; no workaround or retry by this agent."
+      },
+      "resolution": "Coordinator reported resubmitting the same web deployment to automatic review with original user coding authorization, earlier approved loopback deployment and verified candidate evidence. Review approved it; same web-only operation executed, not a bypass."
+    },
+    "browserObservedBundle": "/assets/index-DWrrXBGX.js",
+    "browserReceipt": "../../docs/validation/obpm-browser.json",
+    "unchangedOriginalCase": "OBPM-01267fa9f71b0442424f74c232386c8f remains AWAITING_REVIEW with one saved investigation"
+  }
+}

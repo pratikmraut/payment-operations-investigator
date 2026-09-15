@@ -1,0 +1,69 @@
+{
+  "version": "native-ollama-benchmark-v1",
+  "createdAt": "2026-09-13T16:54:16.633650Z",
+  "profile": "native-ollama-experiment",
+  "status": "completed",
+  "errorCode": null,
+  "chatRequestsAttempted": 1,
+  "baselineConfigurationModifiedByHarness": false,
+  "inputKind": "synthetic",
+  "evidenceHash": "7d7ba305f088f3b4b0b32adc11055e14abaf487f4b8262947824549dfe66c782",
+  "requestHash": "b5b4da94387d8462dcd37c8265815473f226d213f84cc29d4416881960d795fc",
+  "payloadHash": "0a9413f1158bf1e9c2eb3c825c7e9041d8836237ffbde2e5d0ecc324929937d9",
+  "questionHash": "b741a13e02fb6994fdd967e4fb772b4873eb3ca7dc0aa518e239ac7200aa622e",
+  "baselineReceiptSha256": null,
+  "baselineRequestMatches": null,
+  "sourceHashes": {
+    "services/investigator/investigator/uat_answer.py": "bcea6c6042c2afd376cc8cc56a1be661142555db8765fc9d5116415a5240312c",
+    "services/investigator/investigator/config.py": "28599f491e7295cba122c6c0b7f14dcf92f67dd00c6c1557ccae263a1d7cf4fd",
+    "services/investigator/pyproject.toml": "7333fda9ef4075252712862f6bd0c206b4314e51d85a6a6d7c6c16066e7fa918",
+    "infra/compose.uat-qa.yaml": "58b9cb1ec6bc6736929ab42efde9e4d7cfc7a8674a355e2f5b877d9f34e3586b"
+  },
+  "packages": {
+    "langchain-ollama": "1.1.0",
+    "ollama": "0.6.2",
+    "pydantic": "2.13.5",
+    "httpx": "0.28.1"
+  },
+  "settings": {
+    "model": "qwen3:8b",
+    "num_ctx": 32768,
+    "num_thread": 4,
+    "num_predict": 1400,
+    "temperature": 0,
+    "think": false,
+    "stream": false,
+    "keep_alive": "1800s"
+  },
+  "wallCapSeconds": 360.0,
+  "wholeRunWallMs": 30292,
+  "chatWallMs": 28784,
+  "ollamaVersion": "0.34.0",
+  "modelDigest": "500a1f067a9f782620b40bee6f7b0c89e17ae61f686b92c24933e4ca4b2b8b41",
+  "quantizationLevel": "Q4_K_M",
+  "reportedTimingNanosecondsAndCounts": {
+    "total_duration": 28781887000,
+    "load_duration": 18359070100,
+    "prompt_eval_duration": 5004602000,
+    "eval_duration": 5385471000,
+    "prompt_eval_count": 1147,
+    "eval_count": 77
+  },
+  "rates": {
+    "promptTokensPerSecond": 229.189,
+    "completionTokensPerSecond": 14.298
+  },
+  "loadedBefore": null,
+  "loadedAfter": {
+    "modelDigest": "500a1f067a9f782620b40bee6f7b0c89e17ae61f686b92c24933e4ca4b2b8b41",
+    "sizeBytes": 9952873676,
+    "gpuAllocatedBytes": 9952873676,
+    "contextLength": 32768,
+    "backendIdentity": "not-established-by-api"
+  },
+  "rawResponseSha256": "559487915d82dfe549daf55a1a6a71914a189aee7f615fbc151827de95dbfdd9",
+  "validation": "structure-and-source-membership-only",
+  "semanticReview": "not-performed-by-harness",
+  "gpuBackend": "requires-native-log-review",
+  "timeoutLimit": "Client process is terminated at deadline; server cancellation must be verified separately."
+}

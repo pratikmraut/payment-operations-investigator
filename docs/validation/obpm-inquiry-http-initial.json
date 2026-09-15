@@ -1,0 +1,19 @@
+{
+  "status": "FAIL",
+  "executedAt": "2026-09-12T16:47:24.297232+00:00",
+  "mode": "replay",
+  "baseUrl": "http://127.0.0.1:5178",
+  "scope": "Original synthetic mock inquiry -> actual Java mapper/PostgreSQL/worker HTTP path; no Oracle connection or browser check",
+  "checks": [
+    "actual Java API healthy; analyst, viewer and second-tenant sessions authenticate"
+  ],
+  "imports": [],
+  "investigations": [],
+  "failure": {
+    "type": "AssertionError",
+    "message": "POST /api/obpm/inquiries: expected 401, got 403; {\"requestId\":\"1c4797c6-ba4c-4588-9e8c-f247e7996799\",\"message\":\"Role or CSRF token does not permit this request.\",\"code\":\"FORBIDDEN\"}"
+  },
+  "checkCount": 1,
+  "durationSeconds": 0.428,
+  "modelCalls": 0
+}

@@ -1,0 +1,265 @@
+# Shared implementation contract
+
+Saved Payment cases support [lifecycle controls](CASE_LIFECYCLE.md): active/archived queue filtering, scoped Archive/Restore and administrator removal. Existing cases default to ACTIVE; lifecycle changes use separate versions, idempotent commands and audit records. Archived evidence, answers and reports remain readable.
+
+Saved Payment cases now expose a persistent string `caseNumber` in `YYYYMMDD` + five-digit sequence format, alongside the unchanged internal ID. Both identifiers work on authorized case HTTP routes; child bindings use the resolved internal ID. Number allocation, migration, timezone and compatibility are documented in [CASE_NUMBERS](CASE_NUMBERS.md).
+
+The [UAT Excel preparation](UAT_EXCEL_HANDOFF.md) adds an offline `neft-uat-stage-v1` envelope, not an HTTP import payload. It retains classification UAT in private local staging. This preparation adds no application endpoint or Oracle connection.
+
+The subsequent [local UAT model Q&A](UAT_MODEL_QA.md) adds separate authenticated `/api/uat/snapshots` and question/history routes plus worker `/uat/answer`. These consume configured private export snapshots and generate new prose with the local model. They do not use the synthetic OBPM importer or alter case decisions. The original staging envelope remains separate. See that document for the optional Compose configuration, canonical evidence hash, bounded source contract and validation limits.
+
+Status: implemented contract updated 2026-09-14. The original synthetic case API uses UTC ISO-8601 timestamps, signed integer minor-unit money plus ISO currency, and camelCase JSON. The optional UAT workspace instead preserves source DATE strings without inventing a timezone, exact source decimal strings, and native field names inside document contents. The machine-readable [openapi.json](openapi.json) currently covers the synthetic routes; the separate UAT routes are documented in [UAT_MODEL_QA.md](UAT_MODEL_QA.md) and are not yet included in that schema. Dated validation receipts distinguish current and historical implementations.
+
+## Payment discovery and saved payment cases
+
+The optional [FLEXCUBE wire adapter](FLEXCUBE_INTEGRATION.md) consumes the supplied PO01 (`NEFTPaymentDiscoveryInquiryService`) and PO02 (`NEFTEvidenceInquiryService`) contracts using server-built `args0`/`args1` and camelCase result arrays. Browser-facing endpoints below remain unchanged. `CANONICAL` retains the earlier flat wire contract as the default for compatibility; `FLEXCUBE` is explicit configuration. New installations keep discovery MOCK and evidence acquisition disabled until deliberate activation. Configuration and offline payload checks do not establish live connectivity; consult dated validation results for the active deployment.
+
+PO02 provenance schema `flexcube-neft-evidence-v2` additionally records optional DTO omissions in `omittedFields`, with one-based `{group,rowIndex,field}` native-column paths. Explicit nulls remain in `nullFields`; raw response, cited source rows and timeline preserve the distinction. Existing v1 versions remain readable without rewriting their fingerprints. Required row identity/query metadata, scope validation and explicit four-array requirements remain enforced. TLS verification errors use `DISCOVERY_TLS_ERROR` / `CASE_EVIDENCE_TLS_ERROR` (503) and safe messages displayed by the frontend.
+
+The [payment discovery handoff](PAYMENT_DISCOVERY.md) documents the implemented reference/UTR lookup, multipart XLSX import, four-parameter inquiry adapter and persistent discovery-only case registry. These use `/api/payment-discovery/*` and `/api/payment-cases*`, separate from the original synthetic `/api/cases` and `/api/obpm/imports` contract. Read operations require a scoped session; acquisitions and case creation additionally require a writer and CSRF token. Case creation requires an idempotency key and a stored candidate ID.
+
+Default inquiry mode is explicitly labelled MOCK. Excel and configured bank records retain the legacy internal PRIVATE_UAT classification, displayed as Private evidence, exact decimal strings and source-local dates. No model request or full payment evidence acquisition occurs when opening a discovery case. The [proposed bank OpenAPI contract](payment-discovery-bank.openapi.json) describes the retained CANONICAL upstream operations: exact lookup (`orgBank`, `orgBranch`, `referenceType`, `reference`) and dated list (`orgBank`, `orgBranch`, `inquiryDate`, `recordCount`). It is not the raw FLEXCUBE service schema. Our application exposes POST `/api/payment-discovery/lookup` and `/api/payment-discovery/search` respectively; FLEXCUBE mode transforms those inputs into PO01. Exact lookup does not accept a date/count or substitute locally uploaded records. Bank/branch pairs are authorized server-side; bank code is part of payment identity. No bank endpoint has been contacted during local adapter validation.
+
+Discovery candidates and saved payment cases expose `hostSubsequences` as an array of integer strings or JSON `null`. `null` means unknown, distinct from `"0"`. FLEXCUBE nullable `referenceSubsequenceNumber`, CANONICAL nullable/empty `REF_SUBSEQ_NO`, and blank Excel subsequence cells normalize to this representation. The column must still be present, populated values must be exact integer text, and all scope/metadata checks still apply. Known values sort numerically before a single unknown marker; raw row observations remain preserved. Resuming an older saved case does not overwrite its original array or receipt.
+
+## Versioned evidence on a saved payment case
+
+[Case evidence](CASE_EVIDENCE.md) adds `/api/payment-cases/{caseId}/evidence` with list/detail, configuration and group-specific Excel-template GETs, plus `/inquiry`, `/excel`, `/manual` and `/json` POSTs. Reads require case scope; mutations additionally require a writer, CSRF and an 8–200-character idempotency key. Four groups (`PAYMENT`, `HOST`, `HISTORY`, `STATUS`) use the exact 87-column interface in `CaseEvidenceSchema`. Every native value remains text, with a 4,000-character limit and 500 rows per group. JSON and normalized combined evidence are bounded to 5 MiB; each of the four Excel files is also bounded to 5 MiB.
+
+Manual/JSON payloads contain exactly `schemaVersion: "fcr-case-evidence-v1"`, `payment: {reference, orgBank, orgBranch}`, `sourceTimezone`, and `sections`, with exactly `note` and `rows` for each group. The case identity is checked against storage. POST `/inquiry` accepts `{}`; Java derives the saved identity and calls a separately configured fixed HTTPS endpoint. CANONICAL mode sends the flat identity and requires per-group `acquisition` containing that identity, string `returnCode`, boolean `fetchCompleted`, offset `observedAt`, integer `rowCount` and boolean `hasMore`; only successful, fully fetched, untruncated groups are accepted. FLEXCUBE mode builds PO02 context, validates response status/correlation and maps the four explicit result arrays. It requires no invented acquisition object and retains UNVERIFIED completion. Neither mode has been verified against a deployed bank endpoint.
+
+Each save creates an immutable version with source provenance, row coverage, warnings and a fingerprint; retries return the original saved result. Excel/manual/JSON and FLEXCUBE source completion remains UNVERIFIED, including empty groups. CANONICAL API completion records the wrapper's validated report, not independent source verification. FLEXCUBE full snapshots additionally preserve hash-bound `upstream` request/raw-response provenance and native-null paths; summaries omit those bodies. Existing snapshot fingerprints are unchanged. Each wire response and normalized payload remains bounded to 5 MiB, with the combined stored snapshot bounded to 10 MiB. The case's evidence indicator changes, but its resolution status and original discovery observation remain intact. Evidence acquisition does not invoke a model or execute a payment. Full request/response shapes, endpoints, configuration and operator steps are in [the evidence handoff](CASE_EVIDENCE.md).
+
+## Current payment-case knowledge library
+
+Authenticated `GET /api/case-knowledge` returns exactly `{schemaVersion:"case-knowledge-library-v1",tenantId,evidenceSchema,version,embedding,items,warnings}` for the signed-in tenant. It permits viewer reads and does not query a bank, run a model, create embeddings or write cases. `version` is the canonical SHA-256 of the complete current standard-document list.
+
+`embedding` contains `{enabled,status,model,digest,dimensions,indexedAt,indexedDocuments,totalDocuments}`. Status is CURRENT, STALE, MISSING or DISABLED. Metadata is null without a readable index for this tenant; counts never include another tenant's private documents. `indexedDocuments` counts only matching current source hashes. Each item contains the standard `{id,kind,title,content,source}` document plus `version`, `category` (SCOPE/GUIDANCE/STATUS), `selection` (ALWAYS/EXACT_OR_SEMANTIC/SEMANTIC), and `embeddingStatus`. Item version hashes all five standard document fields, including source metadata. The response never exposes vectors or configured absolute index paths.
+
+Optional `poi.case-investigation.knowledge-index-file` enables `case-knowledge-index-v1` (4 MiB, ten unique tenants, 100 unique 1024-dimensional nonzero bounded vectors per tenant). Every current document ID/hash must match before a new question. Missing, malformed, incomplete or stale indexes leave the library readable but reject new questions with `503 CASE_KNOWLEDGE_INDEX_NOT_CURRENT`; source-contract failures return `CASE_KNOWLEDGE_UNAVAILABLE`. The blank default preserves the existing optional status-only workflow. This index is a tenant/evidence-schema knowledge source, not a verified bank/product/release approval registry.
+
+Indexed questions retain mandatory interpretation guidance and exact status definitions, run one search over the complete eligible index, and freeze selected original documents with `CASE-KNOWLEDGE-RETRIEVAL` before the durable answer job. No second status-only search occurs. Invalid scope or excessive source bounds are rejected before embedding; complete prompt bounds remain checked before generation. Existing saved answers and idempotent replays retain their original frozen input. Full schema, source recipe and lifecycle: [CASE_KNOWLEDGE](CASE_KNOWLEDGE.md).
+
+## Questions over saved case evidence
+
+The [case investigation contract](CASE_INVESTIGATION.md) adds GET `/api/payment-cases/{caseId}/workbench`, GET `/evidence/{evidenceId}/context`, POST `/investigations`, and GET `/investigations/{id}` under the saved case route. An authenticated writer submits only `{question,evidenceId,evidenceHash}` with CSRF and an idempotency key. Java returns HTTP 202 with a durable job and freezes the authorized source documents before dispatch to the preserved local worker. Viewer and writer reads remain case/tenant/bank/branch scoped.
+
+Jobs move through QUEUED, RUNNING and COMPLETED or FAILED. Completed detail includes the original generated claims and exact cited documents; failures have a fixed error message and no substitute answer. An explicit new question creates another job against its chosen evidence version. Saving answers does not change the payment/case outcome. The OpenAPI file for the original synthetic API does not yet include these additional case endpoints.
+
+The superseding [case RAG pipeline](CASE_RAG.md) uses service-authenticated worker `POST /case/answer` for new saved Payment case questions. Its input remains `{question,snapshotId,evidenceHash,documents}`. Its output extends the original cited-claim response with required `rag: {pipeline,promptHash,checks,claimSupports}`. Pipeline is `case-evidence-rag-v1`; each ordered support entry contains `{claimIndex,claimType,fields:[{documentId,field,value}]}`. New jobs record `answerContract` with that pipeline ID. Old saved answers retain their original validation; the original `/uat/answer` route and export baseline remain unchanged.
+
+Case answers require 1–4 claims, 1–3 unknowns and 1–3 next checks, with at most 2,000 characters per prose item and six checked field quotations per claim. The model generates only the original `{text,evidenceIds}` claim shape and follow-up prose. Code attaches metadata after checking recognized literal native field quotations against the cited rows; it does not require model-authored proof objects. `rag.checks` is exactly `["source-membership","literal-field-quotations","required-unknowns-and-next-checks"]`. A `source-cited` claim can cite evidence or guidance and have no checked fields. Existing observation/interpretation categories require populated exact fields; interpretations also need a knowledge citation. Java rechecks source-document equality, any populated field/value supports, metadata and original claim composition. Unparsed prose remains source-cited rather than field-verified. These checks do not establish semantic entailment, applicable status meanings or final payment outcomes. Full metadata and bounds are in [CASE_RAG](CASE_RAG.md#inspectable-support-contract).
+
+A first case-response validation failure may trigger one model correction with the same question/sources and bounded validation feedback. The second response must satisfy the same checks; there is no code-written replacement prose or further correction loop. Provider errors, truncation and timeouts are not retried. Case `model.actualCalls` is restricted to 1 or 2. Reported token counts and generation duration include both attempts, with unknown token counts remaining null. Each attempt uses half the configured provider timeout. This is specific to `/case/answer`; the original export worker remains unchanged.
+
+The main `/cases` queue now shows saved Payment cases without the Demo cases tab. This navigation change preserves the legacy synthetic APIs, fixtures and direct case routes; it does not delete historical investigations or turn legacy Replay results into local-model answers.
+
+## Layout and ownership
+- services/api: Java Spring Boot authoritative business API.
+- services/investigator: Python FastAPI + actual LangChain/LangGraph worker.
+- apps/web: React + Vite + TypeScript frontend.
+- data/fixtures/cases.json: root-generated synthetic operational data; no ground-truth labels.
+- data/knowledge/runbooks.json: original versioned guidance; worker can read this.
+- data/obpm/samples: original synthetic normalized NEFT snapshots for the authenticated sample catalog.
+- data/knowledge/obpm-runbooks.json: original OBPM-specific sidecar guidance, scoped by domain, rail, direction, release family, tenant and date.
+- data/evaluation/labels.json: ground truth, ONLY evaluation harness, never served to worker or UI.
+- docs: plans, architecture, flows, decisions, validations.
+- Scripts/Compose owned by root; other authors coordinate changes.
+
+## Case fixture schema
+cases.json is an array:
+{
+"id":"CASE-1001","tenantId":"northstar","paymentId":"PAY-1001",
+"title":"Payment request timed out","description":"Customer received a timeout after submitting...",
+"priority":"HIGH","status":"OPEN","amountMinor":100000,"currency":"INR",
+"rail":"SIMULATED_TRANSFER","merchant":"Juniper Supplies","createdAt":"2026-09-11T09:00:00Z","updatedAt":"2026-09-11T09:04:00Z","version":1,
+"events":[{"id":"EVT-...","occurredAt":"...","type":"REQUEST_ACCEPTED","source":"gateway","status":"SUCCESS","summary":"...","correlationId":"COR-...","attributes":{"idempotencyKey":"IDEM-...","providerPaymentId":"PRV-..."}}],
+"ledgerEntries":[{"id":"LED-...","type":"CAPTURE","amountMinor":100000,"currency":"INR","occurredAt":"...","reference":"PRV-..."}],
+"webhooks":[{"id":"WH-...","providerEventId":"PEVT-...","type":"payment.captured","occurredAt":"...","receivedAt":"...","processingStatus":"APPLIED","providerPaymentId":"PRV-..."}],
+"provider":{"status":"SUCCEEDED","paymentId":"PRV-...","amountMinor":100000,"feeMinor":3000,"refundMinor":0,"payoutMinor":97000,"asOf":"..."},
+"policyDate":"2026-09-11","tags":["timeout","payments"]
+}
+Case list excludes events/ledgerEntries/webhooks/provider; case detail includes them. Current OBPM list entries retain their `obpm` payload and evidence version/hash. No hidden answers/scenarioFamily field in operational data.
+
+For generic simulated-payment cases, Java augments detail snapshots with a reconciliation summary containing currency, signed ledger totals, processor payout, discrepancy and providerAvailable. Known amounts are overflow-checked integer minor units. Unknown provider totals remain null with providerAvailable=false. The worker validates and consumes these authoritative facts when present. A standalone worker benchmark uses a separately documented local calculation path. OBPM uses the distinct unknown-only reconciliation shape described below.
+
+Before storing a new `RESOLVE_CASE` proposal, Java requires its authorized snapshot to have `reconciliation.calculatedBy="java-api"`, `validMoney=true`, `providerAvailable=true`, an integer `providerPayoutMinor`, and a known integer `discrepancyMinor=0`. Null or absent reconciliation values never count as zero. Resolution also requires a finding linked to authorized operational evidence and a returned policy citation, an outcome other than `INSUFFICIENT_EVIDENCE`, and confidence other than `INSUFFICIENT`. A worker resolution proposal that fails these checks returns HTTP 503 with `INVALID_WORKER_RESPONSE`; Java records an `INVESTIGATION_FAILED` audit event and stores no investigation or case transition.
+
+Public JSON monetary values are restricted to the exact JavaScript integer range, -9007199254740991 through 9007199254740991. Java rejects imported amounts, calculated reconciliation values and dashboard aggregates outside that range. Public operations return 422 for these monetary validation errors; invalid startup fixtures fail import instead of being silently rounded. Ledger type codes are uppercased and dots/hyphens become underscores. `CAPTURE`, `PAYMENT_CAPTURED` and `SALE` count as captures and require amounts greater than zero; `REFUND` and `REFUND_POSTED` count as refunds and require amounts below zero. `FEE` must be non-positive, including a permitted zero fee. Other types, including signed `ADJUSTMENT`, contribute their signed amount to ledger net without being classified as capture/refund. Invalid signs fail with `422 INVALID_AMOUNT` before authoritative `validMoney=true` can be returned. Blank, case-insensitive `UNKNOWN` and `UNAVAILABLE` provider status make payout/discrepancy unavailable even if a numeric zero payout is present.
+
+The React formatter preserves INR amounts throughout that range using BigInt integer quotient/remainder and Intl currency grouping, without dividing minor units as a floating-point number. It always displays two paise digits, preserves negative sub-rupee signs, and displays `Invalid amount` for unsafe, fractional or nonfinite numeric inputs. For example, `9007199254740991` minor units displays `₹9,00,71,99,25,47,409.91`. This display check complements Java's authoritative validation.
+
+Knowledge JSON array:
+{"id":"RB-TIMEOUT","version":1,"title":"Transport timeout after processing","content":"original prose","keywords":["timeout","idempotency"],"tenantId":"*","effectiveFrom":"2026-01-01","effectiveTo":null,"source":"Original simulated operating policy","sourceUrl":null}
+Add headings or sections in content if useful. Index derived chunks preserve id/version/title/tenant/dates. Permission/version filter before model context.
+
+## Public Java API (port 8088; /api)
+GET /api/health => {status:"UP",service:"payment-operations-api",mode:"synthetic"}
+POST /api/auth/login {username,password} => {user:{id,name,role,tenantId},csrfToken}; establish HttpOnly SameSite session. Demo users analyst,reviewer,viewer (northstar),other (silverline); configurable local demo password via POI_DEMO_PASSWORD, documented local-only default demo-pass-local acceptable; production profile must reject demo auth. POST /api/auth/logout. GET /api/auth/me same login shape. Mutations require X-CSRF-Token from session. Never trust tenant/role headers.
+GET /api/dashboard => {openCases,highPriorityCases,awaitingReview,resolvedCases,totalAmountMinor,currency:"INR",recentActivity:[],mode:"synthetic"}; openCases counts all non-RESOLVED cases and is labeled Unresolved cases in React.
+GET /api/cases?search=&status=&priority= => {items:[case summary],total}
+GET /api/cases/{id} => full case; cross-tenant returns404
+POST /api/cases/{id}/investigations {question:string,mode:"replay"|"ollama"} => synchronous Investigation (worker timeout bounded; errors honest)
+GET /api/cases/{id}/investigations => {items:[Investigation]}
+GET /api/investigations/{id} => Investigation (tenant scoped)
+POST /api/cases/{id}/decisions body {investigationId,decision:"APPROVE"|"REJECT",note,expectedVersion}; Idempotency-Key header required. REVIEWER only, reviewer must differ from investigation creator. Action comes from stored proposal, not request. APPROVE resolves/escalates/request-evidence case according to proposal; REJECT records rejection. No financial changes. On success => {id,caseId,investigationId,decision,action,caseStatus,version,replayed}
+GET /api/cases/{id}/audit => {items:[{id,occurredAt,actor,action,detail}]}
+GET /api/knowledge => {items:[runbook]}
+GET /api/system => {datasetVersion,caseCount,runbookCount,workerStatus,supportedModes:["replay","ollama"],limitations:[]}
+GET /api/cases/{id}/export => sanitized case + investigations + decisions + audit + evidenceVersions JSON, with mode and datasetVersion. Decisions include reviewer, note and timestamp, excluding internal request hashes and command keys. evidenceVersions includes full immutable OBPM payloads and is empty for generic cases. New investigations retain their original caseSnapshot; historical records may omit it. No truth labels.
+POST /api/obpm/imports => one bounded normalized synthetic snapshot; writer + session CSRF; response {importId,caseId,status:"CREATED"|"UPDATED"|"UNCHANGED",evidenceVersion,evidenceHash,caseVersion,importedAt}, HTTP200.
+GET /api/obpm/imports => {items:[receipt]}, latest50 within authenticated tenant, newest importedAt then ID; no pagination/filter parameters.
+GET /api/obpm/samples => {items:[{id,title,description,payload}]}, up to20 validated original local JSON samples; authenticated read, no remote fetch.
+GET /api/cases/{id}/evidence-versions => {items:[{evidenceVersion,evidenceHash,sourceSnapshotId,extractedAt,importedAt}]}, tenant-scoped, descending evidenceVersion. Metadata only; export includes the full evidence. Existing generic cases return an empty list.
+Error => {code,message,requestId}, statuses400/401/403/404/409/413/422/500/503 meaningful; all business writes durable. Live views can poll; no fabricated progressive reasoning.
+
+## Implemented synthetic OBPM import boundary
+
+The local mock transport adds authenticated `GET /api/obpm/inquiry` (configured enablement, synthetic mode and four example references) and writer/CSRF-protected `POST /api/obpm/inquiries` with only `{paymentReference}`. The POST fetches a fixed-scope original synthetic response from the configured local service, computes paise in Java, validates it and returns the existing import receipt. Input is limited to 1 KiB; source response to 128 KiB; total source deadline defaults to five seconds and is clamped to 1–15 seconds. Redirects and user-supplied destinations are unsupported. Configuration enablement does not promise upstream reachability. Failures do not invoke a sample fallback. See [mock inquiry walkthrough](OBPM_MOCK_INQUIRY.md) and the new routes in [OpenAPI](openapi.json).
+
+The first banking slice is original synthetic outbound NEFT/14.7 ECA evidence. No Oracle connector, arbitrary SQL, credentials, real bank data or payment command is included. The detailed machine-readable request is `ObpmEvidenceSnapshot` in [openapi.json](openapi.json). The implementation scope is recorded in [OBPM_IMPLEMENTATION_CONTRACT.md](OBPM_IMPLEMENTATION_CONTRACT.md).
+
+`POST /api/obpm/imports` requires an authenticated ANALYST or REVIEWER and `X-CSRF-Token`. Tenant comes exclusively from the server identity; a tenant field in the input is unsupported. Read routes also require authentication and scope stored records to that identity. The sample catalog contains shared original synthetic files. The current overview reports imported-case counts and amounts, not all OBPM payment volume, success rates or settlement throughput.
+
+The HTTP request must contain one JSON object, `Content-Type: application/json`, at most **131072 bytes (128 KiB)** including whitespace. Duplicate keys, malformed JSON and trailing JSON values are rejected. Every typed object rejects unknown fields. Queue and external-request arrays have at most **100 records** each; messages and accountingEntries must be present empty arrays. Identifiers match `[A-Za-z0-9._:-]{1,100}`. Text fields are nonblank and reject ISO control characters; general text is limited to500 characters, native codes to80 and exactMaintenanceRelease to200. Nullable/optional fields are identified below.
+
+| Group | Required fields and supported values |
+| --- | --- |
+| Snapshot | schemaVersion=`obpm-evidence-v1`, dataClassification=`SYNTHETIC`, snapshotId, mappingVersion, extractedAt, source, payment, queueRecords, externalRequestAttempts, messages, accountingEntries, sourceCoverage |
+| Source | deploymentId=`SYNTHETIC-OBPM`, releaseFamily=`14.7`, hostCode=`DEMO-HOST`, branchCode=`DEMO-BRANCH`; exactMaintenanceRelease must be present and may be null |
+| Payment | sourcePaymentId, rail=`NEFT`, direction=`OUTBOUND`, sourceAmountDecimal, amountMinor, currency=`INR`, activationDate, createdAt, nativeTransactionStatus; nativeTransactionStatus must be present and may be null. statusUnavailableReason is required nonblank when status is null; otherwise optional/nullable |
+| Queue record | evidenceId, sourcePaymentId, queueReference, requestAttemptId, nativeQueueCode, nativeResponseStatus, isCurrentQueueRecord boolean, observedAt; enteredAt and exitedAt are optional/nullable |
+| ECA attempt | evidenceId, requestAttemptId, sourcePaymentId, requestType=`ECA`, requestedAt, externalSystemFinalOutcome; final outcome must be present and may be null. timeoutRecordedAt is optional/nullable |
+| Coverage | Required groups: queueRecords, messages, externalCoreResponses, accountingEntries. Each has status COMPLETE/PARTIAL/UNAVAILABLE/NOT_REQUESTED. COMPLETE requires nonblank scope, asOf and paginationComplete=true; other states require nonblank reason. Optional paginationComplete must be boolean, never null. Optional scope/reason/asOf can otherwise be null |
+
+Messages/accounting coverage is limited to UNAVAILABLE or NOT_REQUESTED in this slice. COMPLETE describes only its declared query scope, not completeness of an entire bank. Unknown native transaction, queue, response and external-outcome strings are allowed and retained; input validation does not declare their business meaning. Empty collections, incomplete coverage and multiple current flags can import, then require a conservative worker assessment.
+
+All OBPM input timestamps require valid UTC `YYYY-MM-DDTHH:mm:ss[.ffffff]Z`, at most six fractional-second digits and calendar years0001–9999. Offset forms, naive times, leap seconds, invalid dates and finer precision are rejected. activationDate is a valid four-digit-year `YYYY-MM-DD`. Equal instants are allowed where an ordering check uses `<=`; timestamp ties do not choose among ambiguous current records.
+
+sourceAmountDecimal matches `(0|[1-9][0-9]{0,13})(\.[0-9]{1,2})?`, and its exact decimal value times100 must equal nonnegative amountMinor. amountMinor must be an integral JSON numeric token within0–9007199254740991; floats, exponent tokens, rounding and unsupported currencies are rejected. Java performs these cross-field checks; JSON Schema alone does not express exact decimal/paise equality or numeric token spelling.
+
+Evidence IDs are unique across queue and attempt records; queueReference and requestAttemptId are unique within their respective groups. Each record's sourcePaymentId must equal the payment identity. Every queue requestAttemptId must reference a supplied ECA attempt. Java enforces creation<=request<=extraction, request<=timeout<=extraction when timeout exists, and creation<=observation<=extraction. If queue entry exists: request<=entry<=observation. Exit requires entry, entry<=exit<=observation and isCurrentQueueRecord=false. Non-null coverage cutoffs cannot exceed extraction. More specific current-code, timeout/observation and completeness consistency checks remain evidence rules; successful import is not proof of a timeout or payment outcome.
+
+Stable case identity includes server tenant, source deployment/host/branch, rail, direction and native payment ID. Evidence hashes use recursively key-sorted JSON; array order and field values remain significant. Exact canonical equality with the **current** snapshot returns UNCHANGED, preserves case state and both versions, and records a new import receipt/audit event. Changed evidence requires a strictly later extractedAt and a source snapshot ID not already used for different content within that payment. It creates an immutable evidence version, increments the case workflow version and resets current case status to OPEN in one transaction. It does not overwrite earlier snapshots, investigations or decisions. Import is a local single-snapshot operation; no incremental source cursor/job scheduler is implemented.
+
+Each imported case has domain=`OBPM_NEFT`, rail=`NEFT`, obpm payload, evidenceVersion/evidenceHash and normal case identity/workflow fields. paymentId equals sourcePaymentId and policyDate equals activationDate. Legacy events/ledgerEntries/webhooks are empty; provider is null. Reconciliation is `{scope:"OBPM_EVIDENCE",validMoney:true,providerAvailable:false,currency:"INR",calculatedBy:"java-api",captureCount:null,captureMinor:null,refundMinor:null,ledgerNetMinor:null,providerPayoutMinor:null,discrepancyMinor:null}`. Null values are unavailable evidence, never zero or proof of banking completion.
+
+A source refresh changes the case version, so an older pending proposal fails the existing review version check. Each new investigation stores the full Java-authorized input `caseSnapshot` plus snapshotHash. The snapshot's version reflects input time, before the investigation transitions the case to AWAITING_REVIEW; investigation.caseVersion records the reviewable post-transition version. Historical results without caseSnapshot remain unchanged. Case export includes the current case, all saved investigations, decisions/audit, and complete immutable evidenceVersions; it does not substitute current evidence into an older investigation.
+
+| HTTP status | Import/catalog condition |
+| --- | --- |
+| 400 INVALID_REQUEST | Malformed JSON, duplicate fields or multiple JSON values |
+| 401 / 403 | Missing authentication; disallowed writer role or invalid/missing session CSRF |
+| 409 STALE_OBPM_SNAPSHOT / SNAPSHOT_ID_CONFLICT | Changed same/older cutoff, or reusing an immutable source snapshot ID for different content |
+| 409 VERSION_CONFLICT / CONFLICT | Concurrent update; refresh before retrying |
+| 413 IMPORT_TOO_LARGE | Encoded JSON body exceeds128KiB |
+| 422 INVALID_OBPM_EVIDENCE / UNSUPPORTED_EVIDENCE | Invalid shape, unsupported field/constants, references, dates/coverage; nonempty messages/accounting |
+| 422 INVALID_DATA / INVALID_AMOUNT / AMOUNT_OUT_OF_RANGE | Required text missing/blank, invalid integral amount or unsafe money range |
+| 503 SAMPLE_CATALOG_UNAVAILABLE | Local sample read/validation failure; absent directory returns an empty catalog |
+
+No failed import commits a partial evidence version. A successful UNCHANGED import intentionally has a new receipt rather than replaying a prior receipt; there is no Idempotency-Key contract for imports.
+
+The Java worker request timeout defaults to 390 seconds and is clamped to 1–390 seconds. nginx and Vite allow 420 seconds; the worker's provider HTTP timeout is 180 seconds per request. These transport settings do not guarantee downstream computation cancellation or a strict combined job duration, especially when retrieval, provider requests or queued work are involved. A public investigation POST creates a fresh identifier and has no idempotency-key contract; after an uncertain response the UI asks the analyst to refresh saved history before explicitly starting another request. It does not automatically retry or guarantee that the previous server work stopped.
+
+## Investigation result
+{
+"id":"INV-uuid","caseId":"CASE-1001","createdAt":"...","createdBy":"analyst","mode":"replay",
+"status":"AWAITING_REVIEW","outcome":"TIMEOUT_AFTER_SUCCESS",
+"summary":"...","confidence":"HIGH"|"MEDIUM"|"INSUFFICIENT",
+"findings":[{"id":"F-1","text":"...","evidenceIds":["EVT-...","LED-..."],"citationIds":["RB-TIMEOUT:v1"]}],
+"missingEvidence":[],
+"citations":[{"id":"RB-TIMEOUT:v1","documentId":"RB-TIMEOUT","version":1,"title":"...","excerpt":"...","source":"Original simulated operating policy","score":0.1}],
+"toolCalls":[{"name":"get_payment_timeline","status":"COMPLETED","durationMs":1,"evidenceIds":["EVT-..."]}],
+"proposal":{"action":"RESOLVE_CASE"|"ESCALATE"|"REQUEST_EVIDENCE","reason":"..."},
+"metrics":{"durationMs":1,"retrievalMs":1,"toolCount":4,"modelCalls":0,"inputTokens":0,"outputTokens":0,"retrievalMode":"lexical|hybrid","model":"deterministic-replay","synthesisScope":"deterministic-replay","assessmentSource":"deterministic-evidence-rules"},
+"warnings":["Deterministic replay mode; no LLM inference."]
+}
+Permitted outcome enums: TIMEOUT_AFTER_SUCCESS, DUPLICATE_WEBHOOK, OUT_OF_ORDER_WEBHOOK, MISSING_REFUND, INSUFFICIENT_EVIDENCE, PROVIDER_FAILURE, OBPM_ECA_TIMEOUT. OBPM_NEFT accepts only OBPM_ECA_TIMEOUT or INSUFFICIENT_EVIDENCE and only REQUEST_EVIDENCE or ESCALATE. Java and the worker prohibit RESOLVE_CASE for this domain, including at review. Generic cases cannot use OBPM_ECA_TIMEOUT.
+Store immutable result and decisions separately. No fake probabilities; confidence categorical.
+
+In the current worker, deterministic evidence rules supply `outcome`, `summary`, `confidence`, `missingEvidence` and the entire `proposal`. Ollama selects authorized read-only tools and, when the rules establish a supported conclusion, selects one or two IDs from an authorized fact catalog. The service renders those selected facts verbatim and supplies their predefined complete evidence and policy links. It adds no unselected factual claims and does not repair model-written prose: the model returns a typed selection, not prose. The public `Finding` shape is unchanged. Current provenance is recorded in optional, extensible metrics:
+
+| synthesisScope | Current behavior |
+| --- | --- |
+| `fact-selection` | Ollama tool planning plus selection of one or two authorized catalog facts; the service supplies exact fact wording and link closure. A fresh successful run records two model stages. |
+| `finding-only` | Historical Ollama tool planning plus one model-written finding. Its saved prose and provenance are preserved. |
+| `skipped-insufficient-evidence` | Ollama tool planning occurred, but the finding stage was deliberately skipped; `findings=[]`, rule-derived uncertainty/missing facts remain visible, and a fresh successful run records one model stage. |
+| `deterministic-replay` | Actual graph/tools/retrieval with deterministic findings; zero language-model calls and tokens. |
+
+`assessmentSource="deterministic-evidence-rules"` identifies the current assessment origin. For fact selection, `findingSource="service-rendered-facts"` identifies exact service wording, while `factCatalogVersion`, `factCatalogHash` (SHA-256) and `selectedFactIds` preserve selection provenance. The full catalog and raw selection remain in worker checkpoints. These optional fields are retained by Java as worker-reported metadata; Java does not independently rebuild the catalog or verify its hash. Historical saved results may omit them and retain their original content/provenance. The client labels `fact-selection` as “AI-selected evidence” and explains service wording only when its origin is recorded; historical `finding-only` remains “AI evidence explanation”. It never infers authorship from mode alone. No record or database migration is required.
+
+For OBPM live mode, all four evidence groups are mandatory. The first model call returns `toolOrder`, a typed permutation of `inspect_obpm_payment`, `inspect_obpm_queue`, `inspect_obpm_eca_requests` and `inspect_obpm_coverage`. Java's authorized case ID is attached by the service before those actual LangChain tools execute in the returned order. The model cannot omit a required group or provide alternate SQL/identity arguments. Invalid/duplicate/incomplete plans fail visibly; the service does not add omitted tools, silently reorder them or retry. Optional metrics `toolPlanningScope="mandatory-evidence-order"` and `orderedToolNames` identify this narrower planning role. Generic cases retain their existing one-to-four tool-selection behavior. Supported OBPM evidence still has a second fact-ID selection call; insufficient evidence still has only the completed planning call. This describes implementation, not a claim that every live model request succeeds.
+
+A stored result is still a proposal awaiting an independent review, regardless of synthesis scope. A bounded fact catalog reduces unconstrained wording but does not prove that the catalog is correct, all relevant facts were selected, or the underlying records reflect reality. Historical generated prose retains its known limitations. Analysts must inspect the evidence and the rule-derived proposal.
+
+Model/token metrics account for usage returned by graph stages that successfully committed to the checkpoint. Provider timeouts, transport failures or responses rejected before a stage commits may be absent. Resumed results can include time between attempts in `durationMs`; these fields are not complete provider billing or retry-attempt telemetry. Errors never become replay results.
+
+The worker requests evidence (`outcome="INSUFFICIENT_EVIDENCE"`, `proposal.action="REQUEST_EVIDENCE"`) when an otherwise supported timeout, duplicate-webhook or out-of-order-webhook case has an unavailable payout, unknown reconciliation, or nonzero ledger-minus-payout discrepancy. A known mismatch explanation includes ledger net, provider payout and discrepancy. This is a valid investigation response, stored as `AWAITING_REVIEW`; the case changes to `NEEDS_EVIDENCE` only if an independent reviewer approves the stored request. A confirmed missing-refund discrepancy remains `MISSING_REFUND`/`ESCALATE` when it is the single supported exception and the other evidence checks pass. The zero-discrepancy requirement applies to resolution, not escalation; conflicting or multiple independently observed anomalies still require evidence.
+
+## Python worker contract (port8091)
+
+The native GPU profile uses its configured worker port; the port in this legacy section title is not a hardcoded URL for the interfaces below.
+
+### Scoped private case knowledge search
+
+Service-authenticated `POST /case/knowledge-search` accepts exactly `{question,model,digest,entries,limit}`. `question` is nonblank and at most 2,000 characters; `model` is `qwen3-embedding:0.6b`; `digest` is lowercase 64-character SHA-256 hex, optionally prefixed `sha256:`; `limit` must be 3. `entries` contains 1–100 unique `{id,vector}` objects, with IDs at most 200 characters and nonzero 1,024-dimensional vectors whose components are finite numbers within `[-1,1]`. Java supplies eligible IDs/vectors from the configured unified private tenant index, or from the compatible status-only catalog when unified indexing is disabled; this endpoint receives neither source prose nor user-selected bank URLs.
+
+The response is `{model,digest,matches:[{id,score}],processor:"GPU"}`. The worker verifies the installed digest on every request. On a cache miss it embeds the exact submitted question and verifies GPU allocation. It may reuse a previously verified exact query vector from a 128-entry, 1800-second cache keyed by recipe/model/digest/dimensions/question hash. It always recomputes up to three cosine matches against this request's vectors, with deterministic ID ordering for tied scores. `processor:"GPU"` identifies the vector's verified origin, not a new inference call on a cache hit. Java rechecks model/digest, GPU receipt, bounded known unique IDs and finite scores within `[-1,1]`. Unavailable/mismatched models, unverified GPU allocation, invalid results and timeouts fail without a CPU/lexical fallback or automatically downloading models. The request uses the existing service key and shared inference lock. The ordinary `/case/answer` and original `/uat/answer` contracts remain unchanged.
+
+Optional API property `poi.case-investigation.status-catalog-file` (environment `POI_CASE_INVESTIGATION_STATUS_CATALOG_FILE`) points to the private `fcr-status-knowledge-v1` catalog and defaults to blank/disabled. Java validates its 2 MiB/100-entry bounds, tenant/evidence-schema/table/field scope, source/model metadata and vectors. GET case context selects exact observed definitions with no model call. A new question unions exact definitions, explicit field/code mentions and semantic matches, then freezes the original selected documents and `FCR-ENUM-RETRIEVAL` receipt into the existing input/guidance fingerprints. Existing idempotent jobs and saved answers are replayed before catalog/search work and remain unchanged.
+
+Search runs synchronously before the investigation submission returns its durable job, normally 202: this POST alone has a 165-second UI wait, Java's internal search transport is bounded to 150 seconds, and worker `POI_CASE_KNOWLEDGE_TIMEOUT_SECONDS` defaults to 60 seconds (allowed 1–120), with up to five seconds for cleanup and one second waiting for the lock. Case source/prompt limits still apply without truncation. Embedding activity is separate from saved answer-generation `model.actualCalls` and duration. Full schema, lifecycle, preservation and limitations: [STATUS_KNOWLEDGE](STATUS_KNOWLEDGE.md).
+
+### Existing worker interfaces
+
+GET /health => {status:"UP",service:"investigator",supportedModes:["replay","ollama"]}
+POST /investigate accepts {investigationId,case:CaseDetail,question,mode,actorId}; X-Service-Key required equals POI_SERVICE_KEY. Return Investigation shape above. Java first requires the returned investigation/case IDs and mode to match the submitted request, then stamps server-owned identity/time, immutable snapshot hash and case version. Input is an already authorized snapshot; tools scope to that snapshot and authorized/versioned knowledge. No case-file reads or arbitrary user URL/SQL tools.
+POST /retrieve accepts {query,tenantId,policyDate,limit?}, plus domain/rail/direction/releaseFamily together for OBPM retrieval; returns {items:[citations]}; service key required. Supported scope is OBPM_NEFT/NEFT/OUTBOUND/14.7; incomplete or unsupported scope is rejected.
+GET /knowledge?tenantId=northstar returns {items:[runbooks]}; service key required.
+Replay: actual LangGraph execution with transparent deterministic evidence reasoning, no hidden-label access, no pretending LLM was used.
+Ollama: actual LangChain ChatOllama integration, one to four distinct scoped read-only tool selections, then typed fact selection or explicit insufficient-evidence skipping as described above. Unknown or invalid fact selections fail rather than becoming an implicit deterministic selection or rewritten answer. Provider/schema failures are surfaced without silent fallback. OLLAMA_BASE_URL and OLLAMA_MODEL are configurable.
+
+LangGraph checkpoints persist in the worker's own SQLite volume. Tenant, investigation ID and the immutable full input fingerprint identify the thread; conflicting reuse is rejected. The local worker serializes graph execution with a process lock. Saved completed historical results remain readable; unfinished legacy synthesis checkpoints without compatible provenance require a new investigation ID. This is local durable execution, not a claim of horizontal worker scaling.
+
+Retrieval supports `lexical` and `hybrid`. Tenant and policy-date eligibility are applied before retrieval; effectiveTo is exclusive. Hybrid uses actual Ollama embeddings and reciprocal-rank fusion with lexical ranking. It can use in-memory vectors or the configured PostgreSQL/pgvector store; Compose uses the restricted `poi_vectors` role/schema with the extension installed externally. Hybrid provider/database errors remain errors rather than falling back to lexical. Lexical retrieval is never described as semantic retrieval.
+
+The worker also loads original `obpm-runbooks.json` beside the configured runbooks file. OBPM retrieval enforces domain, rail, direction and release family before ranking/embedding in addition to tenant/date; generic retrieval excludes scoped OBPM policies. Its four scoped tools read payment identity, queue history, ECA attempts and coverage from the authorized snapshot. A uniquely current EC/T record with matching ECA attempt, consistent time and complete queue scope establishes a recorded timeout only. Unmapped/pending codes, ambiguous current records or missing evidence do not inherit a historical timeout. No conclusion about funds, block/posting, beneficiary credit or settlement is established by this first slice. Replay has zero chat calls; live fact-selection and planner-only provenance remain explicitly recorded.
+
+
+## Payment-case investigation timing (15 September 2026)
+
+Payment-case investigation summaries and details expose additive `requestedAt` and `timing` metadata. New jobs capture the server request timestamp before evidence/guidance preparation; `timing` contains nullable nonnegative integer `preparationMs`, `queueMs`, `processingMs`, `totalMs`, and `totalBasis: "request-received" | "job-created"`. Terminal totals cover preparation, queue and processing for new jobs. Historical jobs derive only intervals supported by their existing timestamps, with `job-created` total basis and no storage rewrite. Pending/unavailable intervals are null. Idempotent retries keep the original job timing. The model's `durationMs` is unchanged and separate; server timing excludes browser/network/polling delays. Full semantics and UI behavior: [Investigation timing](INVESTIGATION_TIMING.md).
+
+## Case Evidence library (14 September 2026)
+
+`GET /api/evidences` indexes saved cases and their latest evidence summaries across the signed-in user's authorized tenant and bank/branch scopes. It is read-only, including for viewers. Optional query parameters are `search`, `coverage`, `source`, `bank`, `branch` and `page`; ten matching cases appear per page. Global authorized summary counts are independent of filters. The list returns metadata only; raw immutable versions use the existing case evidence endpoints.
+
+Coverage and source filters describe the latest attached version. Populated result groups are not evidence-completeness or payment-outcome assessments. See [the full parameters, response shape and flow](EVIDENCE_LIBRARY.md). The frontend main path is `/evidences`; `/evidences/exports` preserves the earlier standalone Q&A page and `/api/uat/*` contract.
+
+## Private Payment case management
+
+Paths are relative to `/api/payment-cases/{caseId}`. `GET /management` returns `{caseId,version,owner,priority,assignees,notes,evidenceRequests,reviewerConclusions,audit}` after tenant/bank/branch authorization. Version starts at 0 without creating a record on read. `owner` is null or `{id,name}`; assignees are existing same-tenant writer accounts with case access. Case list/detail/dashboard project this sidecar owner/priority without changing original discovery JSON.
+
+| POST path | Exact body fields |
+| --- | --- |
+| `/management` | `expectedVersion`, `ownerId` (eligible ID or null), `priority`, `reason` |
+| `/notes` | `expectedVersion`, `text` |
+| `/evidence-requests` | `expectedVersion`, `title`, `detail`, optional nullable `dueDate` |
+| `/evidence-requests/{requestId}` | `expectedVersion`, `status`, `note`, `evidenceId` only when fulfilling |
+| `/reviewer-conclusions` | `expectedVersion`, `evidenceId`, `evidenceHash`, `investigationIds`, `conclusion` |
+
+All writes require a writer role, session CSRF, and an 8–200-character safe `Idempotency-Key`. They return the full updated management. Reviewer conclusions additionally require a reviewer who is neither the case creator nor any selected investigation creator. Bodies are at most 32 KiB; duplicate/unknown keys and trailing values fail. `expectedVersion` is an integral safe nonnegative number. Priority is LOW/MEDIUM/HIGH/CRITICAL. Reason, note text, transition note, request detail and conclusion allow 1–4,000 characters; request title allows 1–200. `dueDate` is null/omitted or valid `YYYY-MM-DD`.
+
+Evidence requests move between OPEN/FULFILLED/CANCELLED, retaining append-only transitions. Fulfillment requires an authorized saved evidence ID and preserves its verified version/hash; reopening/cancelling clears the current selection but keeps its earlier history. A conclusion requires 1–20 distinct completed investigation IDs from the exact selected evidence ID/hash. It stores RECORDED, reviewer/time, source binding and selected job/answer/input-hash identities. It does not approve or close the case, change payment status or run inference/inquiry.
+
+Management commands commit versioned state, append-only event and retry identity atomically under the case lock. Same-key identical retries return current management without duplication; reusing that key for changed content conflicts with `409 CASE_MANAGEMENT_KEY_CONFLICT`, and stale versions return `409 CASE_MANAGEMENT_VERSION_CONFLICT`. Scope is checked before replay. Existing case/evidence/model histories remain intact. See [CASE_MANAGEMENT](CASE_MANAGEMENT.md) for complete item shapes, error codes, independent-review semantics and flow.
+
+## Payment investigation PDF report
+
+`POST /api/payment-cases/{caseId}/report-preview` accepts required `{evidenceId,investigationIds,includeEvidenceRows}` and optional `reportMode: "SUMMARY" | "DETAILED"`, with session CSRF and an 8–200-character safe `Idempotency-Key`. New UI requests explicitly use SUMMARY by default; omitted mode keeps legacy DETAILED behavior and the original request/snapshot hash semantics. Analysts, reviewers and viewers may export cases in their authorized tenant/bank/branch scope. A null evidence ID requires an empty investigation list and no raw appendix. Summary permits at most two distinct saved jobs and rejects raw rows; Detailed permits twenty. Each job retains its own saved source binding/status, including older versions. Unfinished jobs have no substituted answer.
+
+The response is an immutable persisted `payment-case-report-v1` bundle with `reportId`, `reportHash`, `generatedAt`, `generatedBy`, `case`, `management`, `evidence`, `investigations`, `caseActivity`, `review`, `scope` and `warnings`. Full selected answers and cited documents remain in the frozen bundle in both modes. SUMMARY PDF presents explicitly marked excerpts, key unknowns/checks, compact source cautions and source references; DETAILED PDF includes complete cited documents and provenance. `review.status` is RECORDED only for an independent conclusion matching the exact evidence fingerprint and selected completed-job set; otherwise PENDING. Presentation mode does not change review binding. The preview never changes case management or calls the model/bank.
+
+`POST /api/payment-cases/{caseId}/report.pdf` accepts exactly `{reportId,reportHash}`, rechecks current case access and validates the frozen snapshot fingerprint. It returns `application/pdf` with an attachment filename, no-store and nosniff headers. Errors are structured JSON even for a PDF Accept header. Download does not read newer answers/evidence into the saved report. Identical preview retries return the same snapshot; changed choices under the same key return 409.
+
+Requests are bounded to 8 KiB, frozen bundles to 8 MiB, summaries to three A4 pages, detailed reports to 200 pages and concurrent renders to two per API process. Oversized input/rendering returns 413; busy rendering returns 429. Full operator behavior, storage and limits: [PAYMENT_CASE_REPORTS](PAYMENT_CASE_REPORTS.md).

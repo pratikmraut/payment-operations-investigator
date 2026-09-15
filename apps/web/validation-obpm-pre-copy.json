@@ -1,0 +1,81 @@
+{
+  "recordedAt": "2026-09-12T10:33:56.006946+00:00",
+  "scope": "Synthetic OBPM NEFT React extension; controlled HTTP response tests, no live Oracle/inference/deployment",
+  "tests": {
+    "command": "npm test",
+    "passed": 44,
+    "failed": 0,
+    "files": 3,
+    "evidence": "runtime-obpm-tests.log",
+    "sha256": "f6047dabd9a516b18f23f3731ccc2a6e493baee2bea9e33f7d4738f292aa7f60"
+  },
+  "nativeBuild": {
+    "command": "npm run build",
+    "status": "passed",
+    "evidence": "runtime-obpm-build.log",
+    "sha256": "508f4071ba469023cf26e31760e53ffda3af4ccb617e35ea90c80735ac9f3627"
+  },
+  "dockerBuild": {
+    "command": "docker compose --progress plain build web",
+    "status": "blocked",
+    "reason": "Docker Hub base metadata HTTPS i/o timeout; node:22-alpine and nginx:alpine are not locally tagged images",
+    "evidence": "runtime-obpm-docker-build.log",
+    "sha256": "be9b24bc798bbc076a46b581cddfcfc7c49023604328dbd5129e80ee844c982b",
+    "imageId": null
+  },
+  "sourceHashes": {
+    "src/App.tsx": "a06d63c236e30a8546994b1ec1a7a5e462c3845a2636f4027620d8082e98a9b8",
+    "src/Obpm.tsx": "ae3d78e79cf89992470c6c9b81d85481cf72081faf2514cc4ae72ea2fcb532df",
+    "src/Obpm.test.tsx": "1f435cdba783fc0af25897c7652e88cceb1b9f0440c25f945772648869e82938",
+    "src/types.ts": "eef8e5a69bca9fdac39b4e5e5a973cba1fd55bf8045a39dee5a02f62940acdc1",
+    "src/styles.css": "7e926f818c1a9a6b0eef6f62df19fe30c108981cf835112a5bcd2c7e97579e3c",
+    "src/api.ts": "a2408d993295cdbbca8636d1f7c93511ae4f347f000f6b87f02fe57161cfa9ce",
+    "package.json": "591bb352b21ce96b85941efcff2815f9416dcfd918e2cd46c575122a608042b0",
+    "package-lock.json": "4136fea4dcb470fb3f83ff680f5b6dfc651bbc65a83d0dc23431a509b22da08c",
+    "README.md": "9ac2637d9d78641e2ec5bfb24fdfdd92c1b80479efed2051173a7336292d9df3"
+  },
+  "bundleHashes": {
+    "dist/assets/index-BGtH0cXB.js": "61bde8134a37a0310256f2cea6061c2b9ee6c741114af4cb196ee9f0bbf6af86",
+    "dist/assets/index-C01pCy0K.css": "b63d9ebeb8d16f77b5b6b4c3349ac69c75770367943b8a890d59736068fe698b",
+    "dist/index.html": "e6c18bf899af0e65f01af84e63a51a98a2c53b80aa446eaef9b68df208e67df2"
+  },
+  "historicalRelease": {
+    "tests": 34,
+    "imageId": "sha256:ab12ff1818841ed981deff5ede030b40bdbae6dc2c4fe8fb2d64445729c6aaa8",
+    "receipt": "../../docs/validation/frontend-tests.json",
+    "preserved": true
+  },
+  "limits": [
+    "The offline image packages the native tested bundle; it does not represent a fresh Linux npm build.",
+    "No live browser/backend acceptance was performed by these component tests.",
+    "Banking input uses the shared original synthetic v1 contract; real Oracle mapping is unverified.",
+    "No deployment was performed by the frontend task."
+  ],
+  "updatedAt": "2026-09-12T10:39:21.490140+00:00",
+  "offlineImage": {
+    "status": "passed",
+    "tag": "payment-operations-investigator-web:obpm-v1",
+    "imageId": "sha256:35b1bb4a44220395f791d7d6b1816d03a7eb51af552ceec0348cdf55e79b28b6",
+    "baseImageId": "sha256:bc48a3b784e6936f0fe612afd158599dc296d5efe55c4df34b4039717437b200",
+    "command": "DOCKER_BUILDKIT=0 docker build --pull=false --network=none -t payment-operations-investigator-web:obpm-v1 runtime/offline-web",
+    "method": "The previously tested native static bundle and current nginx.conf were copied into the existing local project web image. No registry or Linux npm build was required.",
+    "buildKitScope": "Process environment restored after command",
+    "latestTagPreserved": true,
+    "log": "runtime/obpm-offline-image-build.log",
+    "logSha256": "9ada942a9555dfc4d2fe828306c99da67407441e890eb10aaf2a6db2f191ca74",
+    "recipe": "runtime/offline-web/Dockerfile",
+    "recipeSha256": "3235c18f08c8fc3f1738a0604281c14fa713229271e80fe1d49a83e54875d8b1",
+    "verification": {
+      "nginxConfig": "nginx -t passed in --network none temporary container with api:127.0.0.1 hosts mapping",
+      "bundleHashMatch": true,
+      "fileHashes": {
+        "dist/assets/index-BGtH0cXB.js": "61bde8134a37a0310256f2cea6061c2b9ee6c741114af4cb196ee9f0bbf6af86",
+        "dist/assets/index-C01pCy0K.css": "b63d9ebeb8d16f77b5b6b4c3349ac69c75770367943b8a890d59736068fe698b",
+        "dist/index.html": "e6c18bf899af0e65f01af84e63a51a98a2c53b80aa446eaef9b68df208e67df2",
+        "nginx.conf": "b3f39e28e4e295e02b88f6e22ced7c8ccfeb39b9a4e659566ae9bde5b897e0c7"
+      },
+      "source": "Actual docker image inspect, sha256sum and nginx -t console output; no fresh test rerun"
+    },
+    "deployed": false
+  }
+}

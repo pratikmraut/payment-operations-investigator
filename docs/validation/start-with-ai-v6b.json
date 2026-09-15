@@ -1,0 +1,18 @@
+{
+  "status": "passed",
+  "startedAt": "2026-09-11T23:31:21.4997025Z",
+  "completedAt": "2026-09-11T23:31:42.6767581Z",
+  "elapsedSeconds": 21.181,
+  "command": "tools/start.ps1 -WithAI",
+  "log": "runtime/start-with-ai-final.log",
+  "logSha256": "89a333a4c059245cdfb9e31661ee562fbbf690bbf3bb9ee11ba811ed58f64b0f",
+  "checks": [
+    "Compose profile ai built/started successfully",
+    "Configured qwen3:4b-instruct and nomic-embed-text:v1.5 reused from existing model volume",
+    "React entry point, Java API proxy and worker health responded"
+  ],
+  "limitations": [
+    "Model weights and build dependencies were cached locally; this does not measure a first internet download.",
+    "Readiness does not invoke model inference; separate live reports cover inference."
+  ]
+}

@@ -1,0 +1,392 @@
+{
+  "timestamp": "2026-09-11T23:19:05.017013+00:00",
+  "baseUrl": "http://127.0.0.1:5178",
+  "caseId": "CASE-1031",
+  "mode": "ollama",
+  "datasetManifestSha256": "b467da9818fd0813665e06301b7ea5940b61d94c54ce04e3d34b1dc31223e140",
+  "limitations": [
+    "One development case; not an accuracy, capacity or generalization benchmark.",
+    "The recorded synthesisScope distinguishes model-selected/service-rendered facts from historical model-written prose; assessment remains rule-owned.",
+    "Identifier validation does not establish catalog correctness, source completeness or selection relevance; inspect the saved facts and provenance.",
+    "Creates a synthetic investigation; no review decision or payment action is submitted."
+  ],
+  "operationalSnapshot": {
+    "id": "CASE-1031",
+    "tenantId": "northstar",
+    "paymentId": "PAY-1031",
+    "title": "Payout and ledger totals differ",
+    "description": "Review this simulated payment using the available evidence. Confirm the observed state, account for ledger entries, and propose the next case action.",
+    "priority": "HIGH",
+    "status": "ESCALATED",
+    "amountMinor": 2445279,
+    "currency": "INR",
+    "rail": "SIMULATED_TRANSFER",
+    "merchant": "Juniper Supplies",
+    "createdAt": "2026-09-11T06:30:00Z",
+    "updatedAt": "2026-09-11T19:38:03.613547597Z",
+    "version": 3,
+    "events": [
+      {
+        "id": "EVT-1031-1",
+        "occurredAt": "2026-09-11T06:30:00Z",
+        "type": "REQUEST_ACCEPTED",
+        "source": "gateway",
+        "status": "SUCCESS",
+        "summary": "Gateway accepted the payment request.",
+        "correlationId": "COR-1031",
+        "attributes": {
+          "idempotencyKey": "IDEM-1031",
+          "providerPaymentId": "PRV-1031",
+          "amountMinor": 2445279,
+          "currency": "INR"
+        }
+      },
+      {
+        "id": "EVT-1031-2",
+        "occurredAt": "2026-09-11T06:30:05Z",
+        "type": "PROCESSOR_CONFIRMED",
+        "source": "processor",
+        "status": "SUCCEEDED",
+        "summary": "Processor confirmed capture under the payment reference.",
+        "correlationId": "COR-1031",
+        "attributes": {
+          "idempotencyKey": "IDEM-1031",
+          "providerPaymentId": "PRV-1031",
+          "amountMinor": 2445279,
+          "currency": "INR"
+        }
+      },
+      {
+        "id": "EVT-1031-3",
+        "occurredAt": "2026-09-11T06:30:08Z",
+        "type": "CLIENT_RESPONSE",
+        "source": "gateway",
+        "status": "DELIVERED",
+        "summary": "Gateway delivered a payment-status response.",
+        "correlationId": "COR-1031",
+        "attributes": {
+          "idempotencyKey": "IDEM-1031",
+          "providerPaymentId": "PRV-1031",
+          "httpStatus": 200
+        }
+      },
+      {
+        "id": "EVT-1031-4",
+        "occurredAt": "2026-09-11T06:31:40Z",
+        "type": "REFUND_REQUESTED",
+        "source": "operations",
+        "status": "ACCEPTED",
+        "summary": "Partial refund request accepted.",
+        "correlationId": "COR-1031",
+        "attributes": {
+          "idempotencyKey": "IDEM-1031",
+          "providerPaymentId": "PRV-1031",
+          "amountMinor": 611319,
+          "refundMinor": 611319,
+          "providerRefundId": "RF-1031"
+        }
+      },
+      {
+        "id": "EVT-1031-5",
+        "occurredAt": "2026-09-11T06:31:50Z",
+        "type": "REFUND_CONFIRMED",
+        "source": "processor",
+        "status": "SUCCEEDED",
+        "summary": "Processor confirmed a partial refund.",
+        "correlationId": "COR-1031",
+        "attributes": {
+          "idempotencyKey": "IDEM-1031",
+          "providerPaymentId": "PRV-1031",
+          "amountMinor": 611319,
+          "refundMinor": 611319,
+          "providerRefundId": "RF-1031"
+        }
+      },
+      {
+        "id": "EVT-1031-6",
+        "occurredAt": "2026-09-11T06:32:00Z",
+        "type": "LEDGER_POSTING",
+        "source": "ledger",
+        "status": "PENDING",
+        "summary": "Refund posting acknowledgement absent at snapshot cutoff.",
+        "correlationId": "COR-1031",
+        "attributes": {
+          "idempotencyKey": "IDEM-1031",
+          "providerPaymentId": "PRV-1031",
+          "providerRefundId": "RF-1031"
+        }
+      }
+    ],
+    "ledgerEntries": [
+      {
+        "id": "LED-1031-1",
+        "type": "CAPTURE",
+        "amountMinor": 2445279,
+        "currency": "INR",
+        "occurredAt": "2026-09-11T06:30:06Z",
+        "reference": "PRV-1031"
+      },
+      {
+        "id": "LED-1031-2",
+        "type": "FEE",
+        "amountMinor": -42792,
+        "currency": "INR",
+        "occurredAt": "2026-09-11T06:30:07Z",
+        "reference": "PRV-1031"
+      }
+    ],
+    "webhooks": [
+      {
+        "id": "WH-1031-1",
+        "providerEventId": "PEVT-1031-CAP",
+        "type": "payment.captured",
+        "occurredAt": "2026-09-11T06:30:05Z",
+        "receivedAt": "2026-09-11T06:30:10Z",
+        "processingStatus": "APPLIED",
+        "providerPaymentId": "PRV-1031"
+      },
+      {
+        "id": "WH-1031-2",
+        "providerEventId": "PEVT-1031-REF",
+        "type": "refund.succeeded",
+        "occurredAt": "2026-09-11T06:31:50Z",
+        "receivedAt": "2026-09-11T06:31:55Z",
+        "processingStatus": "APPLIED",
+        "providerPaymentId": "PRV-1031"
+      }
+    ],
+    "policyDate": "2026-09-11",
+    "tags": [
+      "synthetic",
+      "payment-operations"
+    ],
+    "provider": {
+      "status": "SUCCEEDED",
+      "paymentId": "PRV-1031",
+      "amountMinor": 2445279,
+      "feeMinor": 42792,
+      "refundMinor": 611319,
+      "payoutMinor": 1791168,
+      "asOf": "2026-09-11T06:35:50Z"
+    },
+    "reconciliation": {
+      "validMoney": true,
+      "captureCount": 1,
+      "captureMinor": 2445279,
+      "refundMinor": 0,
+      "ledgerNetMinor": 2402487,
+      "providerAvailable": true,
+      "currency": "INR",
+      "calculatedBy": "java-api",
+      "providerPayoutMinor": 1791168,
+      "discrepancyMinor": 611319
+    }
+  },
+  "investigation": {
+    "outcome": "MISSING_REFUND",
+    "summary": "The confirmed refund has not reconciled with the ledger: confirmation events INR 6,113.19, ledger INR 0.00, provider INR 6,113.19. Investigate the missing or conflicting posting before any refund is retried.",
+    "confidence": "HIGH",
+    "findings": [
+      {
+        "id": "F-1",
+        "text": "Confirmed refund events total INR 6,113.19. The supplied ledger snapshot contains 0 refund entries totaling INR 0.00. The provider refund amount is INR 6,113.19. The supplied ledger net is INR 24,024.87; provider payout is INR 17,911.68; ledger-minus-payout difference is INR 6,113.19.",
+        "evidenceIds": [
+          "EVT-1031-4",
+          "EVT-1031-5",
+          "LED-1031-1",
+          "LED-1031-2",
+          "PROVIDER:PRV-1031"
+        ],
+        "citationIds": [
+          "RB-REFUND:v1"
+        ]
+      }
+    ],
+    "missingEvidence": [],
+    "proposal": {
+      "action": "ESCALATE",
+      "reason": "Escalate the confirmed refund discrepancy for independent review; this application does not issue refunds."
+    },
+    "id": "INV-938271e8-198e-4721-b883-80fd8c33c17f",
+    "caseId": "CASE-1031",
+    "createdAt": "2026-09-11T23:19:42.046145937Z",
+    "createdBy": "analyst",
+    "mode": "ollama",
+    "status": "AWAITING_REVIEW",
+    "citations": [
+      {
+        "id": "RB-REFUND:v1",
+        "documentId": "RB-REFUND",
+        "version": 1,
+        "title": "Refund posting and payout reconciliation",
+        "excerpt": "All values are integer minor units in a single currency. Compute ledger net as the signed sum of capture, fee and refund postings. For a succeeded payment, expected processor payout equals capture amount minus processor fee minus confirmed refunds. A confirmed processor refund that is absent from the ledger creates a difference equal to that refund when other postings agree. Preserve the processor refund reference, confirmation event, ledger snapshot cutoff and exact difference. Escalate the posting exception for a human reconciliation review. The investigator must not create a refund, repair a ledger or transfer money.",
+        "source": "Original simulated operating policy",
+        "score": 0.032787
+      },
+      {
+        "id": "RB-POLICY:v1",
+        "documentId": "RB-POLICY",
+        "version": 1,
+        "title": "Snapshot cutoff and processing lag",
+        "excerpt": "Payment systems can have asynchronous posting lag. A snapshot is evidence at its stated cutoff, not a promise about the future. A confirmed refund with a missing posting should be reported as a reconciliation exception at the snapshot cutoff. Preserve pending-posting events and request follow-up through case review. Do not silently treat a pending posting as completed, or hide a present mismatch because it may later resolve.",
+        "source": "Original simulated operating policy",
+        "score": 0.031754
+      },
+      {
+        "id": "RB-FAILURE:v1",
+        "documentId": "RB-FAILURE",
+        "version": 1,
+        "title": "Confirmed processor rejection",
+        "excerpt": "A terminal FAILED processor state with a matching rejection event and no capture ledger establishes a processing failure in this simulated workflow. Preserve the provider reference and reason code. Propose escalation to the appropriate operations queue for review; this case workflow does not authorize retries, changes to payment instruments, refunds or contact with a customer. A conflicting capture entry invalidates this conclusion and requires evidence reconciliation.",
+        "source": "Original simulated operating policy",
+        "score": 0.031025
+      }
+    ],
+    "toolCalls": [
+      {
+        "name": "get_payment_timeline",
+        "status": "COMPLETED",
+        "durationMs": 0.015,
+        "evidenceIds": [
+          "EVT-1031-1",
+          "EVT-1031-2",
+          "EVT-1031-3",
+          "EVT-1031-4",
+          "EVT-1031-5",
+          "EVT-1031-6",
+          "PROVIDER:PRV-1031"
+        ]
+      },
+      {
+        "name": "compare_settlement",
+        "status": "COMPLETED",
+        "durationMs": 0.028,
+        "evidenceIds": [
+          "LED-1031-1",
+          "LED-1031-2",
+          "PROVIDER:PRV-1031"
+        ]
+      },
+      {
+        "name": "inspect_webhooks",
+        "status": "COMPLETED",
+        "durationMs": 0.028,
+        "evidenceIds": [
+          "WH-1031-1",
+          "WH-1031-2"
+        ]
+      },
+      {
+        "name": "check_refund",
+        "status": "COMPLETED",
+        "durationMs": 0.043,
+        "evidenceIds": [
+          "EVT-1031-4",
+          "EVT-1031-5",
+          "PROVIDER:PRV-1031"
+        ]
+      }
+    ],
+    "metrics": {
+      "durationMs": 36846.723,
+      "retrievalMs": 709.433,
+      "toolCount": 4,
+      "modelCalls": 2,
+      "inputTokens": 1314,
+      "outputTokens": 138,
+      "retrievalMode": "hybrid",
+      "model": "qwen3:4b-instruct",
+      "assessmentSource": "deterministic-evidence-rules",
+      "synthesisScope": "fact-selection",
+      "modelThreads": 4,
+      "modelContextTokens": 4096,
+      "modelTimeoutSeconds": 180.0,
+      "toolOutputTokenLimit": 384,
+      "synthesisOutputTokenLimit": 384,
+      "findingSource": "service-rendered-facts",
+      "factCatalogVersion": 1,
+      "factCatalogHash": "948236794ca498503ff86e321ccd1fc9db0217a67ba90011094f13ba5089a7f0",
+      "selectedFactIds": [
+        "FACT-REFUND-OBSERVATIONS",
+        "FACT-SETTLEMENT"
+      ],
+      "selectedFactProvenance": [
+        {
+          "id": "FACT-REFUND-OBSERVATIONS",
+          "sourceTools": [
+            "check_refund",
+            "compare_settlement"
+          ],
+          "evidenceIds": [
+            "EVT-1031-4",
+            "EVT-1031-5",
+            "LED-1031-1",
+            "LED-1031-2",
+            "PROVIDER:PRV-1031"
+          ],
+          "citationIds": [
+            "RB-REFUND:v1"
+          ]
+        },
+        {
+          "id": "FACT-SETTLEMENT",
+          "sourceTools": [
+            "compare_settlement"
+          ],
+          "evidenceIds": [
+            "LED-1031-1",
+            "LED-1031-2",
+            "PROVIDER:PRV-1031"
+          ],
+          "citationIds": [
+            "RB-REFUND:v1"
+          ]
+        }
+      ],
+      "toolSelectionMs": 8086.102,
+      "toolSelectionProvider": {
+        "model": "qwen3:4b-instruct",
+        "created_at": "2026-09-11T23:19:13.24225844Z",
+        "done": true,
+        "done_reason": "stop",
+        "total_duration": 8067046396,
+        "load_duration": 717392,
+        "prompt_eval_count": 511,
+        "prompt_eval_duration": 909693000,
+        "eval_count": 108,
+        "eval_duration": 7140384000,
+        "logprobs": null,
+        "model_name": "qwen3:4b-instruct",
+        "model_provider": "ollama"
+      },
+      "synthesisMs": 28039.171,
+      "synthesisProvider": {
+        "model": "qwen3:4b-instruct",
+        "created_at": "2026-09-11T23:19:41.996541016Z",
+        "done": true,
+        "done_reason": "stop",
+        "total_duration": 28025854487,
+        "load_duration": 3816425649,
+        "prompt_eval_count": 803,
+        "prompt_eval_duration": 21787968000,
+        "eval_count": 30,
+        "eval_duration": 2402703000,
+        "logprobs": null,
+        "model_name": "qwen3:4b-instruct",
+        "model_provider": "ollama"
+      }
+    },
+    "warnings": [
+      "Synthetic data only; proposals change case disposition, never payment or ledger balances.",
+      "Ollama planned diagnostic tools and selected authorized fact IDs. The service rendered the selected facts and supplied their evidence links; no model-authored prose was used. Decisions and all other explanation fields come from deterministic evidence rules. Fact relevance, completeness and source accuracy still require analyst review."
+    ],
+    "caseVersion": 4,
+    "snapshotHash": "1028651adb011a58848c3584b8bb7e9880176f9bba6d0ed795f0d9d09b4e6192"
+  },
+  "caseStateAfter": {
+    "status": "AWAITING_REVIEW",
+    "version": 4
+  },
+  "status": "passed",
+  "wallSeconds": 37.044
+}

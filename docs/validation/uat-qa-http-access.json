@@ -1,0 +1,43 @@
+{
+  "status": "passed",
+  "httpStatus": {
+    "anonymousList": 401,
+    "analystList": 200,
+    "analystDetail": 200,
+    "otherTenantList": 200,
+    "otherTenantDetail": 404,
+    "otherTenantHistory": 404,
+    "viewerDetail": 200,
+    "viewerQuestion": 403,
+    "questionWithoutCsrf": 403,
+    "staleEvidenceQuestion": 409,
+    "unknownQuestionField": 400,
+    "blankQuestion": 400,
+    "oversizedQuestion": 413
+  },
+  "checks": {
+    "workspaceEnabled": true,
+    "actualSnapshotPresent": true,
+    "detailMatchesPrivateBundleExactly": true,
+    "metadataMatchesDetail": true,
+    "hashAndIdentityMatchPrivateBundle": true,
+    "classificationIsUat": true,
+    "amountRemainsSourceText": true,
+    "tenantIsNotExposed": true,
+    "otherTenantSeesNoSnapshots": true,
+    "viewerCanReadSameEvidence": true,
+    "testHashIsStale": true,
+    "syntheticCasesUnchanged": true,
+    "syntheticImportsUnchanged": true,
+    "privateBundleFileUnchanged": true
+  },
+  "counts": {
+    "requestedModelCalls": 0,
+    "authenticatedSessions": 3,
+    "visibleSnapshots": 1,
+    "documents": 14,
+    "coverageGroups": 4,
+    "httpChecks": 13,
+    "booleanChecks": 14
+  }
+}

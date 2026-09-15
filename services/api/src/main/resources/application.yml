@@ -1,0 +1,69 @@
+server:
+  port: ${PORT:8088}
+  error:
+    include-message: never
+    include-stacktrace: never
+  servlet:
+    session:
+      timeout: 30m
+      cookie:
+        name: POI_SESSION
+        http-only: true
+        same-site: strict
+        secure: ${POI_COOKIE_SECURE:false}
+spring:
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 21MB
+  application:
+    name: payment-operations-api
+  datasource:
+    url: ${POI_DB_URL:jdbc:h2:file:./runtime/poi;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH}
+    username: ${POI_DB_USER:sa}
+    password: ${POI_DB_PASSWORD:}
+  sql:
+    init:
+      mode: always
+  jackson:
+    deserialization:
+      fail-on-unknown-properties: true
+      fail-on-trailing-tokens: true
+poi:
+  payment-discovery:
+    mode: ${POI_PAYMENT_DISCOVERY_MODE:MOCK}
+    bank-enabled: ${POI_PAYMENT_DISCOVERY_BANK_ENABLED:false}
+    bank-url: ${POI_PAYMENT_DISCOVERY_BANK_URL:}
+    deployment: ${POI_PAYMENT_DISCOVERY_DEPLOYMENT:FCR-UAT}
+    scopes: ${POI_PAYMENT_DISCOVERY_SCOPES:northstar:1352:760,silverline:2468:760}
+    timeout-seconds: ${POI_PAYMENT_DISCOVERY_TIMEOUT_SECONDS:10}
+    wire-format: ${POI_PAYMENT_DISCOVERY_WIRE_FORMAT:CANONICAL}
+    api-token: ${POI_PAYMENT_DISCOVERY_API_TOKEN:}
+  case-evidence:
+    api-enabled: ${POI_CASE_EVIDENCE_API_ENABLED:false}
+    api-url: ${POI_CASE_EVIDENCE_API_URL:}
+    wire-format: ${POI_CASE_EVIDENCE_WIRE_FORMAT:CANONICAL}
+    api-token: ${POI_CASE_EVIDENCE_API_TOKEN:}
+    timeout-seconds: ${POI_CASE_EVIDENCE_TIMEOUT_SECONDS:15}
+  flexcube:
+    user-id: ${POI_FLEXCUBE_USER_ID:}
+    channel: ${POI_FLEXCUBE_CHANNEL:API}
+    posting-date: ${POI_FLEXCUBE_POSTING_DATE:}
+    posting-date-policy: ${POI_FLEXCUBE_POSTING_DATE_POLICY:EXPLICIT}
+    posting-zone: ${POI_FLEXCUBE_POSTING_ZONE:Asia/Kolkata}
+    source-timezone: ${POI_FLEXCUBE_SOURCE_TIMEZONE:UNKNOWN}
+  uat-bundle-dir: ${POI_UAT_BUNDLE_DIR:}
+  uat-result-dir: ${POI_UAT_RESULT_DIR:}
+  uat-worker-timeout-seconds: ${POI_UAT_WORKER_TIMEOUT_SECONDS:930}
+  obpm-inquiry-enabled: ${POI_OBPM_INQUIRY_ENABLED:false}
+  obpm-inquiry-url: ${POI_OBPM_INQUIRY_URL:http://127.0.0.1:8092}
+  obpm-inquiry-service-key: ${POI_INQUIRY_SERVICE_KEY:poi-local-inquiry-key}
+  obpm-inquiry-timeout-seconds: ${POI_OBPM_INQUIRY_TIMEOUT_SECONDS:5}
+  obpm-samples: ${POI_OBPM_SAMPLES:../../data/obpm/samples}
+  fixtures: ${POI_FIXTURES:../../data/fixtures/cases.json}
+  import-fixtures: ${POI_IMPORT_FIXTURES:true}
+  dataset-version: ${POI_DATASET_VERSION:synthetic-2026-09-11-v1}
+  demo-password: ${POI_DEMO_PASSWORD:demo-pass-local}
+  worker-url: ${POI_WORKER_URL:http://127.0.0.1:8091}
+  service-key: ${POI_SERVICE_KEY:local-service-key-change-me}
+  worker-timeout-seconds: ${POI_WORKER_TIMEOUT_SECONDS:390}

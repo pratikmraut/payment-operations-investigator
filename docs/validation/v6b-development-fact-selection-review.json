@@ -1,0 +1,3895 @@
+{
+  "reviewedAt": "2026-09-11T23:17:54.877223+00:00",
+  "reviewer": "Codex AI assistant, not independent human review",
+  "evidenceKind": "Read-only V6b six-case controlled development comparison and separate manual review of selected fixed facts against operational evidence",
+  "testReceipt": {
+    "path": "docs/validation/worker-tests.json",
+    "sha256": "8858e44f48cc3ae85e798278804a47628654f38c39642b68d013f851e632dce4",
+    "imageId": "sha256:ae5b391eb19a902d8b20c65ea170783555b37f998502e15adb1cb008bc3dd505",
+    "sourceSha256": "f24907bac8e3eb58e345ae9d28e5f11abc7ca9e741efb5f43a68e630b69aa9a7"
+  },
+  "runtimeReceipt": "docs/validation/runtime-v6b-4b.json",
+  "evaluation": {
+    "path": "docs/validation/evaluation-ollama-development-v6b.json",
+    "sha256": "ab0159cfe1a4c0388a38b1e35240b0cf95cfb0401d5f992011657bd257b5554b"
+  },
+  "priorReview": {
+    "path": "docs/validation/v6-development-fact-selection-review.json",
+    "sha256": "ec5ce319cd4c9c65edb0d7f2b9e21c94f89276ee16afda9048180133b08459f2",
+    "priorTestReceipt": "docs/validation/worker-tests-198-pre-selection-priority.json"
+  },
+  "denominators": {
+    "requests": 6,
+    "accepted": 6,
+    "rejected": 0,
+    "completedModelCalls": 11,
+    "factSelectionResults": 5,
+    "plannerOnlyResults": 1,
+    "modelAuthoredProseFindings": 0,
+    "selectedFactIds": 9,
+    "exactCatalogTextAndLinkMatches": 5,
+    "selectionsWithExceptionDistinguishingObservation": 5,
+    "priorSelectionsWithExceptionDistinguishingObservation": 2,
+    "selectedServiceFindingsWithNoMaterialFactualErrorIdentified": 5
+  },
+  "limitations": [
+    "One controlled repeat on six previously inspected synthetic development fixtures; not held-out accuracy, causal proof of general improvement or production quality.",
+    "No model-prose score applies; catalog facts are service authored. Exact rendering alone is not independent factual validation.",
+    "The selection highlights one or two facts rather than proving every policy prerequisite. Capture/settlement/ignored-stale context may remain only in rule assessment and tool trace.",
+    "Aggregate absence is limited to supplied snapshot membership; catalog/template errors and incomplete sources remain possible.",
+    "Raw provider response bytes are not separately retained; original parsed IDs, exact rendered text and successful-stage usage are preserved. No failed request occurred in this sample.",
+    "Standalone worker-fixture-baseline arithmetic is explicitly labelled; full Java money/reviewer persistence and hybrid retrieval are separate validations."
+  ],
+  "controlledComparisons": [
+    {
+      "caseId": "CASE-1001",
+      "previousInvestigationId": "EVAL-07039469-8d3a-4bf7-a404-e7544f4146f2",
+      "currentInvestigationId": "EVAL-534a97f3-9889-4757-a648-c73aed15da9f",
+      "previousRequest": {
+        "normalizedRequestSha256": "bab83730d9c5502f3052fcc464946b706585bbd8b3b200796612997d0b22fd4a",
+        "caseId": "CASE-1001",
+        "startedAt": "2026-09-11T23:01:27.404371+00:00",
+        "normalization": "Remove investigationId only; preserve case, question, actor and mode."
+      },
+      "currentRequest": {
+        "normalizedRequestSha256": "bab83730d9c5502f3052fcc464946b706585bbd8b3b200796612997d0b22fd4a",
+        "caseId": "CASE-1001",
+        "startedAt": "2026-09-11T23:12:03.105084+00:00",
+        "normalization": "Remove investigationId only; preserve case, question, actor and mode."
+      },
+      "requestsEqualExceptInvestigationId": true,
+      "operationalToolOutputsEqual": true,
+      "assessmentEqual": true,
+      "catalogEqual": true,
+      "structuredSelectorUserInputEqual": true,
+      "previousSelection": {
+        "factIds": [
+          "FACT-PROVIDER-STATUS",
+          "FACT-SUCCESS-EVENT"
+        ]
+      },
+      "currentSelection": {
+        "factIds": [
+          "FACT-TIMEOUT-OBSERVATION",
+          "FACT-PROVIDER-STATUS"
+        ]
+      },
+      "controlledDifference": "Selector SystemMessage only; fresh investigation UUID. Runtime model/config/schema/catalog/evidence rules unchanged.",
+      "limit": "Equal inputs/catalogs establish experiment control, not independent semantic validity. Manual operational-evidence review is separate."
+    },
+    {
+      "caseId": "CASE-1011",
+      "previousInvestigationId": "EVAL-3a2b20b0-9080-4387-9971-9dd0394591fa",
+      "currentInvestigationId": "EVAL-09cc0b02-4f01-42bc-af81-670bd960f0c7",
+      "previousRequest": {
+        "normalizedRequestSha256": "31d1d314317813636c35027ae063d671d59ae4e6f8b37f2389a16bf52b03f71c",
+        "caseId": "CASE-1011",
+        "startedAt": "2026-09-11T23:02:17.295896+00:00",
+        "normalization": "Remove investigationId only; preserve case, question, actor and mode."
+      },
+      "currentRequest": {
+        "normalizedRequestSha256": "31d1d314317813636c35027ae063d671d59ae4e6f8b37f2389a16bf52b03f71c",
+        "caseId": "CASE-1011",
+        "startedAt": "2026-09-11T23:12:51.997967+00:00",
+        "normalization": "Remove investigationId only; preserve case, question, actor and mode."
+      },
+      "requestsEqualExceptInvestigationId": true,
+      "operationalToolOutputsEqual": true,
+      "assessmentEqual": true,
+      "catalogEqual": true,
+      "structuredSelectorUserInputEqual": true,
+      "previousSelection": {
+        "factIds": [
+          "FACT-PROVIDER-STATUS",
+          "FACT-SUCCESS-EVENT"
+        ]
+      },
+      "currentSelection": {
+        "factIds": [
+          "FACT-REPEATED-DELIVERY"
+        ]
+      },
+      "controlledDifference": "Selector SystemMessage only; fresh investigation UUID. Runtime model/config/schema/catalog/evidence rules unchanged.",
+      "limit": "Equal inputs/catalogs establish experiment control, not independent semantic validity. Manual operational-evidence review is separate."
+    },
+    {
+      "caseId": "CASE-1021",
+      "previousInvestigationId": "EVAL-f0e47d73-6712-41ad-921f-8f9f5bafe24f",
+      "currentInvestigationId": "EVAL-9fd828b5-ec1e-4097-a977-e9a6a2cf8194",
+      "previousRequest": {
+        "normalizedRequestSha256": "742fa3172f4f99b7f9e740a1c811145d5de3645fec0dead0a68bfaab12a784e7",
+        "caseId": "CASE-1021",
+        "startedAt": "2026-09-11T23:02:48.865507+00:00",
+        "normalization": "Remove investigationId only; preserve case, question, actor and mode."
+      },
+      "currentRequest": {
+        "normalizedRequestSha256": "742fa3172f4f99b7f9e740a1c811145d5de3645fec0dead0a68bfaab12a784e7",
+        "caseId": "CASE-1021",
+        "startedAt": "2026-09-11T23:13:24.597807+00:00",
+        "normalization": "Remove investigationId only; preserve case, question, actor and mode."
+      },
+      "requestsEqualExceptInvestigationId": true,
+      "operationalToolOutputsEqual": true,
+      "assessmentEqual": true,
+      "catalogEqual": true,
+      "structuredSelectorUserInputEqual": true,
+      "previousSelection": {
+        "factIds": [
+          "FACT-PROVIDER-STATUS",
+          "FACT-SUCCESS-EVENT"
+        ]
+      },
+      "currentSelection": {
+        "factIds": [
+          "FACT-WEBHOOK-TIMING",
+          "FACT-SUCCESS-EVENT"
+        ]
+      },
+      "controlledDifference": "Selector SystemMessage only; fresh investigation UUID. Runtime model/config/schema/catalog/evidence rules unchanged.",
+      "limit": "Equal inputs/catalogs establish experiment control, not independent semantic validity. Manual operational-evidence review is separate."
+    },
+    {
+      "caseId": "CASE-1031",
+      "previousInvestigationId": "EVAL-3b53604c-3545-4057-9b6b-008443097a0c",
+      "currentInvestigationId": "EVAL-e4fafb05-2e1b-41f9-8055-c6d00ec1b3a2",
+      "previousRequest": {
+        "normalizedRequestSha256": "b58b1e6165907047c4dbb91c3aa2f3fafe02f6776c9df960066a6c0b4686fcc1",
+        "caseId": "CASE-1031",
+        "startedAt": "2026-09-11T23:03:24.179640+00:00",
+        "normalization": "Remove investigationId only; preserve case, question, actor and mode."
+      },
+      "currentRequest": {
+        "normalizedRequestSha256": "b58b1e6165907047c4dbb91c3aa2f3fafe02f6776c9df960066a6c0b4686fcc1",
+        "caseId": "CASE-1031",
+        "startedAt": "2026-09-11T23:13:57.961035+00:00",
+        "normalization": "Remove investigationId only; preserve case, question, actor and mode."
+      },
+      "requestsEqualExceptInvestigationId": true,
+      "operationalToolOutputsEqual": true,
+      "assessmentEqual": true,
+      "catalogEqual": true,
+      "structuredSelectorUserInputEqual": true,
+      "previousSelection": {
+        "factIds": [
+          "FACT-SETTLEMENT",
+          "FACT-REFUND-OBSERVATIONS"
+        ]
+      },
+      "currentSelection": {
+        "factIds": [
+          "FACT-REFUND-OBSERVATIONS",
+          "FACT-SETTLEMENT"
+        ]
+      },
+      "controlledDifference": "Selector SystemMessage only; fresh investigation UUID. Runtime model/config/schema/catalog/evidence rules unchanged.",
+      "limit": "Equal inputs/catalogs establish experiment control, not independent semantic validity. Manual operational-evidence review is separate."
+    },
+    {
+      "caseId": "CASE-1041",
+      "previousInvestigationId": "EVAL-d845ebfd-0914-4057-8597-a1eac9330775",
+      "currentInvestigationId": "EVAL-bc0d128c-5c3e-487f-a308-58c293d7b32f",
+      "previousRequest": {
+        "normalizedRequestSha256": "be92fd7adbcde14f2b831346ab1ef59f8d8d1c4198c05812219934472369c923",
+        "caseId": "CASE-1041",
+        "startedAt": "2026-09-11T23:04:03.879604+00:00",
+        "normalization": "Remove investigationId only; preserve case, question, actor and mode."
+      },
+      "currentRequest": {
+        "normalizedRequestSha256": "be92fd7adbcde14f2b831346ab1ef59f8d8d1c4198c05812219934472369c923",
+        "caseId": "CASE-1041",
+        "startedAt": "2026-09-11T23:14:35.962925+00:00",
+        "normalization": "Remove investigationId only; preserve case, question, actor and mode."
+      },
+      "requestsEqualExceptInvestigationId": true,
+      "operationalToolOutputsEqual": true,
+      "assessmentEqual": true,
+      "catalogEqual": true,
+      "structuredSelectorUserInputEqual": true,
+      "previousSelection": null,
+      "currentSelection": null,
+      "controlledDifference": "Selector SystemMessage only; fresh investigation UUID. Runtime model/config/schema/catalog/evidence rules unchanged.",
+      "limit": "Equal inputs/catalogs establish experiment control, not independent semantic validity. Manual operational-evidence review is separate."
+    },
+    {
+      "caseId": "CASE-1051",
+      "previousInvestigationId": "EVAL-2b1b156b-a706-456d-a0ea-40fc770dac2b",
+      "currentInvestigationId": "EVAL-f41c2a90-61e6-4e9d-9b86-a2c032bf9a5a",
+      "previousRequest": {
+        "normalizedRequestSha256": "92831ebd5de313198410009b2798361402f5de0320d5858ec5011b1f01bbbd4b",
+        "caseId": "CASE-1051",
+        "startedAt": "2026-09-11T23:04:13.880463+00:00",
+        "normalization": "Remove investigationId only; preserve case, question, actor and mode."
+      },
+      "currentRequest": {
+        "normalizedRequestSha256": "92831ebd5de313198410009b2798361402f5de0320d5858ec5011b1f01bbbd4b",
+        "caseId": "CASE-1051",
+        "startedAt": "2026-09-11T23:14:49.273640+00:00",
+        "normalization": "Remove investigationId only; preserve case, question, actor and mode."
+      },
+      "requestsEqualExceptInvestigationId": true,
+      "operationalToolOutputsEqual": true,
+      "assessmentEqual": true,
+      "catalogEqual": true,
+      "structuredSelectorUserInputEqual": true,
+      "previousSelection": {
+        "factIds": [
+          "FACT-PROVIDER-STATUS",
+          "FACT-TERMINAL-EVENT"
+        ]
+      },
+      "currentSelection": {
+        "factIds": [
+          "FACT-TERMINAL-EVENT",
+          "FACT-PROVIDER-STATUS"
+        ]
+      },
+      "controlledDifference": "Selector SystemMessage only; fresh investigation UUID. Runtime model/config/schema/catalog/evidence rules unchanged.",
+      "limit": "Equal inputs/catalogs establish experiment control, not independent semantic validity. Manual operational-evidence review is separate."
+    }
+  ],
+  "rows": [
+    {
+      "investigationId": "EVAL-534a97f3-9889-4757-a648-c73aed15da9f",
+      "caseId": "CASE-1001",
+      "startedAt": "2026-09-11T23:12:03.105084+00:00",
+      "synthesisScope": "fact-selection",
+      "parsedModelSelection": {
+        "factIds": [
+          "FACT-TIMEOUT-OBSERVATION",
+          "FACT-PROVIDER-STATUS"
+        ]
+      },
+      "selectionProvenanceNote": "Original parsed selected IDs retained by the completed model stage; raw provider response bytes are not separately retained. The V6 response contract contains IDs only.",
+      "factCatalog": [
+        {
+          "id": "FACT-PROVIDER-STATUS",
+          "text": "The provider reported SUCCEEDED as of 2026-09-11T06:05:50Z; this is a status observation time.",
+          "evidenceIds": [
+            "PROVIDER:PRV-1001"
+          ],
+          "citationIds": [
+            "RB-TIMEOUT:v1"
+          ],
+          "sourceTools": [
+            "get_payment_timeline"
+          ]
+        },
+        {
+          "id": "FACT-CAPTURE-LEDGER",
+          "text": "The supplied ledger snapshot contains 1 capture entry totaling INR 15,199.83.",
+          "evidenceIds": [
+            "LED-1001-1",
+            "LED-1001-2",
+            "PROVIDER:PRV-1001"
+          ],
+          "citationIds": [
+            "RB-TIMEOUT:v1"
+          ],
+          "sourceTools": [
+            "compare_settlement"
+          ]
+        },
+        {
+          "id": "FACT-SETTLEMENT",
+          "text": "The supplied ledger net is INR 14,933.84; provider payout is INR 14,933.84; ledger-minus-payout difference is INR 0.00.",
+          "evidenceIds": [
+            "LED-1001-1",
+            "LED-1001-2",
+            "PROVIDER:PRV-1001"
+          ],
+          "citationIds": [
+            "RB-TIMEOUT:v1"
+          ],
+          "sourceTools": [
+            "compare_settlement"
+          ]
+        },
+        {
+          "id": "FACT-TIMEOUT-OBSERVATION",
+          "text": "The supplied timeline records a timeout observation at 2026-09-11T06:00:08Z; a timeout alone does not establish the payment outcome.",
+          "evidenceIds": [
+            "EVT-1001-3"
+          ],
+          "citationIds": [
+            "RB-TIMEOUT:v1"
+          ],
+          "sourceTools": [
+            "get_payment_timeline"
+          ]
+        },
+        {
+          "id": "FACT-SUCCESS-EVENT",
+          "text": "The supplied timeline records a successful processor/payment event at 2026-09-11T06:00:05Z; this is event occurrence time.",
+          "evidenceIds": [
+            "EVT-1001-2"
+          ],
+          "citationIds": [
+            "RB-TIMEOUT:v1"
+          ],
+          "sourceTools": [
+            "get_payment_timeline"
+          ]
+        }
+      ],
+      "factCatalogVersion": 1,
+      "factCatalogHash": "280399edb64835e27ed7cfab46b20546115b2ae66466a2694760e7ccc8749401",
+      "reconstructedSelectionInput": {
+        "question": "Explain the observed payment state and propose the next case action using authorized evidence and current policy.",
+        "factCatalogVersion": 1,
+        "facts": [
+          {
+            "id": "FACT-PROVIDER-STATUS",
+            "text": "The provider reported SUCCEEDED as of 2026-09-11T06:05:50Z; this is a status observation time.",
+            "evidenceIds": [
+              "PROVIDER:PRV-1001"
+            ],
+            "citationIds": [
+              "RB-TIMEOUT:v1"
+            ],
+            "sourceTools": [
+              "get_payment_timeline"
+            ]
+          },
+          {
+            "id": "FACT-CAPTURE-LEDGER",
+            "text": "The supplied ledger snapshot contains 1 capture entry totaling INR 15,199.83.",
+            "evidenceIds": [
+              "LED-1001-1",
+              "LED-1001-2",
+              "PROVIDER:PRV-1001"
+            ],
+            "citationIds": [
+              "RB-TIMEOUT:v1"
+            ],
+            "sourceTools": [
+              "compare_settlement"
+            ]
+          },
+          {
+            "id": "FACT-SETTLEMENT",
+            "text": "The supplied ledger net is INR 14,933.84; provider payout is INR 14,933.84; ledger-minus-payout difference is INR 0.00.",
+            "evidenceIds": [
+              "LED-1001-1",
+              "LED-1001-2",
+              "PROVIDER:PRV-1001"
+            ],
+            "citationIds": [
+              "RB-TIMEOUT:v1"
+            ],
+            "sourceTools": [
+              "compare_settlement"
+            ]
+          },
+          {
+            "id": "FACT-TIMEOUT-OBSERVATION",
+            "text": "The supplied timeline records a timeout observation at 2026-09-11T06:00:08Z; a timeout alone does not establish the payment outcome.",
+            "evidenceIds": [
+              "EVT-1001-3"
+            ],
+            "citationIds": [
+              "RB-TIMEOUT:v1"
+            ],
+            "sourceTools": [
+              "get_payment_timeline"
+            ]
+          },
+          {
+            "id": "FACT-SUCCESS-EVENT",
+            "text": "The supplied timeline records a successful processor/payment event at 2026-09-11T06:00:05Z; this is event occurrence time.",
+            "evidenceIds": [
+              "EVT-1001-2"
+            ],
+            "citationIds": [
+              "RB-TIMEOUT:v1"
+            ],
+            "sourceTools": [
+              "get_payment_timeline"
+            ]
+          }
+        ],
+        "policy": [
+          {
+            "id": "RB-TIMEOUT:v1",
+            "title": "Transport timeout after processing",
+            "excerpt": "A client transport timeout does not establish payment failure. Correlate the accepted request, idempotency key and processor payment reference. A SUCCEEDED processor confirmation plus exactly one matching capture ledger entry establishes completed capture for this simulated workflow. Reconcile the amount and currency before proposing case resolution. Explain that retrying without checking the original reference can create ambiguity. Never propose a second debit or an automatic refund from a timeout alone. If confirmation or matching ledger evidence is absent, request evidence instead."
+          }
+        ]
+      },
+      "inputProvenance": "Deterministically reconstructed from saved state and frozen source; not a raw HTTP dump.",
+      "sourceHashes": {
+        "graph": "b1116509b1ffdf5157a878e772d37421d7a6508afc5dd0904f22383cd1b01180",
+        "facts": "a7745c344efb3100c8b6a762b9c073e0f45804b0f5c95f0e90b373c5001d6bb4",
+        "evidence": "3d0ef74b64bd528bf966918d3ee9f58175a9c00868fbf89caeb9457f3bfd95b0",
+        "config": "d660f8ce92e00ef8a7a00dd3790f6fa8cf3f5e2b46f698ab057ef453fd6024b0"
+      },
+      "candidate": {
+        "outcome": "TIMEOUT_AFTER_SUCCESS",
+        "summary": "The timeline records a timeout, while the provider reports success and one matching ledger capture is present. Do not initiate another payment from this evidence.",
+        "confidence": "HIGH",
+        "findings": [
+          {
+            "id": "F-1",
+            "text": "The supplied timeline records a timeout observation at 2026-09-11T06:00:08Z; a timeout alone does not establish the payment outcome. The provider reported SUCCEEDED as of 2026-09-11T06:05:50Z; this is a status observation time.",
+            "evidenceIds": [
+              "EVT-1001-3",
+              "PROVIDER:PRV-1001"
+            ],
+            "citationIds": [
+              "RB-TIMEOUT:v1"
+            ]
+          }
+        ],
+        "missingEvidence": [],
+        "proposal": {
+          "action": "RESOLVE_CASE",
+          "reason": "Record the observed successful processing and resolve the investigation without moving funds."
+        }
+      },
+      "checkpointResult": {
+        "outcome": "TIMEOUT_AFTER_SUCCESS",
+        "summary": "The timeline records a timeout, while the provider reports success and one matching ledger capture is present. Do not initiate another payment from this evidence.",
+        "confidence": "HIGH",
+        "findings": [
+          {
+            "id": "F-1",
+            "text": "The supplied timeline records a timeout observation at 2026-09-11T06:00:08Z; a timeout alone does not establish the payment outcome. The provider reported SUCCEEDED as of 2026-09-11T06:05:50Z; this is a status observation time.",
+            "evidenceIds": [
+              "EVT-1001-3",
+              "PROVIDER:PRV-1001"
+            ],
+            "citationIds": [
+              "RB-TIMEOUT:v1"
+            ]
+          }
+        ],
+        "missingEvidence": [],
+        "proposal": {
+          "action": "RESOLVE_CASE",
+          "reason": "Record the observed successful processing and resolve the investigation without moving funds."
+        },
+        "id": "EVAL-534a97f3-9889-4757-a648-c73aed15da9f",
+        "caseId": "CASE-1001",
+        "createdAt": "2026-09-11T23:12:03.105084Z",
+        "createdBy": "offline-evaluator",
+        "mode": "ollama",
+        "status": "AWAITING_REVIEW",
+        "citations": [
+          {
+            "id": "RB-TIMEOUT:v1",
+            "documentId": "RB-TIMEOUT",
+            "version": 1,
+            "title": "Transport timeout after processing",
+            "excerpt": "A client transport timeout does not establish payment failure. Correlate the accepted request, idempotency key and processor payment reference. A SUCCEEDED processor confirmation plus exactly one matching capture ledger entry establishes completed capture for this simulated workflow. Reconcile the amount and currency before proposing case resolution. Explain that retrying without checking the original reference can create ambiguity. Never propose a second debit or an automatic refund from a timeout alone. If confirmation or matching ledger evidence is absent, request evidence instead.",
+            "source": "Original simulated operating policy",
+            "score": 1.152201
+          },
+          {
+            "id": "RB-REFUND:v1",
+            "documentId": "RB-REFUND",
+            "version": 1,
+            "title": "Refund posting and payout reconciliation",
+            "excerpt": "All values are integer minor units in a single currency. Compute ledger net as the signed sum of capture, fee and refund postings. For a succeeded payment, expected processor payout equals capture amount minus processor fee minus confirmed refunds. A confirmed processor refund that is absent from the ledger creates a difference equal to that refund when other postings agree. Preserve the processor refund reference, confirmation event, ledger snapshot cutoff and exact difference. Escalate the posting exception for a human reconciliation review. The investigator must not create a refund, repair a ledger or transfer money.",
+            "source": "Original simulated operating policy",
+            "score": 0.369203
+          },
+          {
+            "id": "RB-REVIEW:v1",
+            "documentId": "RB-REVIEW",
+            "version": 1,
+            "title": "Human review of case proposals",
+            "excerpt": "An investigator proposes RESOLVE_CASE, ESCALATE or REQUEST_EVIDENCE. Only a reviewer distinct from the investigation creator can approve or reject a stored proposal. Apply the stored proposal, check the current case version, and persist the decision and audit entry atomically. Reusing an idempotency key with the same request returns the original decision; a different request with that key must conflict. These actions change case workflow only and never change a payment.",
+            "source": "Original simulated operating policy",
+            "score": 0.264805
+          }
+        ],
+        "toolCalls": [
+          {
+            "name": "get_payment_timeline",
+            "status": "COMPLETED",
+            "durationMs": 0.034,
+            "evidenceIds": [
+              "EVT-1001-1",
+              "EVT-1001-2",
+              "EVT-1001-3",
+              "PROVIDER:PRV-1001"
+            ]
+          },
+          {
+            "name": "compare_settlement",
+            "status": "COMPLETED",
+            "durationMs": 0.037,
+            "evidenceIds": [
+              "LED-1001-1",
+              "LED-1001-2",
+              "PROVIDER:PRV-1001"
+            ]
+          },
+          {
+            "name": "inspect_webhooks",
+            "status": "COMPLETED",
+            "durationMs": 0.03,
+            "evidenceIds": [
+              "WH-1001-1"
+            ]
+          },
+          {
+            "name": "check_refund",
+            "status": "COMPLETED",
+            "durationMs": 0.035,
+            "evidenceIds": [
+              "PROVIDER:PRV-1001"
+            ]
+          }
+        ],
+        "metrics": {
+          "durationMs": 48836.477,
+          "retrievalMs": 8.951,
+          "toolCount": 4,
+          "modelCalls": 2,
+          "inputTokens": 1243,
+          "outputTokens": 130,
+          "retrievalMode": "lexical",
+          "model": "qwen3:4b-instruct",
+          "assessmentSource": "deterministic-evidence-rules",
+          "synthesisScope": "fact-selection",
+          "modelThreads": 4,
+          "modelContextTokens": 4096,
+          "modelTimeoutSeconds": 180.0,
+          "toolOutputTokenLimit": 384,
+          "synthesisOutputTokenLimit": 384,
+          "findingSource": "service-rendered-facts",
+          "factCatalogVersion": 1,
+          "factCatalogHash": "280399edb64835e27ed7cfab46b20546115b2ae66466a2694760e7ccc8749401",
+          "selectedFactIds": [
+            "FACT-TIMEOUT-OBSERVATION",
+            "FACT-PROVIDER-STATUS"
+          ],
+          "selectedFactProvenance": [
+            {
+              "id": "FACT-TIMEOUT-OBSERVATION",
+              "sourceTools": [
+                "get_payment_timeline"
+              ],
+              "evidenceIds": [
+                "EVT-1001-3"
+              ],
+              "citationIds": [
+                "RB-TIMEOUT:v1"
+              ]
+            },
+            {
+              "id": "FACT-PROVIDER-STATUS",
+              "sourceTools": [
+                "get_payment_timeline"
+              ],
+              "evidenceIds": [
+                "PROVIDER:PRV-1001"
+              ],
+              "citationIds": [
+                "RB-TIMEOUT:v1"
+              ]
+            }
+          ],
+          "toolSelectionMs": 24068.642,
+          "toolSelectionProvider": {
+            "model": "qwen3:4b-instruct",
+            "created_at": "2026-09-11T23:12:27.173217736Z",
+            "done": true,
+            "done_reason": "stop",
+            "total_duration": 24046159904,
+            "load_duration": 4319462735,
+            "prompt_eval_count": 511,
+            "prompt_eval_duration": 10532583000,
+            "eval_count": 108,
+            "eval_duration": 9174448000,
+            "logprobs": null,
+            "model_name": "qwen3:4b-instruct",
+            "model_provider": "ollama"
+          },
+          "synthesisMs": 24740.548,
+          "synthesisProvider": {
+            "model": "qwen3:4b-instruct",
+            "created_at": "2026-09-11T23:12:51.936482503Z",
+            "done": true,
+            "done_reason": "stop",
+            "total_duration": 24720019586,
+            "load_duration": 1484604,
+            "prompt_eval_count": 732,
+            "prompt_eval_duration": 22894422000,
+            "eval_count": 22,
+            "eval_duration": 1690731000,
+            "logprobs": null,
+            "model_name": "qwen3:4b-instruct",
+            "model_provider": "ollama"
+          }
+        },
+        "warnings": [
+          "Synthetic data only; proposals change case disposition, never payment or ledger balances.",
+          "Ollama planned diagnostic tools and selected authorized fact IDs. The service rendered the selected facts and supplied their evidence links; no model-authored prose was used. Decisions and all other explanation fields come from deterministic evidence rules. Fact relevance, completeness and source accuracy still require analyst review.",
+          "Lexical retrieval baseline; semantic embeddings are not enabled."
+        ]
+      },
+      "assessment": {
+        "outcome": "TIMEOUT_AFTER_SUCCESS",
+        "summary": "The timeline records a timeout, while the provider reports success and one matching ledger capture is present. Do not initiate another payment from this evidence.",
+        "evidenceIds": [
+          "EVT-1001-3",
+          "LED-1001-1",
+          "LED-1001-2",
+          "PROVIDER:PRV-1001"
+        ],
+        "query": "transport timeout succeeded successful capture idempotency retry",
+        "action": "RESOLVE_CASE",
+        "reason": "Record the observed successful processing and resolve the investigation without moving funds.",
+        "missingEvidence": []
+      },
+      "operationalEvidence": {
+        "get_payment_timeline": {
+          "events": [
+            {
+              "id": "EVT-1001-1",
+              "occurredAt": "2026-09-11T06:00:00Z",
+              "type": "REQUEST_ACCEPTED",
+              "source": "gateway",
+              "status": "SUCCESS",
+              "correlationId": "COR-1001",
+              "attributes": {
+                "idempotencyKey": "IDEM-1001",
+                "providerPaymentId": "PRV-1001",
+                "amountMinor": 1519983
+              }
+            },
+            {
+              "id": "EVT-1001-2",
+              "occurredAt": "2026-09-11T06:00:05Z",
+              "type": "PROCESSOR_CONFIRMED",
+              "source": "processor",
+              "status": "SUCCEEDED",
+              "correlationId": "COR-1001",
+              "attributes": {
+                "idempotencyKey": "IDEM-1001",
+                "providerPaymentId": "PRV-1001",
+                "amountMinor": 1519983
+              }
+            },
+            {
+              "id": "EVT-1001-3",
+              "occurredAt": "2026-09-11T06:00:08Z",
+              "type": "CLIENT_RESPONSE",
+              "source": "gateway",
+              "status": "TIMED_OUT",
+              "correlationId": "COR-1001",
+              "attributes": {
+                "idempotencyKey": "IDEM-1001",
+                "providerPaymentId": "PRV-1001"
+              }
+            }
+          ],
+          "provider": {
+            "status": "SUCCEEDED",
+            "paymentId": "PRV-1001",
+            "amountMinor": 1519983,
+            "feeMinor": 26599,
+            "refundMinor": 0,
+            "payoutMinor": 1493384,
+            "asOf": "2026-09-11T06:05:50Z"
+          },
+          "evidenceIds": [
+            "EVT-1001-1",
+            "EVT-1001-2",
+            "EVT-1001-3",
+            "PROVIDER:PRV-1001"
+          ]
+        },
+        "compare_settlement": {
+          "expectedAmountMinor": 1519983,
+          "currency": "INR",
+          "entries": [
+            {
+              "id": "LED-1001-1",
+              "type": "CAPTURE",
+              "amountMinor": 1519983,
+              "currency": "INR",
+              "occurredAt": "2026-09-11T06:00:06Z",
+              "reference": "PRV-1001"
+            },
+            {
+              "id": "LED-1001-2",
+              "type": "FEE",
+              "amountMinor": -26599,
+              "currency": "INR",
+              "occurredAt": "2026-09-11T06:00:07Z",
+              "reference": "PRV-1001"
+            }
+          ],
+          "captureCount": 1,
+          "captureMinor": 1519983,
+          "refundMinor": 0,
+          "validMoney": true,
+          "moneyIssues": [],
+          "calculationSource": "worker-fixture-baseline",
+          "ledgerNetMinor": 1493384,
+          "providerPayoutMinor": 1493384,
+          "discrepancyMinor": 0,
+          "providerAvailable": true,
+          "reconciliation": null,
+          "provider": {
+            "status": "SUCCEEDED",
+            "paymentId": "PRV-1001",
+            "amountMinor": 1519983,
+            "feeMinor": 26599,
+            "refundMinor": 0,
+            "payoutMinor": 1493384,
+            "asOf": "2026-09-11T06:05:50Z"
+          },
+          "evidenceIds": [
+            "LED-1001-1",
+            "LED-1001-2",
+            "PROVIDER:PRV-1001"
+          ]
+        },
+        "inspect_webhooks": {
+          "records": [
+            {
+              "id": "WH-1001-1",
+              "providerEventId": "PEVT-1001-CAP",
+              "type": "payment.captured",
+              "occurredAt": "2026-09-11T06:00:05Z",
+              "receivedAt": "2026-09-11T06:00:10Z",
+              "processingStatus": "APPLIED",
+              "providerPaymentId": "PRV-1001"
+            }
+          ],
+          "duplicates": [],
+          "orderingInversions": [],
+          "timestampsComplete": true,
+          "evidenceIds": [
+            "WH-1001-1"
+          ]
+        },
+        "check_refund": {
+          "requests": [],
+          "requestedMinor": null,
+          "confirmedMinor": 0,
+          "confirmationIds": [],
+          "ledgerRefundMinor": 0,
+          "providerRefundMinor": 0,
+          "evidenceIds": [
+            "PROVIDER:PRV-1001"
+          ]
+        }
+      },
+      "retrievedPolicies": [
+        {
+          "id": "RB-TIMEOUT:v1",
+          "documentId": "RB-TIMEOUT",
+          "version": 1,
+          "title": "Transport timeout after processing",
+          "excerpt": "A client transport timeout does not establish payment failure. Correlate the accepted request, idempotency key and processor payment reference. A SUCCEEDED processor confirmation plus exactly one matching capture ledger entry establishes completed capture for this simulated workflow. Reconcile the amount and currency before proposing case resolution. Explain that retrying without checking the original reference can create ambiguity. Never propose a second debit or an automatic refund from a timeout alone. If confirmation or matching ledger evidence is absent, request evidence instead.",
+          "source": "Original simulated operating policy",
+          "score": 1.152201
+        },
+        {
+          "id": "RB-REFUND:v1",
+          "documentId": "RB-REFUND",
+          "version": 1,
+          "title": "Refund posting and payout reconciliation",
+          "excerpt": "All values are integer minor units in a single currency. Compute ledger net as the signed sum of capture, fee and refund postings. For a succeeded payment, expected processor payout equals capture amount minus processor fee minus confirmed refunds. A confirmed processor refund that is absent from the ledger creates a difference equal to that refund when other postings agree. Preserve the processor refund reference, confirmation event, ledger snapshot cutoff and exact difference. Escalate the posting exception for a human reconciliation review. The investigator must not create a refund, repair a ledger or transfer money.",
+          "source": "Original simulated operating policy",
+          "score": 0.369203
+        },
+        {
+          "id": "RB-REVIEW:v1",
+          "documentId": "RB-REVIEW",
+          "version": 1,
+          "title": "Human review of case proposals",
+          "excerpt": "An investigator proposes RESOLVE_CASE, ESCALATE or REQUEST_EVIDENCE. Only a reviewer distinct from the investigation creator can approve or reject a stored proposal. Apply the stored proposal, check the current case version, and persist the decision and audit entry atomically. Reusing an idempotency key with the same request returns the original decision; a different request with that key must conflict. These actions change case workflow only and never change a payment.",
+          "source": "Original simulated operating policy",
+          "score": 0.264805
+        }
+      ],
+      "policySuppliedToCompletedFactSelection": [
+        {
+          "id": "RB-TIMEOUT:v1",
+          "documentId": "RB-TIMEOUT",
+          "version": 1,
+          "title": "Transport timeout after processing",
+          "excerpt": "A client transport timeout does not establish payment failure. Correlate the accepted request, idempotency key and processor payment reference. A SUCCEEDED processor confirmation plus exactly one matching capture ledger entry establishes completed capture for this simulated workflow. Reconcile the amount and currency before proposing case resolution. Explain that retrying without checking the original reference can create ambiguity. Never propose a second debit or an automatic refund from a timeout alone. If confirmation or matching ledger evidence is absent, request evidence instead.",
+          "source": "Original simulated operating policy",
+          "score": 1.152201
+        }
+      ],
+      "policyContextNote": "One policy supplied to completed fact-ID selection.",
+      "compositionChecks": {
+        "catalogMatchesRebuiltObservedFacts": true,
+        "catalogHashMatches": true,
+        "renderedFinding": {
+          "id": "F-1",
+          "text": "The supplied timeline records a timeout observation at 2026-09-11T06:00:08Z; a timeout alone does not establish the payment outcome. The provider reported SUCCEEDED as of 2026-09-11T06:05:50Z; this is a status observation time.",
+          "evidenceIds": [
+            "EVT-1001-3",
+            "PROVIDER:PRV-1001"
+          ],
+          "citationIds": [
+            "RB-TIMEOUT:v1"
+          ]
+        },
+        "resultFindingMatchesExactSelectedCatalogTextAndLinks": true,
+        "ruleOwnedFieldsMatchAssessment": true,
+        "limit": "These checks establish composition/provenance, not independent factual correctness or selection usefulness."
+      },
+      "usage": {
+        "modelCalls": 2,
+        "inputTokens": 1243,
+        "outputTokens": 130
+      },
+      "modelTimings": {
+        "toolSelectionMs": 24068.642,
+        "toolSelectionProvider": {
+          "model": "qwen3:4b-instruct",
+          "created_at": "2026-09-11T23:12:27.173217736Z",
+          "done": true,
+          "done_reason": "stop",
+          "total_duration": 24046159904,
+          "load_duration": 4319462735,
+          "prompt_eval_count": 511,
+          "prompt_eval_duration": 10532583000,
+          "eval_count": 108,
+          "eval_duration": 9174448000,
+          "logprobs": null,
+          "model_name": "qwen3:4b-instruct",
+          "model_provider": "ollama"
+        },
+        "synthesisMs": 24740.548,
+        "synthesisProvider": {
+          "model": "qwen3:4b-instruct",
+          "created_at": "2026-09-11T23:12:51.936482503Z",
+          "done": true,
+          "done_reason": "stop",
+          "total_duration": 24720019586,
+          "load_duration": 1484604,
+          "prompt_eval_count": 732,
+          "prompt_eval_duration": 22894422000,
+          "eval_count": 22,
+          "eval_duration": 1690731000,
+          "logprobs": null,
+          "model_name": "qwen3:4b-instruct",
+          "model_provider": "ollama"
+        }
+      },
+      "errors": [],
+      "manualReview": {
+        "reviewer": "Codex AI assistant, not an independent human",
+        "observedEvidenceReview": "EVT-1001-3 records TIMED_OUT at 06:00:08Z; provider reports SUCCEEDED asOf 06:05:50Z. The exact selected sentences preserve these distinct scopes and their links. No claim is made that the later status time is the success event time.",
+        "selectionRelevanceAndLimits": "The selection now includes the distinguishing timeout plus status corroboration. It omits the available single capture and zero-difference settlement, so it is not the complete evidence needed for resolution; those checks remain in the rule summary/tool trace.",
+        "policyReview": "RB-TIMEOUT:v1 is actually supplied and relevant; the selected observation illustrates its timeout-does-not-prove-failure guidance.",
+        "exceptionSpecificObservationSelected": true,
+        "materialFactualErrorIdentifiedInSelectedServiceText": false,
+        "authorship": "The model selected IDs only; the service supplied all displayed sentences and links. Rules owned decisions and other explanation fields.",
+        "workflowLimit": "This direct-worker evaluation executed no Java reviewer action or persisted case transition."
+      }
+    },
+    {
+      "investigationId": "EVAL-09cc0b02-4f01-42bc-af81-670bd960f0c7",
+      "caseId": "CASE-1011",
+      "startedAt": "2026-09-11T23:12:51.997967+00:00",
+      "synthesisScope": "fact-selection",
+      "parsedModelSelection": {
+        "factIds": [
+          "FACT-REPEATED-DELIVERY"
+        ]
+      },
+      "selectionProvenanceNote": "Original parsed selected IDs retained by the completed model stage; raw provider response bytes are not separately retained. The V6 response contract contains IDs only.",
+      "factCatalog": [
+        {
+          "id": "FACT-PROVIDER-STATUS",
+          "text": "The provider reported SUCCEEDED as of 2026-09-11T06:15:50Z; this is a status observation time.",
+          "evidenceIds": [
+            "PROVIDER:PRV-1011"
+          ],
+          "citationIds": [
+            "RB-WEBHOOK-DEDUP:v1"
+          ],
+          "sourceTools": [
+            "get_payment_timeline"
+          ]
+        },
+        {
+          "id": "FACT-CAPTURE-LEDGER",
+          "text": "The supplied ledger snapshot contains 1 capture entry totaling INR 5,710.33.",
+          "evidenceIds": [
+            "LED-1011-1",
+            "LED-1011-2",
+            "PROVIDER:PRV-1011"
+          ],
+          "citationIds": [
+            "RB-WEBHOOK-DEDUP:v1"
+          ],
+          "sourceTools": [
+            "compare_settlement"
+          ]
+        },
+        {
+          "id": "FACT-SETTLEMENT",
+          "text": "The supplied ledger net is INR 5,610.40; provider payout is INR 5,610.40; ledger-minus-payout difference is INR 0.00.",
+          "evidenceIds": [
+            "LED-1011-1",
+            "LED-1011-2",
+            "PROVIDER:PRV-1011"
+          ],
+          "citationIds": [
+            "RB-WEBHOOK-DEDUP:v1"
+          ],
+          "sourceTools": [
+            "compare_settlement"
+          ]
+        },
+        {
+          "id": "FACT-SUCCESS-EVENT",
+          "text": "The supplied timeline records a successful processor/payment event at 2026-09-11T06:10:05Z; this is event occurrence time.",
+          "evidenceIds": [
+            "EVT-1011-2"
+          ],
+          "citationIds": [
+            "RB-WEBHOOK-DEDUP:v1"
+          ],
+          "sourceTools": [
+            "get_payment_timeline"
+          ]
+        },
+        {
+          "id": "FACT-REPEATED-DELIVERY",
+          "text": "One provider event has 2 delivery records in the supplied webhook snapshot: 1 APPLIED, 1 IGNORED_DUPLICATE. Delivery records are separate from financial events.",
+          "evidenceIds": [
+            "WH-1011-1",
+            "WH-1011-2"
+          ],
+          "citationIds": [
+            "RB-WEBHOOK-DEDUP:v1"
+          ],
+          "sourceTools": [
+            "inspect_webhooks"
+          ]
+        }
+      ],
+      "factCatalogVersion": 1,
+      "factCatalogHash": "16159dcbd775c1af5a7bbf22a66a4fbcafd58683bbde086bcb3093d6b7d9b918",
+      "reconstructedSelectionInput": {
+        "question": "Explain the observed payment state and propose the next case action using authorized evidence and current policy.",
+        "factCatalogVersion": 1,
+        "facts": [
+          {
+            "id": "FACT-PROVIDER-STATUS",
+            "text": "The provider reported SUCCEEDED as of 2026-09-11T06:15:50Z; this is a status observation time.",
+            "evidenceIds": [
+              "PROVIDER:PRV-1011"
+            ],
+            "citationIds": [
+              "RB-WEBHOOK-DEDUP:v1"
+            ],
+            "sourceTools": [
+              "get_payment_timeline"
+            ]
+          },
+          {
+            "id": "FACT-CAPTURE-LEDGER",
+            "text": "The supplied ledger snapshot contains 1 capture entry totaling INR 5,710.33.",
+            "evidenceIds": [
+              "LED-1011-1",
+              "LED-1011-2",
+              "PROVIDER:PRV-1011"
+            ],
+            "citationIds": [
+              "RB-WEBHOOK-DEDUP:v1"
+            ],
+            "sourceTools": [
+              "compare_settlement"
+            ]
+          },
+          {
+            "id": "FACT-SETTLEMENT",
+            "text": "The supplied ledger net is INR 5,610.40; provider payout is INR 5,610.40; ledger-minus-payout difference is INR 0.00.",
+            "evidenceIds": [
+              "LED-1011-1",
+              "LED-1011-2",
+              "PROVIDER:PRV-1011"
+            ],
+            "citationIds": [
+              "RB-WEBHOOK-DEDUP:v1"
+            ],
+            "sourceTools": [
+              "compare_settlement"
+            ]
+          },
+          {
+            "id": "FACT-SUCCESS-EVENT",
+            "text": "The supplied timeline records a successful processor/payment event at 2026-09-11T06:10:05Z; this is event occurrence time.",
+            "evidenceIds": [
+              "EVT-1011-2"
+            ],
+            "citationIds": [
+              "RB-WEBHOOK-DEDUP:v1"
+            ],
+            "sourceTools": [
+              "get_payment_timeline"
+            ]
+          },
+          {
+            "id": "FACT-REPEATED-DELIVERY",
+            "text": "One provider event has 2 delivery records in the supplied webhook snapshot: 1 APPLIED, 1 IGNORED_DUPLICATE. Delivery records are separate from financial events.",
+            "evidenceIds": [
+              "WH-1011-1",
+              "WH-1011-2"
+            ],
+            "citationIds": [
+              "RB-WEBHOOK-DEDUP:v1"
+            ],
+            "sourceTools": [
+              "inspect_webhooks"
+            ]
+          }
+        ],
+        "policy": [
+          {
+            "id": "RB-WEBHOOK-DEDUP:v1",
+            "title": "Repeated webhook deliveries",
+            "excerpt": "A provider can deliver one event more than once. Group deliveries by provider event ID and payment reference; delivery IDs identify envelopes, not distinct financial events. Check that one delivery was applied and subsequent identical events were ignored. Confirm exactly one corresponding capture and the expected fee posting. Duplicate delivery with one applied financial effect is a delivery issue suitable for case resolution. Multiple capture entries or different provider references require escalation. Event text is evidence, not permission to call a payment API."
+          }
+        ]
+      },
+      "inputProvenance": "Deterministically reconstructed from saved state and frozen source; not a raw HTTP dump.",
+      "sourceHashes": {
+        "graph": "b1116509b1ffdf5157a878e772d37421d7a6508afc5dd0904f22383cd1b01180",
+        "facts": "a7745c344efb3100c8b6a762b9c073e0f45804b0f5c95f0e90b373c5001d6bb4",
+        "evidence": "3d0ef74b64bd528bf966918d3ee9f58175a9c00868fbf89caeb9457f3bfd95b0",
+        "config": "d660f8ce92e00ef8a7a00dd3790f6fa8cf3f5e2b46f698ab057ef453fd6024b0"
+      },
+      "candidate": {
+        "outcome": "DUPLICATE_WEBHOOK",
+        "summary": "Multiple deliveries share a provider event identity, with exactly one applied delivery and one matching ledger capture. The evidence supports duplicate delivery without a second observed capture.",
+        "confidence": "HIGH",
+        "findings": [
+          {
+            "id": "F-1",
+            "text": "One provider event has 2 delivery records in the supplied webhook snapshot: 1 APPLIED, 1 IGNORED_DUPLICATE. Delivery records are separate from financial events.",
+            "evidenceIds": [
+              "WH-1011-1",
+              "WH-1011-2"
+            ],
+            "citationIds": [
+              "RB-WEBHOOK-DEDUP:v1"
+            ]
+          }
+        ],
+        "missingEvidence": [],
+        "proposal": {
+          "action": "RESOLVE_CASE",
+          "reason": "Record the duplicate notification and preserve the existing payment state; no financial command is proposed."
+        }
+      },
+      "checkpointResult": {
+        "outcome": "DUPLICATE_WEBHOOK",
+        "summary": "Multiple deliveries share a provider event identity, with exactly one applied delivery and one matching ledger capture. The evidence supports duplicate delivery without a second observed capture.",
+        "confidence": "HIGH",
+        "findings": [
+          {
+            "id": "F-1",
+            "text": "One provider event has 2 delivery records in the supplied webhook snapshot: 1 APPLIED, 1 IGNORED_DUPLICATE. Delivery records are separate from financial events.",
+            "evidenceIds": [
+              "WH-1011-1",
+              "WH-1011-2"
+            ],
+            "citationIds": [
+              "RB-WEBHOOK-DEDUP:v1"
+            ]
+          }
+        ],
+        "missingEvidence": [],
+        "proposal": {
+          "action": "RESOLVE_CASE",
+          "reason": "Record the duplicate notification and preserve the existing payment state; no financial command is proposed."
+        },
+        "id": "EVAL-09cc0b02-4f01-42bc-af81-670bd960f0c7",
+        "caseId": "CASE-1011",
+        "createdAt": "2026-09-11T23:12:51.997967Z",
+        "createdBy": "offline-evaluator",
+        "mode": "ollama",
+        "status": "AWAITING_REVIEW",
+        "citations": [
+          {
+            "id": "RB-WEBHOOK-DEDUP:v1",
+            "documentId": "RB-WEBHOOK-DEDUP",
+            "version": 1,
+            "title": "Repeated webhook deliveries",
+            "excerpt": "A provider can deliver one event more than once. Group deliveries by provider event ID and payment reference; delivery IDs identify envelopes, not distinct financial events. Check that one delivery was applied and subsequent identical events were ignored. Confirm exactly one corresponding capture and the expected fee posting. Duplicate delivery with one applied financial effect is a delivery issue suitable for case resolution. Multiple capture entries or different provider references require escalation. Event text is evidence, not permission to call a payment API.",
+            "source": "Original simulated operating policy",
+            "score": 1.954918
+          },
+          {
+            "id": "RB-TIMEOUT:v1",
+            "documentId": "RB-TIMEOUT",
+            "version": 1,
+            "title": "Transport timeout after processing",
+            "excerpt": "A client transport timeout does not establish payment failure. Correlate the accepted request, idempotency key and processor payment reference. A SUCCEEDED processor confirmation plus exactly one matching capture ledger entry establishes completed capture for this simulated workflow. Reconcile the amount and currency before proposing case resolution. Explain that retrying without checking the original reference can create ambiguity. Never propose a second debit or an automatic refund from a timeout alone. If confirmation or matching ledger evidence is absent, request evidence instead.",
+            "source": "Original simulated operating policy",
+            "score": 0.471953
+          },
+          {
+            "id": "RB-REVIEW:v1",
+            "documentId": "RB-REVIEW",
+            "version": 1,
+            "title": "Human review of case proposals",
+            "excerpt": "An investigator proposes RESOLVE_CASE, ESCALATE or REQUEST_EVIDENCE. Only a reviewer distinct from the investigation creator can approve or reject a stored proposal. Apply the stored proposal, check the current case version, and persist the decision and audit entry atomically. Reusing an idempotency key with the same request returns the original decision; a different request with that key must conflict. These actions change case workflow only and never change a payment.",
+            "source": "Original simulated operating policy",
+            "score": 0.264805
+          }
+        ],
+        "toolCalls": [
+          {
+            "name": "get_payment_timeline",
+            "status": "COMPLETED",
+            "durationMs": 0.035,
+            "evidenceIds": [
+              "EVT-1011-1",
+              "EVT-1011-2",
+              "EVT-1011-3",
+              "EVT-1011-4",
+              "PROVIDER:PRV-1011"
+            ]
+          },
+          {
+            "name": "compare_settlement",
+            "status": "COMPLETED",
+            "durationMs": 0.026,
+            "evidenceIds": [
+              "LED-1011-1",
+              "LED-1011-2",
+              "PROVIDER:PRV-1011"
+            ]
+          },
+          {
+            "name": "inspect_webhooks",
+            "status": "COMPLETED",
+            "durationMs": 0.038,
+            "evidenceIds": [
+              "WH-1011-1",
+              "WH-1011-2"
+            ]
+          },
+          {
+            "name": "check_refund",
+            "status": "COMPLETED",
+            "durationMs": 0.032,
+            "evidenceIds": [
+              "PROVIDER:PRV-1011"
+            ]
+          }
+        ],
+        "metrics": {
+          "durationMs": 32572.004,
+          "retrievalMs": 4.784,
+          "toolCount": 4,
+          "modelCalls": 2,
+          "inputTokens": 1253,
+          "outputTokens": 122,
+          "retrievalMode": "lexical",
+          "model": "qwen3:4b-instruct",
+          "assessmentSource": "deterministic-evidence-rules",
+          "synthesisScope": "fact-selection",
+          "modelThreads": 4,
+          "modelContextTokens": 4096,
+          "modelTimeoutSeconds": 180.0,
+          "toolOutputTokenLimit": 384,
+          "synthesisOutputTokenLimit": 384,
+          "findingSource": "service-rendered-facts",
+          "factCatalogVersion": 1,
+          "factCatalogHash": "16159dcbd775c1af5a7bbf22a66a4fbcafd58683bbde086bcb3093d6b7d9b918",
+          "selectedFactIds": [
+            "FACT-REPEATED-DELIVERY"
+          ],
+          "selectedFactProvenance": [
+            {
+              "id": "FACT-REPEATED-DELIVERY",
+              "sourceTools": [
+                "inspect_webhooks"
+              ],
+              "evidenceIds": [
+                "WH-1011-1",
+                "WH-1011-2"
+              ],
+              "citationIds": [
+                "RB-WEBHOOK-DEDUP:v1"
+              ]
+            }
+          ],
+          "toolSelectionMs": 12704.5,
+          "toolSelectionProvider": {
+            "model": "qwen3:4b-instruct",
+            "created_at": "2026-09-11T23:13:04.703882175Z",
+            "done": true,
+            "done_reason": "stop",
+            "total_duration": 12683699165,
+            "load_duration": 1538399,
+            "prompt_eval_count": 511,
+            "prompt_eval_duration": 1162112000,
+            "eval_count": 108,
+            "eval_duration": 11356289000,
+            "logprobs": null,
+            "model_name": "qwen3:4b-instruct",
+            "model_provider": "ollama"
+          },
+          "synthesisMs": 19850.42,
+          "synthesisProvider": {
+            "model": "qwen3:4b-instruct",
+            "created_at": "2026-09-11T23:13:24.565397784Z",
+            "done": true,
+            "done_reason": "stop",
+            "total_duration": 19829474977,
+            "load_duration": 3578765,
+            "prompt_eval_count": 742,
+            "prompt_eval_duration": 18436981000,
+            "eval_count": 14,
+            "eval_duration": 1215900000,
+            "logprobs": null,
+            "model_name": "qwen3:4b-instruct",
+            "model_provider": "ollama"
+          }
+        },
+        "warnings": [
+          "Synthetic data only; proposals change case disposition, never payment or ledger balances.",
+          "Ollama planned diagnostic tools and selected authorized fact IDs. The service rendered the selected facts and supplied their evidence links; no model-authored prose was used. Decisions and all other explanation fields come from deterministic evidence rules. Fact relevance, completeness and source accuracy still require analyst review.",
+          "Lexical retrieval baseline; semantic embeddings are not enabled."
+        ]
+      },
+      "assessment": {
+        "outcome": "DUPLICATE_WEBHOOK",
+        "summary": "Multiple deliveries share a provider event identity, with exactly one applied delivery and one matching ledger capture. The evidence supports duplicate delivery without a second observed capture.",
+        "evidenceIds": [
+          "WH-1011-1",
+          "WH-1011-2",
+          "LED-1011-1",
+          "LED-1011-2",
+          "PROVIDER:PRV-1011"
+        ],
+        "query": "duplicate webhook repeated delivery providerEventId exactly once idempotency",
+        "action": "RESOLVE_CASE",
+        "reason": "Record the duplicate notification and preserve the existing payment state; no financial command is proposed.",
+        "missingEvidence": []
+      },
+      "operationalEvidence": {
+        "get_payment_timeline": {
+          "events": [
+            {
+              "id": "EVT-1011-1",
+              "occurredAt": "2026-09-11T06:10:00Z",
+              "type": "REQUEST_ACCEPTED",
+              "source": "gateway",
+              "status": "SUCCESS",
+              "correlationId": "COR-1011",
+              "attributes": {
+                "idempotencyKey": "IDEM-1011",
+                "providerPaymentId": "PRV-1011",
+                "amountMinor": 571033
+              }
+            },
+            {
+              "id": "EVT-1011-2",
+              "occurredAt": "2026-09-11T06:10:05Z",
+              "type": "PROCESSOR_CONFIRMED",
+              "source": "processor",
+              "status": "SUCCEEDED",
+              "correlationId": "COR-1011",
+              "attributes": {
+                "idempotencyKey": "IDEM-1011",
+                "providerPaymentId": "PRV-1011",
+                "amountMinor": 571033
+              }
+            },
+            {
+              "id": "EVT-1011-3",
+              "occurredAt": "2026-09-11T06:10:08Z",
+              "type": "CLIENT_RESPONSE",
+              "source": "gateway",
+              "status": "DELIVERED",
+              "correlationId": "COR-1011",
+              "attributes": {
+                "idempotencyKey": "IDEM-1011",
+                "providerPaymentId": "PRV-1011"
+              }
+            },
+            {
+              "id": "EVT-1011-4",
+              "occurredAt": "2026-09-11T06:10:30Z",
+              "type": "WEBHOOK_RECEIVED",
+              "source": "webhook-consumer",
+              "status": "IGNORED_DUPLICATE",
+              "correlationId": "COR-1011",
+              "attributes": {
+                "idempotencyKey": "IDEM-1011",
+                "providerPaymentId": "PRV-1011"
+              }
+            }
+          ],
+          "provider": {
+            "status": "SUCCEEDED",
+            "paymentId": "PRV-1011",
+            "amountMinor": 571033,
+            "feeMinor": 9993,
+            "refundMinor": 0,
+            "payoutMinor": 561040,
+            "asOf": "2026-09-11T06:15:50Z"
+          },
+          "evidenceIds": [
+            "EVT-1011-1",
+            "EVT-1011-2",
+            "EVT-1011-3",
+            "EVT-1011-4",
+            "PROVIDER:PRV-1011"
+          ]
+        },
+        "compare_settlement": {
+          "expectedAmountMinor": 571033,
+          "currency": "INR",
+          "entries": [
+            {
+              "id": "LED-1011-1",
+              "type": "CAPTURE",
+              "amountMinor": 571033,
+              "currency": "INR",
+              "occurredAt": "2026-09-11T06:10:06Z",
+              "reference": "PRV-1011"
+            },
+            {
+              "id": "LED-1011-2",
+              "type": "FEE",
+              "amountMinor": -9993,
+              "currency": "INR",
+              "occurredAt": "2026-09-11T06:10:07Z",
+              "reference": "PRV-1011"
+            }
+          ],
+          "captureCount": 1,
+          "captureMinor": 571033,
+          "refundMinor": 0,
+          "validMoney": true,
+          "moneyIssues": [],
+          "calculationSource": "worker-fixture-baseline",
+          "ledgerNetMinor": 561040,
+          "providerPayoutMinor": 561040,
+          "discrepancyMinor": 0,
+          "providerAvailable": true,
+          "reconciliation": null,
+          "provider": {
+            "status": "SUCCEEDED",
+            "paymentId": "PRV-1011",
+            "amountMinor": 571033,
+            "feeMinor": 9993,
+            "refundMinor": 0,
+            "payoutMinor": 561040,
+            "asOf": "2026-09-11T06:15:50Z"
+          },
+          "evidenceIds": [
+            "LED-1011-1",
+            "LED-1011-2",
+            "PROVIDER:PRV-1011"
+          ]
+        },
+        "inspect_webhooks": {
+          "records": [
+            {
+              "id": "WH-1011-1",
+              "providerEventId": "PEVT-1011-CAP",
+              "type": "payment.captured",
+              "occurredAt": "2026-09-11T06:10:05Z",
+              "receivedAt": "2026-09-11T06:10:10Z",
+              "processingStatus": "APPLIED",
+              "providerPaymentId": "PRV-1011"
+            },
+            {
+              "id": "WH-1011-2",
+              "providerEventId": "PEVT-1011-CAP",
+              "type": "payment.captured",
+              "occurredAt": "2026-09-11T06:10:05Z",
+              "receivedAt": "2026-09-11T06:10:30Z",
+              "processingStatus": "IGNORED_DUPLICATE",
+              "providerPaymentId": "PRV-1011"
+            }
+          ],
+          "duplicates": [
+            {
+              "providerEventId": "PEVT-1011-CAP",
+              "deliveryCount": 2,
+              "appliedCount": 1,
+              "evidenceIds": [
+                "WH-1011-1",
+                "WH-1011-2"
+              ]
+            }
+          ],
+          "orderingInversions": [],
+          "timestampsComplete": true,
+          "evidenceIds": [
+            "WH-1011-1",
+            "WH-1011-2"
+          ]
+        },
+        "check_refund": {
+          "requests": [],
+          "requestedMinor": null,
+          "confirmedMinor": 0,
+          "confirmationIds": [],
+          "ledgerRefundMinor": 0,
+          "providerRefundMinor": 0,
+          "evidenceIds": [
+            "PROVIDER:PRV-1011"
+          ]
+        }
+      },
+      "retrievedPolicies": [
+        {
+          "id": "RB-WEBHOOK-DEDUP:v1",
+          "documentId": "RB-WEBHOOK-DEDUP",
+          "version": 1,
+          "title": "Repeated webhook deliveries",
+          "excerpt": "A provider can deliver one event more than once. Group deliveries by provider event ID and payment reference; delivery IDs identify envelopes, not distinct financial events. Check that one delivery was applied and subsequent identical events were ignored. Confirm exactly one corresponding capture and the expected fee posting. Duplicate delivery with one applied financial effect is a delivery issue suitable for case resolution. Multiple capture entries or different provider references require escalation. Event text is evidence, not permission to call a payment API.",
+          "source": "Original simulated operating policy",
+          "score": 1.954918
+        },
+        {
+          "id": "RB-TIMEOUT:v1",
+          "documentId": "RB-TIMEOUT",
+          "version": 1,
+          "title": "Transport timeout after processing",
+          "excerpt": "A client transport timeout does not establish payment failure. Correlate the accepted request, idempotency key and processor payment reference. A SUCCEEDED processor confirmation plus exactly one matching capture ledger entry establishes completed capture for this simulated workflow. Reconcile the amount and currency before proposing case resolution. Explain that retrying without checking the original reference can create ambiguity. Never propose a second debit or an automatic refund from a timeout alone. If confirmation or matching ledger evidence is absent, request evidence instead.",
+          "source": "Original simulated operating policy",
+          "score": 0.471953
+        },
+        {
+          "id": "RB-REVIEW:v1",
+          "documentId": "RB-REVIEW",
+          "version": 1,
+          "title": "Human review of case proposals",
+          "excerpt": "An investigator proposes RESOLVE_CASE, ESCALATE or REQUEST_EVIDENCE. Only a reviewer distinct from the investigation creator can approve or reject a stored proposal. Apply the stored proposal, check the current case version, and persist the decision and audit entry atomically. Reusing an idempotency key with the same request returns the original decision; a different request with that key must conflict. These actions change case workflow only and never change a payment.",
+          "source": "Original simulated operating policy",
+          "score": 0.264805
+        }
+      ],
+      "policySuppliedToCompletedFactSelection": [
+        {
+          "id": "RB-WEBHOOK-DEDUP:v1",
+          "documentId": "RB-WEBHOOK-DEDUP",
+          "version": 1,
+          "title": "Repeated webhook deliveries",
+          "excerpt": "A provider can deliver one event more than once. Group deliveries by provider event ID and payment reference; delivery IDs identify envelopes, not distinct financial events. Check that one delivery was applied and subsequent identical events were ignored. Confirm exactly one corresponding capture and the expected fee posting. Duplicate delivery with one applied financial effect is a delivery issue suitable for case resolution. Multiple capture entries or different provider references require escalation. Event text is evidence, not permission to call a payment API.",
+          "source": "Original simulated operating policy",
+          "score": 1.954918
+        }
+      ],
+      "policyContextNote": "One policy supplied to completed fact-ID selection.",
+      "compositionChecks": {
+        "catalogMatchesRebuiltObservedFacts": true,
+        "catalogHashMatches": true,
+        "renderedFinding": {
+          "id": "F-1",
+          "text": "One provider event has 2 delivery records in the supplied webhook snapshot: 1 APPLIED, 1 IGNORED_DUPLICATE. Delivery records are separate from financial events.",
+          "evidenceIds": [
+            "WH-1011-1",
+            "WH-1011-2"
+          ],
+          "citationIds": [
+            "RB-WEBHOOK-DEDUP:v1"
+          ]
+        },
+        "resultFindingMatchesExactSelectedCatalogTextAndLinks": true,
+        "ruleOwnedFieldsMatchAssessment": true,
+        "limit": "These checks establish composition/provenance, not independent factual correctness or selection usefulness."
+      },
+      "usage": {
+        "modelCalls": 2,
+        "inputTokens": 1253,
+        "outputTokens": 122
+      },
+      "modelTimings": {
+        "toolSelectionMs": 12704.5,
+        "toolSelectionProvider": {
+          "model": "qwen3:4b-instruct",
+          "created_at": "2026-09-11T23:13:04.703882175Z",
+          "done": true,
+          "done_reason": "stop",
+          "total_duration": 12683699165,
+          "load_duration": 1538399,
+          "prompt_eval_count": 511,
+          "prompt_eval_duration": 1162112000,
+          "eval_count": 108,
+          "eval_duration": 11356289000,
+          "logprobs": null,
+          "model_name": "qwen3:4b-instruct",
+          "model_provider": "ollama"
+        },
+        "synthesisMs": 19850.42,
+        "synthesisProvider": {
+          "model": "qwen3:4b-instruct",
+          "created_at": "2026-09-11T23:13:24.565397784Z",
+          "done": true,
+          "done_reason": "stop",
+          "total_duration": 19829474977,
+          "load_duration": 3578765,
+          "prompt_eval_count": 742,
+          "prompt_eval_duration": 18436981000,
+          "eval_count": 14,
+          "eval_duration": 1215900000,
+          "logprobs": null,
+          "model_name": "qwen3:4b-instruct",
+          "model_provider": "ollama"
+        }
+      },
+      "errors": [],
+      "manualReview": {
+        "reviewer": "Codex AI assistant, not an independent human",
+        "observedEvidenceReview": "WH-1011-1 and WH-1011-2 have one shared providerEventId and different delivery IDs, with APPLIED and IGNORED_DUPLICATE respectively. The selected catalog sentence states these counts and does not claim simultaneous receipt.",
+        "selectionRelevanceAndLimits": "The single selected fact now directly explains the duplicate-delivery exception. It does not add an unselected sentence or claim to demonstrate the ledger/capture prerequisite.",
+        "policyReview": "RB-WEBHOOK-DEDUP:v1 is supplied and relevant to grouping and ignored repeat deliveries; ledger corroboration remains outside this selected sentence.",
+        "exceptionSpecificObservationSelected": true,
+        "materialFactualErrorIdentifiedInSelectedServiceText": false,
+        "authorship": "The model selected IDs only; the service supplied all displayed sentences and links. Rules owned decisions and other explanation fields.",
+        "workflowLimit": "This direct-worker evaluation executed no Java reviewer action or persisted case transition."
+      }
+    },
+    {
+      "investigationId": "EVAL-9fd828b5-ec1e-4097-a977-e9a6a2cf8194",
+      "caseId": "CASE-1021",
+      "startedAt": "2026-09-11T23:13:24.597807+00:00",
+      "synthesisScope": "fact-selection",
+      "parsedModelSelection": {
+        "factIds": [
+          "FACT-WEBHOOK-TIMING",
+          "FACT-SUCCESS-EVENT"
+        ]
+      },
+      "selectionProvenanceNote": "Original parsed selected IDs retained by the completed model stage; raw provider response bytes are not separately retained. The V6 response contract contains IDs only.",
+      "factCatalog": [
+        {
+          "id": "FACT-PROVIDER-STATUS",
+          "text": "The provider reported SUCCEEDED as of 2026-09-11T06:25:50Z; this is a status observation time.",
+          "evidenceIds": [
+            "PROVIDER:PRV-1021"
+          ],
+          "citationIds": [
+            "RB-EVENT-ORDER:v1"
+          ],
+          "sourceTools": [
+            "get_payment_timeline"
+          ]
+        },
+        {
+          "id": "FACT-CAPTURE-LEDGER",
+          "text": "The supplied ledger snapshot contains 1 capture entry totaling INR 21,227.11.",
+          "evidenceIds": [
+            "LED-1021-1",
+            "LED-1021-2",
+            "PROVIDER:PRV-1021"
+          ],
+          "citationIds": [
+            "RB-EVENT-ORDER:v1"
+          ],
+          "sourceTools": [
+            "compare_settlement"
+          ]
+        },
+        {
+          "id": "FACT-SETTLEMENT",
+          "text": "The supplied ledger net is INR 20,855.64; provider payout is INR 20,855.64; ledger-minus-payout difference is INR 0.00.",
+          "evidenceIds": [
+            "LED-1021-1",
+            "LED-1021-2",
+            "PROVIDER:PRV-1021"
+          ],
+          "citationIds": [
+            "RB-EVENT-ORDER:v1"
+          ],
+          "sourceTools": [
+            "compare_settlement"
+          ]
+        },
+        {
+          "id": "FACT-SUCCESS-EVENT",
+          "text": "The supplied timeline records a successful processor/payment event at 2026-09-11T06:20:05Z; this is event occurrence time.",
+          "evidenceIds": [
+            "EVT-1021-2"
+          ],
+          "citationIds": [
+            "RB-EVENT-ORDER:v1"
+          ],
+          "sourceTools": [
+            "get_payment_timeline"
+          ]
+        },
+        {
+          "id": "FACT-WEBHOOK-TIMING",
+          "text": "The earlier provider event occurred at 2026-09-11T06:20:02Z, and its webhook was received at 2026-09-11T06:20:45Z. The later provider event occurred at 2026-09-11T06:20:05Z, and its webhook was received at 2026-09-11T06:20:10Z.",
+          "evidenceIds": [
+            "WH-1021-1",
+            "WH-1021-2"
+          ],
+          "citationIds": [
+            "RB-EVENT-ORDER:v1"
+          ],
+          "sourceTools": [
+            "inspect_webhooks"
+          ]
+        }
+      ],
+      "factCatalogVersion": 1,
+      "factCatalogHash": "769aecc75c4f380f619d60a467e17b6e2e14b90447c73cc1269886ba3c889bd1",
+      "reconstructedSelectionInput": {
+        "question": "Explain the observed payment state and propose the next case action using authorized evidence and current policy.",
+        "factCatalogVersion": 1,
+        "facts": [
+          {
+            "id": "FACT-PROVIDER-STATUS",
+            "text": "The provider reported SUCCEEDED as of 2026-09-11T06:25:50Z; this is a status observation time.",
+            "evidenceIds": [
+              "PROVIDER:PRV-1021"
+            ],
+            "citationIds": [
+              "RB-EVENT-ORDER:v1"
+            ],
+            "sourceTools": [
+              "get_payment_timeline"
+            ]
+          },
+          {
+            "id": "FACT-CAPTURE-LEDGER",
+            "text": "The supplied ledger snapshot contains 1 capture entry totaling INR 21,227.11.",
+            "evidenceIds": [
+              "LED-1021-1",
+              "LED-1021-2",
+              "PROVIDER:PRV-1021"
+            ],
+            "citationIds": [
+              "RB-EVENT-ORDER:v1"
+            ],
+            "sourceTools": [
+              "compare_settlement"
+            ]
+          },
+          {
+            "id": "FACT-SETTLEMENT",
+            "text": "The supplied ledger net is INR 20,855.64; provider payout is INR 20,855.64; ledger-minus-payout difference is INR 0.00.",
+            "evidenceIds": [
+              "LED-1021-1",
+              "LED-1021-2",
+              "PROVIDER:PRV-1021"
+            ],
+            "citationIds": [
+              "RB-EVENT-ORDER:v1"
+            ],
+            "sourceTools": [
+              "compare_settlement"
+            ]
+          },
+          {
+            "id": "FACT-SUCCESS-EVENT",
+            "text": "The supplied timeline records a successful processor/payment event at 2026-09-11T06:20:05Z; this is event occurrence time.",
+            "evidenceIds": [
+              "EVT-1021-2"
+            ],
+            "citationIds": [
+              "RB-EVENT-ORDER:v1"
+            ],
+            "sourceTools": [
+              "get_payment_timeline"
+            ]
+          },
+          {
+            "id": "FACT-WEBHOOK-TIMING",
+            "text": "The earlier provider event occurred at 2026-09-11T06:20:02Z, and its webhook was received at 2026-09-11T06:20:45Z. The later provider event occurred at 2026-09-11T06:20:05Z, and its webhook was received at 2026-09-11T06:20:10Z.",
+            "evidenceIds": [
+              "WH-1021-1",
+              "WH-1021-2"
+            ],
+            "citationIds": [
+              "RB-EVENT-ORDER:v1"
+            ],
+            "sourceTools": [
+              "inspect_webhooks"
+            ]
+          }
+        ],
+        "policy": [
+          {
+            "id": "RB-EVENT-ORDER:v1",
+            "title": "Late and out-of-order provider events",
+            "excerpt": "Compare provider occurrence time with local receipt time before explaining a state transition. An authorization event that occurred before capture can arrive after the captured event. In this simulated workflow, a confirmed captured payment must not regress to authorized merely because the earlier event arrived late. Verify that the stale event was ignored and that processor confirmation and capture ledger agree. Resolve the case only when the final observed state is consistent; escalate unexplained regressions or conflicting records."
+          }
+        ]
+      },
+      "inputProvenance": "Deterministically reconstructed from saved state and frozen source; not a raw HTTP dump.",
+      "sourceHashes": {
+        "graph": "b1116509b1ffdf5157a878e772d37421d7a6508afc5dd0904f22383cd1b01180",
+        "facts": "a7745c344efb3100c8b6a762b9c073e0f45804b0f5c95f0e90b373c5001d6bb4",
+        "evidence": "3d0ef74b64bd528bf966918d3ee9f58175a9c00868fbf89caeb9457f3bfd95b0",
+        "config": "d660f8ce92e00ef8a7a00dd3790f6fa8cf3f5e2b46f698ab057ef453fd6024b0"
+      },
+      "candidate": {
+        "outcome": "OUT_OF_ORDER_WEBHOOK",
+        "summary": "Webhook receipt order differs from provider occurrence order. The provider success snapshot and matching ledger capture establish the observed final payment state.",
+        "confidence": "HIGH",
+        "findings": [
+          {
+            "id": "F-1",
+            "text": "The earlier provider event occurred at 2026-09-11T06:20:02Z, and its webhook was received at 2026-09-11T06:20:45Z. The later provider event occurred at 2026-09-11T06:20:05Z, and its webhook was received at 2026-09-11T06:20:10Z. The supplied timeline records a successful processor/payment event at 2026-09-11T06:20:05Z; this is event occurrence time.",
+            "evidenceIds": [
+              "EVT-1021-2",
+              "WH-1021-1",
+              "WH-1021-2"
+            ],
+            "citationIds": [
+              "RB-EVENT-ORDER:v1"
+            ]
+          }
+        ],
+        "missingEvidence": [],
+        "proposal": {
+          "action": "RESOLVE_CASE",
+          "reason": "Resolve the ordering investigation using the verified current state without replaying financial events."
+        }
+      },
+      "checkpointResult": {
+        "outcome": "OUT_OF_ORDER_WEBHOOK",
+        "summary": "Webhook receipt order differs from provider occurrence order. The provider success snapshot and matching ledger capture establish the observed final payment state.",
+        "confidence": "HIGH",
+        "findings": [
+          {
+            "id": "F-1",
+            "text": "The earlier provider event occurred at 2026-09-11T06:20:02Z, and its webhook was received at 2026-09-11T06:20:45Z. The later provider event occurred at 2026-09-11T06:20:05Z, and its webhook was received at 2026-09-11T06:20:10Z. The supplied timeline records a successful processor/payment event at 2026-09-11T06:20:05Z; this is event occurrence time.",
+            "evidenceIds": [
+              "EVT-1021-2",
+              "WH-1021-1",
+              "WH-1021-2"
+            ],
+            "citationIds": [
+              "RB-EVENT-ORDER:v1"
+            ]
+          }
+        ],
+        "missingEvidence": [],
+        "proposal": {
+          "action": "RESOLVE_CASE",
+          "reason": "Resolve the ordering investigation using the verified current state without replaying financial events."
+        },
+        "id": "EVAL-9fd828b5-ec1e-4097-a977-e9a6a2cf8194",
+        "caseId": "CASE-1021",
+        "createdAt": "2026-09-11T23:13:24.597807Z",
+        "createdBy": "offline-evaluator",
+        "mode": "ollama",
+        "status": "AWAITING_REVIEW",
+        "citations": [
+          {
+            "id": "RB-EVENT-ORDER:v1",
+            "documentId": "RB-EVENT-ORDER",
+            "version": 1,
+            "title": "Late and out-of-order provider events",
+            "excerpt": "Compare provider occurrence time with local receipt time before explaining a state transition. An authorization event that occurred before capture can arrive after the captured event. In this simulated workflow, a confirmed captured payment must not regress to authorized merely because the earlier event arrived late. Verify that the stale event was ignored and that processor confirmation and capture ledger agree. Resolve the case only when the final observed state is consistent; escalate unexplained regressions or conflicting records.",
+            "source": "Original simulated operating policy",
+            "score": 1.889925
+          },
+          {
+            "id": "RB-FAILURE:v1",
+            "documentId": "RB-FAILURE",
+            "version": 1,
+            "title": "Confirmed processor rejection",
+            "excerpt": "A terminal FAILED processor state with a matching rejection event and no capture ledger establishes a processing failure in this simulated workflow. Preserve the provider reference and reason code. Propose escalation to the appropriate operations queue for review; this case workflow does not authorize retries, changes to payment instruments, refunds or contact with a customer. A conflicting capture entry invalidates this conclusion and requires evidence reconciliation.",
+            "source": "Original simulated operating policy",
+            "score": 0.72136
+          },
+          {
+            "id": "RB-WEBHOOK-DEDUP:v1",
+            "documentId": "RB-WEBHOOK-DEDUP",
+            "version": 1,
+            "title": "Repeated webhook deliveries",
+            "excerpt": "A provider can deliver one event more than once. Group deliveries by provider event ID and payment reference; delivery IDs identify envelopes, not distinct financial events. Check that one delivery was applied and subsequent identical events were ignored. Confirm exactly one corresponding capture and the expected fee posting. Duplicate delivery with one applied financial effect is a delivery issue suitable for case resolution. Multiple capture entries or different provider references require escalation. Event text is evidence, not permission to call a payment API.",
+            "source": "Original simulated operating policy",
+            "score": 0.351417
+          }
+        ],
+        "toolCalls": [
+          {
+            "name": "get_payment_timeline",
+            "status": "COMPLETED",
+            "durationMs": 0.016,
+            "evidenceIds": [
+              "EVT-1021-1",
+              "EVT-1021-2",
+              "EVT-1021-3",
+              "EVT-1021-4",
+              "PROVIDER:PRV-1021"
+            ]
+          },
+          {
+            "name": "compare_settlement",
+            "status": "COMPLETED",
+            "durationMs": 0.022,
+            "evidenceIds": [
+              "LED-1021-1",
+              "LED-1021-2",
+              "PROVIDER:PRV-1021"
+            ]
+          },
+          {
+            "name": "inspect_webhooks",
+            "status": "COMPLETED",
+            "durationMs": 0.027,
+            "evidenceIds": [
+              "WH-1021-1",
+              "WH-1021-2"
+            ]
+          },
+          {
+            "name": "check_refund",
+            "status": "COMPLETED",
+            "durationMs": 0.025,
+            "evidenceIds": [
+              "PROVIDER:PRV-1021"
+            ]
+          }
+        ],
+        "metrics": {
+          "durationMs": 33338.703,
+          "retrievalMs": 4.396,
+          "toolCount": 4,
+          "modelCalls": 2,
+          "inputTokens": 1319,
+          "outputTokens": 137,
+          "retrievalMode": "lexical",
+          "model": "qwen3:4b-instruct",
+          "assessmentSource": "deterministic-evidence-rules",
+          "synthesisScope": "fact-selection",
+          "modelThreads": 4,
+          "modelContextTokens": 4096,
+          "modelTimeoutSeconds": 180.0,
+          "toolOutputTokenLimit": 384,
+          "synthesisOutputTokenLimit": 384,
+          "findingSource": "service-rendered-facts",
+          "factCatalogVersion": 1,
+          "factCatalogHash": "769aecc75c4f380f619d60a467e17b6e2e14b90447c73cc1269886ba3c889bd1",
+          "selectedFactIds": [
+            "FACT-WEBHOOK-TIMING",
+            "FACT-SUCCESS-EVENT"
+          ],
+          "selectedFactProvenance": [
+            {
+              "id": "FACT-WEBHOOK-TIMING",
+              "sourceTools": [
+                "inspect_webhooks"
+              ],
+              "evidenceIds": [
+                "WH-1021-1",
+                "WH-1021-2"
+              ],
+              "citationIds": [
+                "RB-EVENT-ORDER:v1"
+              ]
+            },
+            {
+              "id": "FACT-SUCCESS-EVENT",
+              "sourceTools": [
+                "get_payment_timeline"
+              ],
+              "evidenceIds": [
+                "EVT-1021-2"
+              ],
+              "citationIds": [
+                "RB-EVENT-ORDER:v1"
+              ]
+            }
+          ],
+          "toolSelectionMs": 12329.709,
+          "toolSelectionProvider": {
+            "model": "qwen3:4b-instruct",
+            "created_at": "2026-09-11T23:13:36.929503015Z",
+            "done": true,
+            "done_reason": "stop",
+            "total_duration": 12306214188,
+            "load_duration": 1538238,
+            "prompt_eval_count": 511,
+            "prompt_eval_duration": 1149902000,
+            "eval_count": 108,
+            "eval_duration": 10944520000,
+            "logprobs": null,
+            "model_name": "qwen3:4b-instruct",
+            "model_provider": "ollama"
+          },
+          "synthesisMs": 20991.68,
+          "synthesisProvider": {
+            "model": "qwen3:4b-instruct",
+            "created_at": "2026-09-11T23:13:57.906731161Z",
+            "done": true,
+            "done_reason": "stop",
+            "total_duration": 20949804825,
+            "load_duration": 1480144,
+            "prompt_eval_count": 808,
+            "prompt_eval_duration": 18457194000,
+            "eval_count": 29,
+            "eval_duration": 2365768000,
+            "logprobs": null,
+            "model_name": "qwen3:4b-instruct",
+            "model_provider": "ollama"
+          }
+        },
+        "warnings": [
+          "Synthetic data only; proposals change case disposition, never payment or ledger balances.",
+          "Ollama planned diagnostic tools and selected authorized fact IDs. The service rendered the selected facts and supplied their evidence links; no model-authored prose was used. Decisions and all other explanation fields come from deterministic evidence rules. Fact relevance, completeness and source accuracy still require analyst review.",
+          "Lexical retrieval baseline; semantic embeddings are not enabled."
+        ]
+      },
+      "assessment": {
+        "outcome": "OUT_OF_ORDER_WEBHOOK",
+        "summary": "Webhook receipt order differs from provider occurrence order. The provider success snapshot and matching ledger capture establish the observed final payment state.",
+        "evidenceIds": [
+          "WH-1021-1",
+          "WH-1021-2",
+          "LED-1021-1",
+          "LED-1021-2",
+          "PROVIDER:PRV-1021"
+        ],
+        "query": "out of order webhook late stale terminal state event timestamp",
+        "action": "RESOLVE_CASE",
+        "reason": "Resolve the ordering investigation using the verified current state without replaying financial events.",
+        "missingEvidence": []
+      },
+      "operationalEvidence": {
+        "get_payment_timeline": {
+          "events": [
+            {
+              "id": "EVT-1021-1",
+              "occurredAt": "2026-09-11T06:20:00Z",
+              "type": "REQUEST_ACCEPTED",
+              "source": "gateway",
+              "status": "SUCCESS",
+              "correlationId": "COR-1021",
+              "attributes": {
+                "idempotencyKey": "IDEM-1021",
+                "providerPaymentId": "PRV-1021",
+                "amountMinor": 2122711
+              }
+            },
+            {
+              "id": "EVT-1021-2",
+              "occurredAt": "2026-09-11T06:20:05Z",
+              "type": "PROCESSOR_CONFIRMED",
+              "source": "processor",
+              "status": "SUCCEEDED",
+              "correlationId": "COR-1021",
+              "attributes": {
+                "idempotencyKey": "IDEM-1021",
+                "providerPaymentId": "PRV-1021",
+                "amountMinor": 2122711
+              }
+            },
+            {
+              "id": "EVT-1021-3",
+              "occurredAt": "2026-09-11T06:20:08Z",
+              "type": "CLIENT_RESPONSE",
+              "source": "gateway",
+              "status": "DELIVERED",
+              "correlationId": "COR-1021",
+              "attributes": {
+                "idempotencyKey": "IDEM-1021",
+                "providerPaymentId": "PRV-1021"
+              }
+            },
+            {
+              "id": "EVT-1021-4",
+              "occurredAt": "2026-09-11T06:20:45Z",
+              "type": "WEBHOOK_RECEIVED",
+              "source": "webhook-consumer",
+              "status": "IGNORED_STALE",
+              "correlationId": "COR-1021",
+              "attributes": {
+                "idempotencyKey": "IDEM-1021",
+                "providerPaymentId": "PRV-1021"
+              }
+            }
+          ],
+          "provider": {
+            "status": "SUCCEEDED",
+            "paymentId": "PRV-1021",
+            "amountMinor": 2122711,
+            "feeMinor": 37147,
+            "refundMinor": 0,
+            "payoutMinor": 2085564,
+            "asOf": "2026-09-11T06:25:50Z"
+          },
+          "evidenceIds": [
+            "EVT-1021-1",
+            "EVT-1021-2",
+            "EVT-1021-3",
+            "EVT-1021-4",
+            "PROVIDER:PRV-1021"
+          ]
+        },
+        "compare_settlement": {
+          "expectedAmountMinor": 2122711,
+          "currency": "INR",
+          "entries": [
+            {
+              "id": "LED-1021-1",
+              "type": "CAPTURE",
+              "amountMinor": 2122711,
+              "currency": "INR",
+              "occurredAt": "2026-09-11T06:20:06Z",
+              "reference": "PRV-1021"
+            },
+            {
+              "id": "LED-1021-2",
+              "type": "FEE",
+              "amountMinor": -37147,
+              "currency": "INR",
+              "occurredAt": "2026-09-11T06:20:07Z",
+              "reference": "PRV-1021"
+            }
+          ],
+          "captureCount": 1,
+          "captureMinor": 2122711,
+          "refundMinor": 0,
+          "validMoney": true,
+          "moneyIssues": [],
+          "calculationSource": "worker-fixture-baseline",
+          "ledgerNetMinor": 2085564,
+          "providerPayoutMinor": 2085564,
+          "discrepancyMinor": 0,
+          "providerAvailable": true,
+          "reconciliation": null,
+          "provider": {
+            "status": "SUCCEEDED",
+            "paymentId": "PRV-1021",
+            "amountMinor": 2122711,
+            "feeMinor": 37147,
+            "refundMinor": 0,
+            "payoutMinor": 2085564,
+            "asOf": "2026-09-11T06:25:50Z"
+          },
+          "evidenceIds": [
+            "LED-1021-1",
+            "LED-1021-2",
+            "PROVIDER:PRV-1021"
+          ]
+        },
+        "inspect_webhooks": {
+          "records": [
+            {
+              "id": "WH-1021-1",
+              "providerEventId": "PEVT-1021-CAP",
+              "type": "payment.captured",
+              "occurredAt": "2026-09-11T06:20:05Z",
+              "receivedAt": "2026-09-11T06:20:10Z",
+              "processingStatus": "APPLIED",
+              "providerPaymentId": "PRV-1021"
+            },
+            {
+              "id": "WH-1021-2",
+              "providerEventId": "PEVT-1021-AUTH",
+              "type": "payment.authorized",
+              "occurredAt": "2026-09-11T06:20:02Z",
+              "receivedAt": "2026-09-11T06:20:45Z",
+              "processingStatus": "IGNORED_STALE",
+              "providerPaymentId": "PRV-1021"
+            }
+          ],
+          "duplicates": [],
+          "orderingInversions": [
+            [
+              "WH-1021-1",
+              "WH-1021-2"
+            ]
+          ],
+          "timestampsComplete": true,
+          "evidenceIds": [
+            "WH-1021-1",
+            "WH-1021-2"
+          ]
+        },
+        "check_refund": {
+          "requests": [],
+          "requestedMinor": null,
+          "confirmedMinor": 0,
+          "confirmationIds": [],
+          "ledgerRefundMinor": 0,
+          "providerRefundMinor": 0,
+          "evidenceIds": [
+            "PROVIDER:PRV-1021"
+          ]
+        }
+      },
+      "retrievedPolicies": [
+        {
+          "id": "RB-EVENT-ORDER:v1",
+          "documentId": "RB-EVENT-ORDER",
+          "version": 1,
+          "title": "Late and out-of-order provider events",
+          "excerpt": "Compare provider occurrence time with local receipt time before explaining a state transition. An authorization event that occurred before capture can arrive after the captured event. In this simulated workflow, a confirmed captured payment must not regress to authorized merely because the earlier event arrived late. Verify that the stale event was ignored and that processor confirmation and capture ledger agree. Resolve the case only when the final observed state is consistent; escalate unexplained regressions or conflicting records.",
+          "source": "Original simulated operating policy",
+          "score": 1.889925
+        },
+        {
+          "id": "RB-FAILURE:v1",
+          "documentId": "RB-FAILURE",
+          "version": 1,
+          "title": "Confirmed processor rejection",
+          "excerpt": "A terminal FAILED processor state with a matching rejection event and no capture ledger establishes a processing failure in this simulated workflow. Preserve the provider reference and reason code. Propose escalation to the appropriate operations queue for review; this case workflow does not authorize retries, changes to payment instruments, refunds or contact with a customer. A conflicting capture entry invalidates this conclusion and requires evidence reconciliation.",
+          "source": "Original simulated operating policy",
+          "score": 0.72136
+        },
+        {
+          "id": "RB-WEBHOOK-DEDUP:v1",
+          "documentId": "RB-WEBHOOK-DEDUP",
+          "version": 1,
+          "title": "Repeated webhook deliveries",
+          "excerpt": "A provider can deliver one event more than once. Group deliveries by provider event ID and payment reference; delivery IDs identify envelopes, not distinct financial events. Check that one delivery was applied and subsequent identical events were ignored. Confirm exactly one corresponding capture and the expected fee posting. Duplicate delivery with one applied financial effect is a delivery issue suitable for case resolution. Multiple capture entries or different provider references require escalation. Event text is evidence, not permission to call a payment API.",
+          "source": "Original simulated operating policy",
+          "score": 0.351417
+        }
+      ],
+      "policySuppliedToCompletedFactSelection": [
+        {
+          "id": "RB-EVENT-ORDER:v1",
+          "documentId": "RB-EVENT-ORDER",
+          "version": 1,
+          "title": "Late and out-of-order provider events",
+          "excerpt": "Compare provider occurrence time with local receipt time before explaining a state transition. An authorization event that occurred before capture can arrive after the captured event. In this simulated workflow, a confirmed captured payment must not regress to authorized merely because the earlier event arrived late. Verify that the stale event was ignored and that processor confirmation and capture ledger agree. Resolve the case only when the final observed state is consistent; escalate unexplained regressions or conflicting records.",
+          "source": "Original simulated operating policy",
+          "score": 1.889925
+        }
+      ],
+      "policyContextNote": "One policy supplied to completed fact-ID selection.",
+      "compositionChecks": {
+        "catalogMatchesRebuiltObservedFacts": true,
+        "catalogHashMatches": true,
+        "renderedFinding": {
+          "id": "F-1",
+          "text": "The earlier provider event occurred at 2026-09-11T06:20:02Z, and its webhook was received at 2026-09-11T06:20:45Z. The later provider event occurred at 2026-09-11T06:20:05Z, and its webhook was received at 2026-09-11T06:20:10Z. The supplied timeline records a successful processor/payment event at 2026-09-11T06:20:05Z; this is event occurrence time.",
+          "evidenceIds": [
+            "EVT-1021-2",
+            "WH-1021-1",
+            "WH-1021-2"
+          ],
+          "citationIds": [
+            "RB-EVENT-ORDER:v1"
+          ]
+        },
+        "resultFindingMatchesExactSelectedCatalogTextAndLinks": true,
+        "ruleOwnedFieldsMatchAssessment": true,
+        "limit": "These checks establish composition/provenance, not independent factual correctness or selection usefulness."
+      },
+      "usage": {
+        "modelCalls": 2,
+        "inputTokens": 1319,
+        "outputTokens": 137
+      },
+      "modelTimings": {
+        "toolSelectionMs": 12329.709,
+        "toolSelectionProvider": {
+          "model": "qwen3:4b-instruct",
+          "created_at": "2026-09-11T23:13:36.929503015Z",
+          "done": true,
+          "done_reason": "stop",
+          "total_duration": 12306214188,
+          "load_duration": 1538238,
+          "prompt_eval_count": 511,
+          "prompt_eval_duration": 1149902000,
+          "eval_count": 108,
+          "eval_duration": 10944520000,
+          "logprobs": null,
+          "model_name": "qwen3:4b-instruct",
+          "model_provider": "ollama"
+        },
+        "synthesisMs": 20991.68,
+        "synthesisProvider": {
+          "model": "qwen3:4b-instruct",
+          "created_at": "2026-09-11T23:13:57.906731161Z",
+          "done": true,
+          "done_reason": "stop",
+          "total_duration": 20949804825,
+          "load_duration": 1480144,
+          "prompt_eval_count": 808,
+          "prompt_eval_duration": 18457194000,
+          "eval_count": 29,
+          "eval_duration": 2365768000,
+          "logprobs": null,
+          "model_name": "qwen3:4b-instruct",
+          "model_provider": "ollama"
+        }
+      },
+      "errors": [],
+      "manualReview": {
+        "reviewer": "Codex AI assistant, not an independent human",
+        "observedEvidenceReview": "WH-1021-2 occurred at 06:20:02Z and arrived 06:20:45Z; WH-1021-1 occurred at 06:20:05Z and arrived 06:20:10Z. EVT-1021-2 reports success at 06:20:05Z. All three actual IDs are linked. The three exact sentences correctly separate occurrence and receipt, with no capture-before-authorization or processing-order invention.",
+        "selectionRelevanceAndLimits": "The selected pair now explains the ordering inversion and adds success-event corroboration. It does not narrate IGNORED_STALE or ledger values; those remain verified in the assessment/tool trace.",
+        "policyReview": "RB-EVENT-ORDER:v1 is actually supplied and relevant. The selected timing fact directly illustrates the distinction it requests, without turning receipt order into event order.",
+        "exceptionSpecificObservationSelected": true,
+        "materialFactualErrorIdentifiedInSelectedServiceText": false,
+        "authorship": "The model selected IDs only; the service supplied all displayed sentences and links. Rules owned decisions and other explanation fields.",
+        "workflowLimit": "This direct-worker evaluation executed no Java reviewer action or persisted case transition."
+      }
+    },
+    {
+      "investigationId": "EVAL-e4fafb05-2e1b-41f9-8055-c6d00ec1b3a2",
+      "caseId": "CASE-1031",
+      "startedAt": "2026-09-11T23:13:57.961035+00:00",
+      "synthesisScope": "fact-selection",
+      "parsedModelSelection": {
+        "factIds": [
+          "FACT-REFUND-OBSERVATIONS",
+          "FACT-SETTLEMENT"
+        ]
+      },
+      "selectionProvenanceNote": "Original parsed selected IDs retained by the completed model stage; raw provider response bytes are not separately retained. The V6 response contract contains IDs only.",
+      "factCatalog": [
+        {
+          "id": "FACT-PROVIDER-STATUS",
+          "text": "The provider reported SUCCEEDED as of 2026-09-11T06:35:50Z; this is a status observation time.",
+          "evidenceIds": [
+            "PROVIDER:PRV-1031"
+          ],
+          "citationIds": [
+            "RB-REFUND:v1"
+          ],
+          "sourceTools": [
+            "get_payment_timeline"
+          ]
+        },
+        {
+          "id": "FACT-CAPTURE-LEDGER",
+          "text": "The supplied ledger snapshot contains 1 capture entry totaling INR 24,452.79.",
+          "evidenceIds": [
+            "LED-1031-1",
+            "LED-1031-2",
+            "PROVIDER:PRV-1031"
+          ],
+          "citationIds": [
+            "RB-REFUND:v1"
+          ],
+          "sourceTools": [
+            "compare_settlement"
+          ]
+        },
+        {
+          "id": "FACT-SETTLEMENT",
+          "text": "The supplied ledger net is INR 24,024.87; provider payout is INR 17,911.68; ledger-minus-payout difference is INR 6,113.19.",
+          "evidenceIds": [
+            "LED-1031-1",
+            "LED-1031-2",
+            "PROVIDER:PRV-1031"
+          ],
+          "citationIds": [
+            "RB-REFUND:v1"
+          ],
+          "sourceTools": [
+            "compare_settlement"
+          ]
+        },
+        {
+          "id": "FACT-SUCCESS-EVENT",
+          "text": "The supplied timeline records a successful processor/payment event at 2026-09-11T06:30:05Z; this is event occurrence time.",
+          "evidenceIds": [
+            "EVT-1031-2"
+          ],
+          "citationIds": [
+            "RB-REFUND:v1"
+          ],
+          "sourceTools": [
+            "get_payment_timeline"
+          ]
+        },
+        {
+          "id": "FACT-REFUND-OBSERVATIONS",
+          "text": "Confirmed refund events total INR 6,113.19. The supplied ledger snapshot contains 0 refund entries totaling INR 0.00. The provider refund amount is INR 6,113.19.",
+          "evidenceIds": [
+            "EVT-1031-4",
+            "EVT-1031-5",
+            "LED-1031-1",
+            "LED-1031-2",
+            "PROVIDER:PRV-1031"
+          ],
+          "citationIds": [
+            "RB-REFUND:v1"
+          ],
+          "sourceTools": [
+            "check_refund",
+            "compare_settlement"
+          ]
+        }
+      ],
+      "factCatalogVersion": 1,
+      "factCatalogHash": "948236794ca498503ff86e321ccd1fc9db0217a67ba90011094f13ba5089a7f0",
+      "reconstructedSelectionInput": {
+        "question": "Explain the observed payment state and propose the next case action using authorized evidence and current policy.",
+        "factCatalogVersion": 1,
+        "facts": [
+          {
+            "id": "FACT-PROVIDER-STATUS",
+            "text": "The provider reported SUCCEEDED as of 2026-09-11T06:35:50Z; this is a status observation time.",
+            "evidenceIds": [
+              "PROVIDER:PRV-1031"
+            ],
+            "citationIds": [
+              "RB-REFUND:v1"
+            ],
+            "sourceTools": [
+              "get_payment_timeline"
+            ]
+          },
+          {
+            "id": "FACT-CAPTURE-LEDGER",
+            "text": "The supplied ledger snapshot contains 1 capture entry totaling INR 24,452.79.",
+            "evidenceIds": [
+              "LED-1031-1",
+              "LED-1031-2",
+              "PROVIDER:PRV-1031"
+            ],
+            "citationIds": [
+              "RB-REFUND:v1"
+            ],
+            "sourceTools": [
+              "compare_settlement"
+            ]
+          },
+          {
+            "id": "FACT-SETTLEMENT",
+            "text": "The supplied ledger net is INR 24,024.87; provider payout is INR 17,911.68; ledger-minus-payout difference is INR 6,113.19.",
+            "evidenceIds": [
+              "LED-1031-1",
+              "LED-1031-2",
+              "PROVIDER:PRV-1031"
+            ],
+            "citationIds": [
+              "RB-REFUND:v1"
+            ],
+            "sourceTools": [
+              "compare_settlement"
+            ]
+          },
+          {
+            "id": "FACT-SUCCESS-EVENT",
+            "text": "The supplied timeline records a successful processor/payment event at 2026-09-11T06:30:05Z; this is event occurrence time.",
+            "evidenceIds": [
+              "EVT-1031-2"
+            ],
+            "citationIds": [
+              "RB-REFUND:v1"
+            ],
+            "sourceTools": [
+              "get_payment_timeline"
+            ]
+          },
+          {
+            "id": "FACT-REFUND-OBSERVATIONS",
+            "text": "Confirmed refund events total INR 6,113.19. The supplied ledger snapshot contains 0 refund entries totaling INR 0.00. The provider refund amount is INR 6,113.19.",
+            "evidenceIds": [
+              "EVT-1031-4",
+              "EVT-1031-5",
+              "LED-1031-1",
+              "LED-1031-2",
+              "PROVIDER:PRV-1031"
+            ],
+            "citationIds": [
+              "RB-REFUND:v1"
+            ],
+            "sourceTools": [
+              "check_refund",
+              "compare_settlement"
+            ]
+          }
+        ],
+        "policy": [
+          {
+            "id": "RB-REFUND:v1",
+            "title": "Refund posting and payout reconciliation",
+            "excerpt": "All values are integer minor units in a single currency. Compute ledger net as the signed sum of capture, fee and refund postings. For a succeeded payment, expected processor payout equals capture amount minus processor fee minus confirmed refunds. A confirmed processor refund that is absent from the ledger creates a difference equal to that refund when other postings agree. Preserve the processor refund reference, confirmation event, ledger snapshot cutoff and exact difference. Escalate the posting exception for a human reconciliation review. The investigator must not create a refund, repair a ledger or transfer money."
+          }
+        ]
+      },
+      "inputProvenance": "Deterministically reconstructed from saved state and frozen source; not a raw HTTP dump.",
+      "sourceHashes": {
+        "graph": "b1116509b1ffdf5157a878e772d37421d7a6508afc5dd0904f22383cd1b01180",
+        "facts": "a7745c344efb3100c8b6a762b9c073e0f45804b0f5c95f0e90b373c5001d6bb4",
+        "evidence": "3d0ef74b64bd528bf966918d3ee9f58175a9c00868fbf89caeb9457f3bfd95b0",
+        "config": "d660f8ce92e00ef8a7a00dd3790f6fa8cf3f5e2b46f698ab057ef453fd6024b0"
+      },
+      "candidate": {
+        "outcome": "MISSING_REFUND",
+        "summary": "The confirmed refund has not reconciled with the ledger: confirmation events INR 6,113.19, ledger INR 0.00, provider INR 6,113.19. Investigate the missing or conflicting posting before any refund is retried.",
+        "confidence": "HIGH",
+        "findings": [
+          {
+            "id": "F-1",
+            "text": "Confirmed refund events total INR 6,113.19. The supplied ledger snapshot contains 0 refund entries totaling INR 0.00. The provider refund amount is INR 6,113.19. The supplied ledger net is INR 24,024.87; provider payout is INR 17,911.68; ledger-minus-payout difference is INR 6,113.19.",
+            "evidenceIds": [
+              "EVT-1031-4",
+              "EVT-1031-5",
+              "LED-1031-1",
+              "LED-1031-2",
+              "PROVIDER:PRV-1031"
+            ],
+            "citationIds": [
+              "RB-REFUND:v1"
+            ]
+          }
+        ],
+        "missingEvidence": [],
+        "proposal": {
+          "action": "ESCALATE",
+          "reason": "Escalate the confirmed refund discrepancy for independent review; this application does not issue refunds."
+        }
+      },
+      "checkpointResult": {
+        "outcome": "MISSING_REFUND",
+        "summary": "The confirmed refund has not reconciled with the ledger: confirmation events INR 6,113.19, ledger INR 0.00, provider INR 6,113.19. Investigate the missing or conflicting posting before any refund is retried.",
+        "confidence": "HIGH",
+        "findings": [
+          {
+            "id": "F-1",
+            "text": "Confirmed refund events total INR 6,113.19. The supplied ledger snapshot contains 0 refund entries totaling INR 0.00. The provider refund amount is INR 6,113.19. The supplied ledger net is INR 24,024.87; provider payout is INR 17,911.68; ledger-minus-payout difference is INR 6,113.19.",
+            "evidenceIds": [
+              "EVT-1031-4",
+              "EVT-1031-5",
+              "LED-1031-1",
+              "LED-1031-2",
+              "PROVIDER:PRV-1031"
+            ],
+            "citationIds": [
+              "RB-REFUND:v1"
+            ]
+          }
+        ],
+        "missingEvidence": [],
+        "proposal": {
+          "action": "ESCALATE",
+          "reason": "Escalate the confirmed refund discrepancy for independent review; this application does not issue refunds."
+        },
+        "id": "EVAL-e4fafb05-2e1b-41f9-8055-c6d00ec1b3a2",
+        "caseId": "CASE-1031",
+        "createdAt": "2026-09-11T23:13:57.961035Z",
+        "createdBy": "offline-evaluator",
+        "mode": "ollama",
+        "status": "AWAITING_REVIEW",
+        "citations": [
+          {
+            "id": "RB-REFUND:v1",
+            "documentId": "RB-REFUND",
+            "version": 1,
+            "title": "Refund posting and payout reconciliation",
+            "excerpt": "All values are integer minor units in a single currency. Compute ledger net as the signed sum of capture, fee and refund postings. For a succeeded payment, expected processor payout equals capture amount minus processor fee minus confirmed refunds. A confirmed processor refund that is absent from the ledger creates a difference equal to that refund when other postings agree. Preserve the processor refund reference, confirmation event, ledger snapshot cutoff and exact difference. Escalate the posting exception for a human reconciliation review. The investigator must not create a refund, repair a ledger or transfer money.",
+            "source": "Original simulated operating policy",
+            "score": 0.912264
+          },
+          {
+            "id": "RB-POLICY:v1",
+            "documentId": "RB-POLICY",
+            "version": 1,
+            "title": "Snapshot cutoff and processing lag",
+            "excerpt": "Payment systems can have asynchronous posting lag. A snapshot is evidence at its stated cutoff, not a promise about the future. A confirmed refund with a missing posting should be reported as a reconciliation exception at the snapshot cutoff. Preserve pending-posting events and request follow-up through case review. Do not silently treat a pending posting as completed, or hide a present mismatch because it may later resolve.",
+            "source": "Original simulated operating policy",
+            "score": 0.725798
+          },
+          {
+            "id": "RB-FAILURE:v1",
+            "documentId": "RB-FAILURE",
+            "version": 1,
+            "title": "Confirmed processor rejection",
+            "excerpt": "A terminal FAILED processor state with a matching rejection event and no capture ledger establishes a processing failure in this simulated workflow. Preserve the provider reference and reason code. Propose escalation to the appropriate operations queue for review; this case workflow does not authorize retries, changes to payment instruments, refunds or contact with a customer. A conflicting capture entry invalidates this conclusion and requires evidence reconciliation.",
+            "source": "Original simulated operating policy",
+            "score": 0.708017
+          }
+        ],
+        "toolCalls": [
+          {
+            "name": "get_payment_timeline",
+            "status": "COMPLETED",
+            "durationMs": 0.017,
+            "evidenceIds": [
+              "EVT-1031-1",
+              "EVT-1031-2",
+              "EVT-1031-3",
+              "EVT-1031-4",
+              "EVT-1031-5",
+              "EVT-1031-6",
+              "PROVIDER:PRV-1031"
+            ]
+          },
+          {
+            "name": "compare_settlement",
+            "status": "COMPLETED",
+            "durationMs": 0.022,
+            "evidenceIds": [
+              "LED-1031-1",
+              "LED-1031-2",
+              "PROVIDER:PRV-1031"
+            ]
+          },
+          {
+            "name": "inspect_webhooks",
+            "status": "COMPLETED",
+            "durationMs": 0.025,
+            "evidenceIds": [
+              "WH-1031-1",
+              "WH-1031-2"
+            ]
+          },
+          {
+            "name": "check_refund",
+            "status": "COMPLETED",
+            "durationMs": 0.044,
+            "evidenceIds": [
+              "EVT-1031-4",
+              "EVT-1031-5",
+              "PROVIDER:PRV-1031"
+            ]
+          }
+        ],
+        "metrics": {
+          "durationMs": 37945.539,
+          "retrievalMs": 4.296,
+          "toolCount": 4,
+          "modelCalls": 2,
+          "inputTokens": 1314,
+          "outputTokens": 138,
+          "retrievalMode": "lexical",
+          "model": "qwen3:4b-instruct",
+          "assessmentSource": "deterministic-evidence-rules",
+          "synthesisScope": "fact-selection",
+          "modelThreads": 4,
+          "modelContextTokens": 4096,
+          "modelTimeoutSeconds": 180.0,
+          "toolOutputTokenLimit": 384,
+          "synthesisOutputTokenLimit": 384,
+          "findingSource": "service-rendered-facts",
+          "factCatalogVersion": 1,
+          "factCatalogHash": "948236794ca498503ff86e321ccd1fc9db0217a67ba90011094f13ba5089a7f0",
+          "selectedFactIds": [
+            "FACT-REFUND-OBSERVATIONS",
+            "FACT-SETTLEMENT"
+          ],
+          "selectedFactProvenance": [
+            {
+              "id": "FACT-REFUND-OBSERVATIONS",
+              "sourceTools": [
+                "check_refund",
+                "compare_settlement"
+              ],
+              "evidenceIds": [
+                "EVT-1031-4",
+                "EVT-1031-5",
+                "LED-1031-1",
+                "LED-1031-2",
+                "PROVIDER:PRV-1031"
+              ],
+              "citationIds": [
+                "RB-REFUND:v1"
+              ]
+            },
+            {
+              "id": "FACT-SETTLEMENT",
+              "sourceTools": [
+                "compare_settlement"
+              ],
+              "evidenceIds": [
+                "LED-1031-1",
+                "LED-1031-2",
+                "PROVIDER:PRV-1031"
+              ],
+              "citationIds": [
+                "RB-REFUND:v1"
+              ]
+            }
+          ],
+          "toolSelectionMs": 10773.178,
+          "toolSelectionProvider": {
+            "model": "qwen3:4b-instruct",
+            "created_at": "2026-09-11T23:14:08.73480807Z",
+            "done": true,
+            "done_reason": "stop",
+            "total_duration": 10753484098,
+            "load_duration": 1030362,
+            "prompt_eval_count": 511,
+            "prompt_eval_duration": 1035482000,
+            "eval_count": 108,
+            "eval_duration": 9556605000,
+            "logprobs": null,
+            "model_name": "qwen3:4b-instruct",
+            "model_provider": "ollama"
+          },
+          "synthesisMs": 27156.143,
+          "synthesisProvider": {
+            "model": "qwen3:4b-instruct",
+            "created_at": "2026-09-11T23:14:35.901167475Z",
+            "done": true,
+            "done_reason": "stop",
+            "total_duration": 27138910708,
+            "load_duration": 1467593,
+            "prompt_eval_count": 803,
+            "prompt_eval_duration": 23987599000,
+            "eval_count": 30,
+            "eval_duration": 3038285000,
+            "logprobs": null,
+            "model_name": "qwen3:4b-instruct",
+            "model_provider": "ollama"
+          }
+        },
+        "warnings": [
+          "Synthetic data only; proposals change case disposition, never payment or ledger balances.",
+          "Ollama planned diagnostic tools and selected authorized fact IDs. The service rendered the selected facts and supplied their evidence links; no model-authored prose was used. Decisions and all other explanation fields come from deterministic evidence rules. Fact relevance, completeness and source accuracy still require analyst review.",
+          "Lexical retrieval baseline; semantic embeddings are not enabled."
+        ]
+      },
+      "assessment": {
+        "outcome": "MISSING_REFUND",
+        "summary": "The confirmed refund has not reconciled with the ledger: confirmation events INR 6,113.19, ledger INR 0.00, provider INR 6,113.19. Investigate the missing or conflicting posting before any refund is retried.",
+        "evidenceIds": [
+          "EVT-1031-4",
+          "EVT-1031-5",
+          "PROVIDER:PRV-1031"
+        ],
+        "query": "refund confirmed requested missing ledger provider reconciliation refund amount",
+        "action": "ESCALATE",
+        "reason": "Escalate the confirmed refund discrepancy for independent review; this application does not issue refunds.",
+        "missingEvidence": []
+      },
+      "operationalEvidence": {
+        "get_payment_timeline": {
+          "events": [
+            {
+              "id": "EVT-1031-1",
+              "occurredAt": "2026-09-11T06:30:00Z",
+              "type": "REQUEST_ACCEPTED",
+              "source": "gateway",
+              "status": "SUCCESS",
+              "correlationId": "COR-1031",
+              "attributes": {
+                "idempotencyKey": "IDEM-1031",
+                "providerPaymentId": "PRV-1031",
+                "amountMinor": 2445279
+              }
+            },
+            {
+              "id": "EVT-1031-2",
+              "occurredAt": "2026-09-11T06:30:05Z",
+              "type": "PROCESSOR_CONFIRMED",
+              "source": "processor",
+              "status": "SUCCEEDED",
+              "correlationId": "COR-1031",
+              "attributes": {
+                "idempotencyKey": "IDEM-1031",
+                "providerPaymentId": "PRV-1031",
+                "amountMinor": 2445279
+              }
+            },
+            {
+              "id": "EVT-1031-3",
+              "occurredAt": "2026-09-11T06:30:08Z",
+              "type": "CLIENT_RESPONSE",
+              "source": "gateway",
+              "status": "DELIVERED",
+              "correlationId": "COR-1031",
+              "attributes": {
+                "idempotencyKey": "IDEM-1031",
+                "providerPaymentId": "PRV-1031"
+              }
+            },
+            {
+              "id": "EVT-1031-4",
+              "occurredAt": "2026-09-11T06:31:40Z",
+              "type": "REFUND_REQUESTED",
+              "source": "operations",
+              "status": "ACCEPTED",
+              "correlationId": "COR-1031",
+              "attributes": {
+                "idempotencyKey": "IDEM-1031",
+                "providerPaymentId": "PRV-1031",
+                "amountMinor": 611319,
+                "refundMinor": 611319
+              }
+            },
+            {
+              "id": "EVT-1031-5",
+              "occurredAt": "2026-09-11T06:31:50Z",
+              "type": "REFUND_CONFIRMED",
+              "source": "processor",
+              "status": "SUCCEEDED",
+              "correlationId": "COR-1031",
+              "attributes": {
+                "idempotencyKey": "IDEM-1031",
+                "providerPaymentId": "PRV-1031",
+                "amountMinor": 611319,
+                "refundMinor": 611319
+              }
+            },
+            {
+              "id": "EVT-1031-6",
+              "occurredAt": "2026-09-11T06:32:00Z",
+              "type": "LEDGER_POSTING",
+              "source": "ledger",
+              "status": "PENDING",
+              "correlationId": "COR-1031",
+              "attributes": {
+                "idempotencyKey": "IDEM-1031",
+                "providerPaymentId": "PRV-1031"
+              }
+            }
+          ],
+          "provider": {
+            "status": "SUCCEEDED",
+            "paymentId": "PRV-1031",
+            "amountMinor": 2445279,
+            "feeMinor": 42792,
+            "refundMinor": 611319,
+            "payoutMinor": 1791168,
+            "asOf": "2026-09-11T06:35:50Z"
+          },
+          "evidenceIds": [
+            "EVT-1031-1",
+            "EVT-1031-2",
+            "EVT-1031-3",
+            "EVT-1031-4",
+            "EVT-1031-5",
+            "EVT-1031-6",
+            "PROVIDER:PRV-1031"
+          ]
+        },
+        "compare_settlement": {
+          "expectedAmountMinor": 2445279,
+          "currency": "INR",
+          "entries": [
+            {
+              "id": "LED-1031-1",
+              "type": "CAPTURE",
+              "amountMinor": 2445279,
+              "currency": "INR",
+              "occurredAt": "2026-09-11T06:30:06Z",
+              "reference": "PRV-1031"
+            },
+            {
+              "id": "LED-1031-2",
+              "type": "FEE",
+              "amountMinor": -42792,
+              "currency": "INR",
+              "occurredAt": "2026-09-11T06:30:07Z",
+              "reference": "PRV-1031"
+            }
+          ],
+          "captureCount": 1,
+          "captureMinor": 2445279,
+          "refundMinor": 0,
+          "validMoney": true,
+          "moneyIssues": [],
+          "calculationSource": "worker-fixture-baseline",
+          "ledgerNetMinor": 2402487,
+          "providerPayoutMinor": 1791168,
+          "discrepancyMinor": 611319,
+          "providerAvailable": true,
+          "reconciliation": null,
+          "provider": {
+            "status": "SUCCEEDED",
+            "paymentId": "PRV-1031",
+            "amountMinor": 2445279,
+            "feeMinor": 42792,
+            "refundMinor": 611319,
+            "payoutMinor": 1791168,
+            "asOf": "2026-09-11T06:35:50Z"
+          },
+          "evidenceIds": [
+            "LED-1031-1",
+            "LED-1031-2",
+            "PROVIDER:PRV-1031"
+          ]
+        },
+        "inspect_webhooks": {
+          "records": [
+            {
+              "id": "WH-1031-1",
+              "providerEventId": "PEVT-1031-CAP",
+              "type": "payment.captured",
+              "occurredAt": "2026-09-11T06:30:05Z",
+              "receivedAt": "2026-09-11T06:30:10Z",
+              "processingStatus": "APPLIED",
+              "providerPaymentId": "PRV-1031"
+            },
+            {
+              "id": "WH-1031-2",
+              "providerEventId": "PEVT-1031-REF",
+              "type": "refund.succeeded",
+              "occurredAt": "2026-09-11T06:31:50Z",
+              "receivedAt": "2026-09-11T06:31:55Z",
+              "processingStatus": "APPLIED",
+              "providerPaymentId": "PRV-1031"
+            }
+          ],
+          "duplicates": [],
+          "orderingInversions": [],
+          "timestampsComplete": true,
+          "evidenceIds": [
+            "WH-1031-1",
+            "WH-1031-2"
+          ]
+        },
+        "check_refund": {
+          "requests": [
+            {
+              "id": "EVT-1031-4",
+              "type": "REFUND_REQUESTED",
+              "amountMinor": 611319,
+              "status": "ACCEPTED",
+              "occurredAt": "2026-09-11T06:31:40Z",
+              "refundIdentity": "RF-1031"
+            },
+            {
+              "id": "EVT-1031-5",
+              "type": "REFUND_CONFIRMED",
+              "amountMinor": 611319,
+              "status": "SUCCEEDED",
+              "occurredAt": "2026-09-11T06:31:50Z",
+              "refundIdentity": "RF-1031"
+            }
+          ],
+          "requestedMinor": 611319,
+          "confirmedMinor": 611319,
+          "confirmationIds": [
+            "EVT-1031-5"
+          ],
+          "ledgerRefundMinor": 0,
+          "providerRefundMinor": 611319,
+          "evidenceIds": [
+            "EVT-1031-4",
+            "EVT-1031-5",
+            "PROVIDER:PRV-1031"
+          ]
+        }
+      },
+      "retrievedPolicies": [
+        {
+          "id": "RB-REFUND:v1",
+          "documentId": "RB-REFUND",
+          "version": 1,
+          "title": "Refund posting and payout reconciliation",
+          "excerpt": "All values are integer minor units in a single currency. Compute ledger net as the signed sum of capture, fee and refund postings. For a succeeded payment, expected processor payout equals capture amount minus processor fee minus confirmed refunds. A confirmed processor refund that is absent from the ledger creates a difference equal to that refund when other postings agree. Preserve the processor refund reference, confirmation event, ledger snapshot cutoff and exact difference. Escalate the posting exception for a human reconciliation review. The investigator must not create a refund, repair a ledger or transfer money.",
+          "source": "Original simulated operating policy",
+          "score": 0.912264
+        },
+        {
+          "id": "RB-POLICY:v1",
+          "documentId": "RB-POLICY",
+          "version": 1,
+          "title": "Snapshot cutoff and processing lag",
+          "excerpt": "Payment systems can have asynchronous posting lag. A snapshot is evidence at its stated cutoff, not a promise about the future. A confirmed refund with a missing posting should be reported as a reconciliation exception at the snapshot cutoff. Preserve pending-posting events and request follow-up through case review. Do not silently treat a pending posting as completed, or hide a present mismatch because it may later resolve.",
+          "source": "Original simulated operating policy",
+          "score": 0.725798
+        },
+        {
+          "id": "RB-FAILURE:v1",
+          "documentId": "RB-FAILURE",
+          "version": 1,
+          "title": "Confirmed processor rejection",
+          "excerpt": "A terminal FAILED processor state with a matching rejection event and no capture ledger establishes a processing failure in this simulated workflow. Preserve the provider reference and reason code. Propose escalation to the appropriate operations queue for review; this case workflow does not authorize retries, changes to payment instruments, refunds or contact with a customer. A conflicting capture entry invalidates this conclusion and requires evidence reconciliation.",
+          "source": "Original simulated operating policy",
+          "score": 0.708017
+        }
+      ],
+      "policySuppliedToCompletedFactSelection": [
+        {
+          "id": "RB-REFUND:v1",
+          "documentId": "RB-REFUND",
+          "version": 1,
+          "title": "Refund posting and payout reconciliation",
+          "excerpt": "All values are integer minor units in a single currency. Compute ledger net as the signed sum of capture, fee and refund postings. For a succeeded payment, expected processor payout equals capture amount minus processor fee minus confirmed refunds. A confirmed processor refund that is absent from the ledger creates a difference equal to that refund when other postings agree. Preserve the processor refund reference, confirmation event, ledger snapshot cutoff and exact difference. Escalate the posting exception for a human reconciliation review. The investigator must not create a refund, repair a ledger or transfer money.",
+          "source": "Original simulated operating policy",
+          "score": 0.912264
+        }
+      ],
+      "policyContextNote": "One policy supplied to completed fact-ID selection.",
+      "compositionChecks": {
+        "catalogMatchesRebuiltObservedFacts": true,
+        "catalogHashMatches": true,
+        "renderedFinding": {
+          "id": "F-1",
+          "text": "Confirmed refund events total INR 6,113.19. The supplied ledger snapshot contains 0 refund entries totaling INR 0.00. The provider refund amount is INR 6,113.19. The supplied ledger net is INR 24,024.87; provider payout is INR 17,911.68; ledger-minus-payout difference is INR 6,113.19.",
+          "evidenceIds": [
+            "EVT-1031-4",
+            "EVT-1031-5",
+            "LED-1031-1",
+            "LED-1031-2",
+            "PROVIDER:PRV-1031"
+          ],
+          "citationIds": [
+            "RB-REFUND:v1"
+          ]
+        },
+        "resultFindingMatchesExactSelectedCatalogTextAndLinks": true,
+        "ruleOwnedFieldsMatchAssessment": true,
+        "limit": "These checks establish composition/provenance, not independent factual correctness or selection usefulness."
+      },
+      "usage": {
+        "modelCalls": 2,
+        "inputTokens": 1314,
+        "outputTokens": 138
+      },
+      "modelTimings": {
+        "toolSelectionMs": 10773.178,
+        "toolSelectionProvider": {
+          "model": "qwen3:4b-instruct",
+          "created_at": "2026-09-11T23:14:08.73480807Z",
+          "done": true,
+          "done_reason": "stop",
+          "total_duration": 10753484098,
+          "load_duration": 1030362,
+          "prompt_eval_count": 511,
+          "prompt_eval_duration": 1035482000,
+          "eval_count": 108,
+          "eval_duration": 9556605000,
+          "logprobs": null,
+          "model_name": "qwen3:4b-instruct",
+          "model_provider": "ollama"
+        },
+        "synthesisMs": 27156.143,
+        "synthesisProvider": {
+          "model": "qwen3:4b-instruct",
+          "created_at": "2026-09-11T23:14:35.901167475Z",
+          "done": true,
+          "done_reason": "stop",
+          "total_duration": 27138910708,
+          "load_duration": 1467593,
+          "prompt_eval_count": 803,
+          "prompt_eval_duration": 23987599000,
+          "eval_count": 30,
+          "eval_duration": 3038285000,
+          "logprobs": null,
+          "model_name": "qwen3:4b-instruct",
+          "model_provider": "ollama"
+        }
+      },
+      "errors": [],
+      "manualReview": {
+        "reviewer": "Codex AI assistant, not an independent human",
+        "observedEvidenceReview": "EVT-1031-5 confirms 611,319 minor units; supplied ledger CAPTURE 2,445,279 plus FEE -42,792 yields 2,402,487, with no refund posting. Provider payout 1,791,168 leaves difference 611,319. Exact service wording names every amount and scopes absence to supplied membership. Request, confirmation, ledger and provider links plus sourceTools provide full available closure.",
+        "selectionRelevanceAndLimits": "Specific and useful refund observation first, followed by settlement corroboration. Same two facts as V6 in reversed order; no selected sentence was rewritten.",
+        "policyReview": "RB-REFUND:v1 is relevant and actually supplied. Its signed-sum and confirmed-refund posting guidance matches the selected facts; it is not itself the evidence source for money.",
+        "exceptionSpecificObservationSelected": true,
+        "materialFactualErrorIdentifiedInSelectedServiceText": false,
+        "authorship": "The model selected IDs only; the service supplied all displayed sentences and links. Rules owned decisions and other explanation fields.",
+        "workflowLimit": "This direct-worker evaluation executed no Java reviewer action or persisted case transition."
+      }
+    },
+    {
+      "investigationId": "EVAL-bc0d128c-5c3e-487f-a308-58c293d7b32f",
+      "caseId": "CASE-1041",
+      "startedAt": "2026-09-11T23:14:35.962925+00:00",
+      "synthesisScope": "skipped-insufficient-evidence",
+      "parsedModelSelection": null,
+      "selectionProvenanceNote": "No completed fact-ID selection is recorded in this checkpoint; this alone does not establish whether a provider attempt is skipped, in progress or failed.",
+      "factCatalog": null,
+      "factCatalogVersion": null,
+      "factCatalogHash": null,
+      "reconstructedSelectionInput": null,
+      "inputProvenance": "Deterministically reconstructed from saved state and frozen source; not a raw HTTP dump.",
+      "sourceHashes": {
+        "graph": "b1116509b1ffdf5157a878e772d37421d7a6508afc5dd0904f22383cd1b01180",
+        "facts": "a7745c344efb3100c8b6a762b9c073e0f45804b0f5c95f0e90b373c5001d6bb4",
+        "evidence": "3d0ef74b64bd528bf966918d3ee9f58175a9c00868fbf89caeb9457f3bfd95b0",
+        "config": "d660f8ce92e00ef8a7a00dd3790f6fa8cf3f5e2b46f698ab057ef453fd6024b0"
+      },
+      "candidate": {
+        "outcome": "INSUFFICIENT_EVIDENCE",
+        "summary": "The available evidence does not support a reliable conclusion. Obtain or reconcile the missing facts before changing case disposition.",
+        "confidence": "INSUFFICIENT",
+        "findings": [],
+        "missingEvidence": [
+          "Obtain an authoritative processor status for the original payment reference, with its observation timestamp; the supplied provider state is UNKNOWN.",
+          "Confirm whether the empty ledger snapshot is complete for this payment through a stated cutoff; supply any capture, fee or refund records found.",
+          "Check provider delivery history for the original payment reference; supply any events found, including occurrence time, receipt time and processing status, or confirm that none were delivered."
+        ],
+        "proposal": {
+          "action": "REQUEST_EVIDENCE",
+          "reason": "Request the listed evidence and keep financial state unchanged."
+        }
+      },
+      "checkpointResult": {
+        "outcome": "INSUFFICIENT_EVIDENCE",
+        "summary": "The available evidence does not support a reliable conclusion. Obtain or reconcile the missing facts before changing case disposition.",
+        "confidence": "INSUFFICIENT",
+        "findings": [],
+        "missingEvidence": [
+          "Obtain an authoritative processor status for the original payment reference, with its observation timestamp; the supplied provider state is UNKNOWN.",
+          "Confirm whether the empty ledger snapshot is complete for this payment through a stated cutoff; supply any capture, fee or refund records found.",
+          "Check provider delivery history for the original payment reference; supply any events found, including occurrence time, receipt time and processing status, or confirm that none were delivered."
+        ],
+        "proposal": {
+          "action": "REQUEST_EVIDENCE",
+          "reason": "Request the listed evidence and keep financial state unchanged."
+        },
+        "id": "EVAL-bc0d128c-5c3e-487f-a308-58c293d7b32f",
+        "caseId": "CASE-1041",
+        "createdAt": "2026-09-11T23:14:35.962925Z",
+        "createdBy": "offline-evaluator",
+        "mode": "ollama",
+        "status": "AWAITING_REVIEW",
+        "citations": [
+          {
+            "id": "RB-FAILURE:v1",
+            "documentId": "RB-FAILURE",
+            "version": 1,
+            "title": "Confirmed processor rejection",
+            "excerpt": "A terminal FAILED processor state with a matching rejection event and no capture ledger establishes a processing failure in this simulated workflow. Preserve the provider reference and reason code. Propose escalation to the appropriate operations queue for review; this case workflow does not authorize retries, changes to payment instruments, refunds or contact with a customer. A conflicting capture entry invalidates this conclusion and requires evidence reconciliation.",
+            "source": "Original simulated operating policy",
+            "score": 1.075351
+          },
+          {
+            "id": "RB-UNCERTAINTY:v1",
+            "documentId": "RB-UNCERTAINTY",
+            "version": 1,
+            "title": "Insufficient or conflicting payment evidence",
+            "excerpt": "A timeout, an empty ledger or an unavailable status lookup alone cannot prove success or failure. Request a processor status result correlated to the original payment reference, a ledger extract with its cutoff time, and relevant delivery records. If amount, currency, identity or timestamps conflict, state the conflict and avoid a confident conclusion. Propose REQUEST_EVIDENCE for the case. Do not invent missing facts, rely on case titles as answers, or convert missing evidence into a guessed payment outcome.",
+            "source": "Original simulated operating policy",
+            "score": 0.903843
+          },
+          {
+            "id": "RB-INCIDENT:v1",
+            "documentId": "RB-INCIDENT",
+            "version": 1,
+            "title": "Operations incident evidence packet",
+            "excerpt": "A useful escalation packet contains case identifier, payment reference, amount and currency, observed symptom, ordered timeline, exact ledger comparison, cited operating policy, missing evidence and proposed queue action. Describe observed facts separately from hypotheses. Include snapshot times so reviewers understand possible processing lag. Export only authorized synthetic case data and its audit history; never include evaluation labels, credentials or unrelated cases.",
+            "source": "Original simulated operating policy",
+            "score": 0.607435
+          }
+        ],
+        "toolCalls": [
+          {
+            "name": "get_payment_timeline",
+            "status": "COMPLETED",
+            "durationMs": 0.013,
+            "evidenceIds": [
+              "EVT-1041-1",
+              "EVT-1041-2",
+              "EVT-1041-3",
+              "PROVIDER:PRV-1041"
+            ]
+          },
+          {
+            "name": "compare_settlement",
+            "status": "COMPLETED",
+            "durationMs": 0.021,
+            "evidenceIds": [
+              "PROVIDER:PRV-1041"
+            ]
+          },
+          {
+            "name": "inspect_webhooks",
+            "status": "COMPLETED",
+            "durationMs": 0.005,
+            "evidenceIds": []
+          },
+          {
+            "name": "check_refund",
+            "status": "COMPLETED",
+            "durationMs": 0.023,
+            "evidenceIds": [
+              "PROVIDER:PRV-1041"
+            ]
+          }
+        ],
+        "metrics": {
+          "durationMs": 13257.647,
+          "retrievalMs": 5.476,
+          "toolCount": 4,
+          "modelCalls": 1,
+          "inputTokens": 511,
+          "outputTokens": 108,
+          "retrievalMode": "lexical",
+          "model": "qwen3:4b-instruct",
+          "assessmentSource": "deterministic-evidence-rules",
+          "synthesisScope": "skipped-insufficient-evidence",
+          "modelThreads": 4,
+          "modelContextTokens": 4096,
+          "modelTimeoutSeconds": 180.0,
+          "toolOutputTokenLimit": 384,
+          "synthesisOutputTokenLimit": 384,
+          "toolSelectionMs": 13240.307,
+          "toolSelectionProvider": {
+            "model": "qwen3:4b-instruct",
+            "created_at": "2026-09-11T23:14:49.205647319Z",
+            "done": true,
+            "done_reason": "stop",
+            "total_duration": 13214428097,
+            "load_duration": 893626,
+            "prompt_eval_count": 511,
+            "prompt_eval_duration": 1330659000,
+            "eval_count": 108,
+            "eval_duration": 11691634000,
+            "logprobs": null,
+            "model_name": "qwen3:4b-instruct",
+            "model_provider": "ollama"
+          }
+        },
+        "warnings": [
+          "Synthetic data only; proposals change case disposition, never payment or ledger balances.",
+          "Ollama planned diagnostic tools; fact selection was skipped because evidence was insufficient. All explanation text comes from deterministic evidence rules.",
+          "Lexical retrieval baseline; semantic embeddings are not enabled."
+        ]
+      },
+      "assessment": {
+        "outcome": "INSUFFICIENT_EVIDENCE",
+        "summary": "The available evidence does not support a reliable conclusion. Obtain or reconcile the missing facts before changing case disposition.",
+        "evidenceIds": [],
+        "query": "insufficient evidence missing conflicting provider ledger reconciliation escalation",
+        "action": "REQUEST_EVIDENCE",
+        "reason": "Request the listed evidence and keep financial state unchanged.",
+        "missingEvidence": [
+          "Obtain an authoritative processor status for the original payment reference, with its observation timestamp; the supplied provider state is UNKNOWN.",
+          "Confirm whether the empty ledger snapshot is complete for this payment through a stated cutoff; supply any capture, fee or refund records found.",
+          "Check provider delivery history for the original payment reference; supply any events found, including occurrence time, receipt time and processing status, or confirm that none were delivered."
+        ]
+      },
+      "operationalEvidence": {
+        "get_payment_timeline": {
+          "events": [
+            {
+              "id": "EVT-1041-1",
+              "occurredAt": "2026-09-11T06:40:00Z",
+              "type": "REQUEST_ACCEPTED",
+              "source": "gateway",
+              "status": "SUCCESS",
+              "correlationId": "COR-1041",
+              "attributes": {
+                "idempotencyKey": "IDEM-1041",
+                "providerPaymentId": "PRV-1041",
+                "amountMinor": 70140
+              }
+            },
+            {
+              "id": "EVT-1041-2",
+              "occurredAt": "2026-09-11T06:40:08Z",
+              "type": "CLIENT_RESPONSE",
+              "source": "gateway",
+              "status": "TIMED_OUT",
+              "correlationId": "COR-1041",
+              "attributes": {
+                "idempotencyKey": "IDEM-1041",
+                "providerPaymentId": "PRV-1041"
+              }
+            },
+            {
+              "id": "EVT-1041-3",
+              "occurredAt": "2026-09-11T06:45:00Z",
+              "type": "STATUS_LOOKUP",
+              "source": "processor-adapter",
+              "status": "UNAVAILABLE",
+              "correlationId": "COR-1041",
+              "attributes": {
+                "idempotencyKey": "IDEM-1041",
+                "providerPaymentId": "PRV-1041"
+              }
+            }
+          ],
+          "provider": {
+            "status": "UNKNOWN",
+            "paymentId": "PRV-1041",
+            "amountMinor": 0,
+            "feeMinor": 0,
+            "refundMinor": 0,
+            "payoutMinor": 0,
+            "asOf": "2026-09-11T06:45:50Z"
+          },
+          "evidenceIds": [
+            "EVT-1041-1",
+            "EVT-1041-2",
+            "EVT-1041-3",
+            "PROVIDER:PRV-1041"
+          ]
+        },
+        "compare_settlement": {
+          "expectedAmountMinor": 70140,
+          "currency": "INR",
+          "entries": [],
+          "captureCount": 0,
+          "captureMinor": 0,
+          "refundMinor": 0,
+          "validMoney": true,
+          "moneyIssues": [],
+          "calculationSource": "worker-fixture-baseline",
+          "ledgerNetMinor": 0,
+          "providerPayoutMinor": null,
+          "discrepancyMinor": null,
+          "providerAvailable": false,
+          "reconciliation": null,
+          "provider": {
+            "status": "UNKNOWN",
+            "paymentId": "PRV-1041",
+            "amountMinor": 0,
+            "feeMinor": 0,
+            "refundMinor": 0,
+            "payoutMinor": 0,
+            "asOf": "2026-09-11T06:45:50Z"
+          },
+          "evidenceIds": [
+            "PROVIDER:PRV-1041"
+          ]
+        },
+        "inspect_webhooks": {
+          "records": [],
+          "duplicates": [],
+          "orderingInversions": [],
+          "timestampsComplete": true,
+          "evidenceIds": []
+        },
+        "check_refund": {
+          "requests": [],
+          "requestedMinor": null,
+          "confirmedMinor": 0,
+          "confirmationIds": [],
+          "ledgerRefundMinor": 0,
+          "providerRefundMinor": 0,
+          "evidenceIds": [
+            "PROVIDER:PRV-1041"
+          ]
+        }
+      },
+      "retrievedPolicies": [
+        {
+          "id": "RB-FAILURE:v1",
+          "documentId": "RB-FAILURE",
+          "version": 1,
+          "title": "Confirmed processor rejection",
+          "excerpt": "A terminal FAILED processor state with a matching rejection event and no capture ledger establishes a processing failure in this simulated workflow. Preserve the provider reference and reason code. Propose escalation to the appropriate operations queue for review; this case workflow does not authorize retries, changes to payment instruments, refunds or contact with a customer. A conflicting capture entry invalidates this conclusion and requires evidence reconciliation.",
+          "source": "Original simulated operating policy",
+          "score": 1.075351
+        },
+        {
+          "id": "RB-UNCERTAINTY:v1",
+          "documentId": "RB-UNCERTAINTY",
+          "version": 1,
+          "title": "Insufficient or conflicting payment evidence",
+          "excerpt": "A timeout, an empty ledger or an unavailable status lookup alone cannot prove success or failure. Request a processor status result correlated to the original payment reference, a ledger extract with its cutoff time, and relevant delivery records. If amount, currency, identity or timestamps conflict, state the conflict and avoid a confident conclusion. Propose REQUEST_EVIDENCE for the case. Do not invent missing facts, rely on case titles as answers, or convert missing evidence into a guessed payment outcome.",
+          "source": "Original simulated operating policy",
+          "score": 0.903843
+        },
+        {
+          "id": "RB-INCIDENT:v1",
+          "documentId": "RB-INCIDENT",
+          "version": 1,
+          "title": "Operations incident evidence packet",
+          "excerpt": "A useful escalation packet contains case identifier, payment reference, amount and currency, observed symptom, ordered timeline, exact ledger comparison, cited operating policy, missing evidence and proposed queue action. Describe observed facts separately from hypotheses. Include snapshot times so reviewers understand possible processing lag. Export only authorized synthetic case data and its audit history; never include evaluation labels, credentials or unrelated cases.",
+          "source": "Original simulated operating policy",
+          "score": 0.607435
+        }
+      ],
+      "policySuppliedToCompletedFactSelection": [],
+      "policyContextNote": "No fact-selection stage is recorded; skipped insufficiency has only a planner call, while incomplete states may have an unrecorded failed attempt.",
+      "compositionChecks": null,
+      "usage": {
+        "modelCalls": 1,
+        "inputTokens": 511,
+        "outputTokens": 108
+      },
+      "modelTimings": {
+        "toolSelectionMs": 13240.307,
+        "toolSelectionProvider": {
+          "model": "qwen3:4b-instruct",
+          "created_at": "2026-09-11T23:14:49.205647319Z",
+          "done": true,
+          "done_reason": "stop",
+          "total_duration": 13214428097,
+          "load_duration": 893626,
+          "prompt_eval_count": 511,
+          "prompt_eval_duration": 1330659000,
+          "eval_count": 108,
+          "eval_duration": 11691634000,
+          "logprobs": null,
+          "model_name": "qwen3:4b-instruct",
+          "model_provider": "ollama"
+        }
+      },
+      "errors": [],
+      "manualReview": {
+        "reviewer": "Codex AI assistant, not an independent human",
+        "observedEvidenceReview": "No fact selector ran. The supplied provider state is UNKNOWN and both ledger and webhook lists are empty; the three rule-owned requests seek timestamped status, stated ledger cutoff coverage and delivery-history confirmation without asserting unseen records exist.",
+        "selectionRelevanceAndLimits": "Correct planner-only insufficient-evidence path; excluded from the five-selection denominator.",
+        "policyReview": "No policy is supplied to skipped selection. Retrieved failure guidance does not imply UNKNOWN is FAILED and receives no selected-policy relevance credit.",
+        "exceptionSpecificObservationSelected": null,
+        "materialFactualErrorIdentifiedInSelectedServiceText": null,
+        "authorship": "The model selected IDs only; the service supplied all displayed sentences and links. Rules owned decisions and other explanation fields.",
+        "workflowLimit": "This direct-worker evaluation executed no Java reviewer action or persisted case transition."
+      }
+    },
+    {
+      "investigationId": "EVAL-f41c2a90-61e6-4e9d-9b86-a2c032bf9a5a",
+      "caseId": "CASE-1051",
+      "startedAt": "2026-09-11T23:14:49.273640+00:00",
+      "synthesisScope": "fact-selection",
+      "parsedModelSelection": {
+        "factIds": [
+          "FACT-TERMINAL-EVENT",
+          "FACT-PROVIDER-STATUS"
+        ]
+      },
+      "selectionProvenanceNote": "Original parsed selected IDs retained by the completed model stage; raw provider response bytes are not separately retained. The V6 response contract contains IDs only.",
+      "factCatalog": [
+        {
+          "id": "FACT-PROVIDER-STATUS",
+          "text": "The provider reported FAILED as of 2026-09-11T06:55:50Z; this is a status observation time.",
+          "evidenceIds": [
+            "PROVIDER:PRV-1051"
+          ],
+          "citationIds": [
+            "RB-FAILURE:v1"
+          ],
+          "sourceTools": [
+            "get_payment_timeline"
+          ]
+        },
+        {
+          "id": "FACT-CAPTURE-LEDGER",
+          "text": "The supplied ledger snapshot contains 0 capture entries totaling INR 0.00.",
+          "evidenceIds": [
+            "PROVIDER:PRV-1051"
+          ],
+          "citationIds": [
+            "RB-FAILURE:v1"
+          ],
+          "sourceTools": [
+            "compare_settlement"
+          ]
+        },
+        {
+          "id": "FACT-SETTLEMENT",
+          "text": "The supplied ledger net is INR 0.00; provider payout is INR 0.00; ledger-minus-payout difference is INR 0.00.",
+          "evidenceIds": [
+            "PROVIDER:PRV-1051"
+          ],
+          "citationIds": [
+            "RB-FAILURE:v1"
+          ],
+          "sourceTools": [
+            "compare_settlement"
+          ]
+        },
+        {
+          "id": "FACT-TERMINAL-EVENT",
+          "text": "The supplied timeline records a terminal processor/payment event with status FAILED at 2026-09-11T06:50:05Z.",
+          "evidenceIds": [
+            "EVT-1051-2"
+          ],
+          "citationIds": [
+            "RB-FAILURE:v1"
+          ],
+          "sourceTools": [
+            "get_payment_timeline"
+          ]
+        }
+      ],
+      "factCatalogVersion": 1,
+      "factCatalogHash": "ecf84d2a517e22c645122c5bba9bd8ab69cc2611a137d02499b9be0cf87bfea4",
+      "reconstructedSelectionInput": {
+        "question": "Explain the observed payment state and propose the next case action using authorized evidence and current policy.",
+        "factCatalogVersion": 1,
+        "facts": [
+          {
+            "id": "FACT-PROVIDER-STATUS",
+            "text": "The provider reported FAILED as of 2026-09-11T06:55:50Z; this is a status observation time.",
+            "evidenceIds": [
+              "PROVIDER:PRV-1051"
+            ],
+            "citationIds": [
+              "RB-FAILURE:v1"
+            ],
+            "sourceTools": [
+              "get_payment_timeline"
+            ]
+          },
+          {
+            "id": "FACT-CAPTURE-LEDGER",
+            "text": "The supplied ledger snapshot contains 0 capture entries totaling INR 0.00.",
+            "evidenceIds": [
+              "PROVIDER:PRV-1051"
+            ],
+            "citationIds": [
+              "RB-FAILURE:v1"
+            ],
+            "sourceTools": [
+              "compare_settlement"
+            ]
+          },
+          {
+            "id": "FACT-SETTLEMENT",
+            "text": "The supplied ledger net is INR 0.00; provider payout is INR 0.00; ledger-minus-payout difference is INR 0.00.",
+            "evidenceIds": [
+              "PROVIDER:PRV-1051"
+            ],
+            "citationIds": [
+              "RB-FAILURE:v1"
+            ],
+            "sourceTools": [
+              "compare_settlement"
+            ]
+          },
+          {
+            "id": "FACT-TERMINAL-EVENT",
+            "text": "The supplied timeline records a terminal processor/payment event with status FAILED at 2026-09-11T06:50:05Z.",
+            "evidenceIds": [
+              "EVT-1051-2"
+            ],
+            "citationIds": [
+              "RB-FAILURE:v1"
+            ],
+            "sourceTools": [
+              "get_payment_timeline"
+            ]
+          }
+        ],
+        "policy": [
+          {
+            "id": "RB-FAILURE:v1",
+            "title": "Confirmed processor rejection",
+            "excerpt": "A terminal FAILED processor state with a matching rejection event and no capture ledger establishes a processing failure in this simulated workflow. Preserve the provider reference and reason code. Propose escalation to the appropriate operations queue for review; this case workflow does not authorize retries, changes to payment instruments, refunds or contact with a customer. A conflicting capture entry invalidates this conclusion and requires evidence reconciliation."
+          }
+        ]
+      },
+      "inputProvenance": "Deterministically reconstructed from saved state and frozen source; not a raw HTTP dump.",
+      "sourceHashes": {
+        "graph": "b1116509b1ffdf5157a878e772d37421d7a6508afc5dd0904f22383cd1b01180",
+        "facts": "a7745c344efb3100c8b6a762b9c073e0f45804b0f5c95f0e90b373c5001d6bb4",
+        "evidence": "3d0ef74b64bd528bf966918d3ee9f58175a9c00868fbf89caeb9457f3bfd95b0",
+        "config": "d660f8ce92e00ef8a7a00dd3790f6fa8cf3f5e2b46f698ab057ef453fd6024b0"
+      },
+      "candidate": {
+        "outcome": "PROVIDER_FAILURE",
+        "summary": "The timestamped provider snapshot reports failure and no ledger capture is recorded. The payment requires operational follow-up; automatic payment retries are outside this investigation.",
+        "confidence": "HIGH",
+        "findings": [
+          {
+            "id": "F-1",
+            "text": "The supplied timeline records a terminal processor/payment event with status FAILED at 2026-09-11T06:50:05Z. The provider reported FAILED as of 2026-09-11T06:55:50Z; this is a status observation time.",
+            "evidenceIds": [
+              "EVT-1051-2",
+              "PROVIDER:PRV-1051"
+            ],
+            "citationIds": [
+              "RB-FAILURE:v1"
+            ]
+          }
+        ],
+        "missingEvidence": [],
+        "proposal": {
+          "action": "ESCALATE",
+          "reason": "Escalate the observed provider failure with its evidence; no retry or money movement is proposed."
+        }
+      },
+      "checkpointResult": {
+        "outcome": "PROVIDER_FAILURE",
+        "summary": "The timestamped provider snapshot reports failure and no ledger capture is recorded. The payment requires operational follow-up; automatic payment retries are outside this investigation.",
+        "confidence": "HIGH",
+        "findings": [
+          {
+            "id": "F-1",
+            "text": "The supplied timeline records a terminal processor/payment event with status FAILED at 2026-09-11T06:50:05Z. The provider reported FAILED as of 2026-09-11T06:55:50Z; this is a status observation time.",
+            "evidenceIds": [
+              "EVT-1051-2",
+              "PROVIDER:PRV-1051"
+            ],
+            "citationIds": [
+              "RB-FAILURE:v1"
+            ]
+          }
+        ],
+        "missingEvidence": [],
+        "proposal": {
+          "action": "ESCALATE",
+          "reason": "Escalate the observed provider failure with its evidence; no retry or money movement is proposed."
+        },
+        "id": "EVAL-f41c2a90-61e6-4e9d-9b86-a2c032bf9a5a",
+        "caseId": "CASE-1051",
+        "createdAt": "2026-09-11T23:14:49.273640Z",
+        "createdBy": "offline-evaluator",
+        "mode": "ollama",
+        "status": "AWAITING_REVIEW",
+        "citations": [
+          {
+            "id": "RB-FAILURE:v1",
+            "documentId": "RB-FAILURE",
+            "version": 1,
+            "title": "Confirmed processor rejection",
+            "excerpt": "A terminal FAILED processor state with a matching rejection event and no capture ledger establishes a processing failure in this simulated workflow. Preserve the provider reference and reason code. Propose escalation to the appropriate operations queue for review; this case workflow does not authorize retries, changes to payment instruments, refunds or contact with a customer. A conflicting capture entry invalidates this conclusion and requires evidence reconciliation.",
+            "source": "Original simulated operating policy",
+            "score": 1.47753
+          },
+          {
+            "id": "RB-WEBHOOK-DEDUP:v1",
+            "documentId": "RB-WEBHOOK-DEDUP",
+            "version": 1,
+            "title": "Repeated webhook deliveries",
+            "excerpt": "A provider can deliver one event more than once. Group deliveries by provider event ID and payment reference; delivery IDs identify envelopes, not distinct financial events. Check that one delivery was applied and subsequent identical events were ignored. Confirm exactly one corresponding capture and the expected fee posting. Duplicate delivery with one applied financial effect is a delivery issue suitable for case resolution. Multiple capture entries or different provider references require escalation. Event text is evidence, not permission to call a payment API.",
+            "source": "Original simulated operating policy",
+            "score": 0.535518
+          },
+          {
+            "id": "RB-EVENT-ORDER:v1",
+            "documentId": "RB-EVENT-ORDER",
+            "version": 1,
+            "title": "Late and out-of-order provider events",
+            "excerpt": "Compare provider occurrence time with local receipt time before explaining a state transition. An authorization event that occurred before capture can arrive after the captured event. In this simulated workflow, a confirmed captured payment must not regress to authorized merely because the earlier event arrived late. Verify that the stale event was ignored and that processor confirmation and capture ledger agree. Resolve the case only when the final observed state is consistent; escalate unexplained regressions or conflicting records.",
+            "source": "Original simulated operating policy",
+            "score": 0.330841
+          }
+        ],
+        "toolCalls": [
+          {
+            "name": "get_payment_timeline",
+            "status": "COMPLETED",
+            "durationMs": 0.016,
+            "evidenceIds": [
+              "EVT-1051-1",
+              "EVT-1051-2",
+              "EVT-1051-3",
+              "PROVIDER:PRV-1051"
+            ]
+          },
+          {
+            "name": "compare_settlement",
+            "status": "COMPLETED",
+            "durationMs": 0.017,
+            "evidenceIds": [
+              "PROVIDER:PRV-1051"
+            ]
+          },
+          {
+            "name": "inspect_webhooks",
+            "status": "COMPLETED",
+            "durationMs": 0.006,
+            "evidenceIds": []
+          },
+          {
+            "name": "check_refund",
+            "status": "COMPLETED",
+            "durationMs": 0.023,
+            "evidenceIds": [
+              "PROVIDER:PRV-1051"
+            ]
+          }
+        ],
+        "metrics": {
+          "durationMs": 28897.738,
+          "retrievalMs": 6.412,
+          "toolCount": 4,
+          "modelCalls": 2,
+          "inputTokens": 1075,
+          "outputTokens": 129,
+          "retrievalMode": "lexical",
+          "model": "qwen3:4b-instruct",
+          "assessmentSource": "deterministic-evidence-rules",
+          "synthesisScope": "fact-selection",
+          "modelThreads": 4,
+          "modelContextTokens": 4096,
+          "modelTimeoutSeconds": 180.0,
+          "toolOutputTokenLimit": 384,
+          "synthesisOutputTokenLimit": 384,
+          "findingSource": "service-rendered-facts",
+          "factCatalogVersion": 1,
+          "factCatalogHash": "ecf84d2a517e22c645122c5bba9bd8ab69cc2611a137d02499b9be0cf87bfea4",
+          "selectedFactIds": [
+            "FACT-TERMINAL-EVENT",
+            "FACT-PROVIDER-STATUS"
+          ],
+          "selectedFactProvenance": [
+            {
+              "id": "FACT-TERMINAL-EVENT",
+              "sourceTools": [
+                "get_payment_timeline"
+              ],
+              "evidenceIds": [
+                "EVT-1051-2"
+              ],
+              "citationIds": [
+                "RB-FAILURE:v1"
+              ]
+            },
+            {
+              "id": "FACT-PROVIDER-STATUS",
+              "sourceTools": [
+                "get_payment_timeline"
+              ],
+              "evidenceIds": [
+                "PROVIDER:PRV-1051"
+              ],
+              "citationIds": [
+                "RB-FAILURE:v1"
+              ]
+            }
+          ],
+          "toolSelectionMs": 9786.666,
+          "toolSelectionProvider": {
+            "model": "qwen3:4b-instruct",
+            "created_at": "2026-09-11T23:14:59.061520597Z",
+            "done": true,
+            "done_reason": "stop",
+            "total_duration": 9764778770,
+            "load_duration": 1559347,
+            "prompt_eval_count": 511,
+            "prompt_eval_duration": 1159140000,
+            "eval_count": 108,
+            "eval_duration": 8572960999,
+            "logprobs": null,
+            "model_name": "qwen3:4b-instruct",
+            "model_provider": "ollama"
+          },
+          "synthesisMs": 19090.577,
+          "synthesisProvider": {
+            "model": "qwen3:4b-instruct",
+            "created_at": "2026-09-11T23:15:18.167627005Z",
+            "done": true,
+            "done_reason": "stop",
+            "total_duration": 19074459590,
+            "load_duration": 1593465,
+            "prompt_eval_count": 564,
+            "prompt_eval_duration": 16771856000,
+            "eval_count": 21,
+            "eval_duration": 2173839000,
+            "logprobs": null,
+            "model_name": "qwen3:4b-instruct",
+            "model_provider": "ollama"
+          }
+        },
+        "warnings": [
+          "Synthetic data only; proposals change case disposition, never payment or ledger balances.",
+          "Ollama planned diagnostic tools and selected authorized fact IDs. The service rendered the selected facts and supplied their evidence links; no model-authored prose was used. Decisions and all other explanation fields come from deterministic evidence rules. Fact relevance, completeness and source accuracy still require analyst review.",
+          "Lexical retrieval baseline; semantic embeddings are not enabled."
+        ]
+      },
+      "assessment": {
+        "outcome": "PROVIDER_FAILURE",
+        "summary": "The timestamped provider snapshot reports failure and no ledger capture is recorded. The payment requires operational follow-up; automatic payment retries are outside this investigation.",
+        "evidenceIds": [
+          "EVT-1051-1",
+          "EVT-1051-2",
+          "EVT-1051-3",
+          "PROVIDER:PRV-1051"
+        ],
+        "query": "provider failed declined no capture failure escalation",
+        "action": "ESCALATE",
+        "reason": "Escalate the observed provider failure with its evidence; no retry or money movement is proposed.",
+        "missingEvidence": []
+      },
+      "operationalEvidence": {
+        "get_payment_timeline": {
+          "events": [
+            {
+              "id": "EVT-1051-1",
+              "occurredAt": "2026-09-11T06:50:00Z",
+              "type": "REQUEST_ACCEPTED",
+              "source": "gateway",
+              "status": "SUCCESS",
+              "correlationId": "COR-1051",
+              "attributes": {
+                "idempotencyKey": "IDEM-1051",
+                "providerPaymentId": "PRV-1051",
+                "amountMinor": 770717
+              }
+            },
+            {
+              "id": "EVT-1051-2",
+              "occurredAt": "2026-09-11T06:50:05Z",
+              "type": "PROCESSOR_REJECTED",
+              "source": "processor",
+              "status": "FAILED",
+              "correlationId": "COR-1051",
+              "attributes": {
+                "idempotencyKey": "IDEM-1051",
+                "providerPaymentId": "PRV-1051",
+                "reasonCode": "SIMULATED_PROCESSING_DECLINE"
+              }
+            },
+            {
+              "id": "EVT-1051-3",
+              "occurredAt": "2026-09-11T06:50:08Z",
+              "type": "CLIENT_RESPONSE",
+              "source": "gateway",
+              "status": "DELIVERED",
+              "correlationId": "COR-1051",
+              "attributes": {
+                "idempotencyKey": "IDEM-1051",
+                "providerPaymentId": "PRV-1051"
+              }
+            }
+          ],
+          "provider": {
+            "status": "FAILED",
+            "paymentId": "PRV-1051",
+            "amountMinor": 0,
+            "feeMinor": 0,
+            "refundMinor": 0,
+            "payoutMinor": 0,
+            "asOf": "2026-09-11T06:55:50Z"
+          },
+          "evidenceIds": [
+            "EVT-1051-1",
+            "EVT-1051-2",
+            "EVT-1051-3",
+            "PROVIDER:PRV-1051"
+          ]
+        },
+        "compare_settlement": {
+          "expectedAmountMinor": 770717,
+          "currency": "INR",
+          "entries": [],
+          "captureCount": 0,
+          "captureMinor": 0,
+          "refundMinor": 0,
+          "validMoney": true,
+          "moneyIssues": [],
+          "calculationSource": "worker-fixture-baseline",
+          "ledgerNetMinor": 0,
+          "providerPayoutMinor": 0,
+          "discrepancyMinor": 0,
+          "providerAvailable": true,
+          "reconciliation": null,
+          "provider": {
+            "status": "FAILED",
+            "paymentId": "PRV-1051",
+            "amountMinor": 0,
+            "feeMinor": 0,
+            "refundMinor": 0,
+            "payoutMinor": 0,
+            "asOf": "2026-09-11T06:55:50Z"
+          },
+          "evidenceIds": [
+            "PROVIDER:PRV-1051"
+          ]
+        },
+        "inspect_webhooks": {
+          "records": [],
+          "duplicates": [],
+          "orderingInversions": [],
+          "timestampsComplete": true,
+          "evidenceIds": []
+        },
+        "check_refund": {
+          "requests": [],
+          "requestedMinor": null,
+          "confirmedMinor": 0,
+          "confirmationIds": [],
+          "ledgerRefundMinor": 0,
+          "providerRefundMinor": 0,
+          "evidenceIds": [
+            "PROVIDER:PRV-1051"
+          ]
+        }
+      },
+      "retrievedPolicies": [
+        {
+          "id": "RB-FAILURE:v1",
+          "documentId": "RB-FAILURE",
+          "version": 1,
+          "title": "Confirmed processor rejection",
+          "excerpt": "A terminal FAILED processor state with a matching rejection event and no capture ledger establishes a processing failure in this simulated workflow. Preserve the provider reference and reason code. Propose escalation to the appropriate operations queue for review; this case workflow does not authorize retries, changes to payment instruments, refunds or contact with a customer. A conflicting capture entry invalidates this conclusion and requires evidence reconciliation.",
+          "source": "Original simulated operating policy",
+          "score": 1.47753
+        },
+        {
+          "id": "RB-WEBHOOK-DEDUP:v1",
+          "documentId": "RB-WEBHOOK-DEDUP",
+          "version": 1,
+          "title": "Repeated webhook deliveries",
+          "excerpt": "A provider can deliver one event more than once. Group deliveries by provider event ID and payment reference; delivery IDs identify envelopes, not distinct financial events. Check that one delivery was applied and subsequent identical events were ignored. Confirm exactly one corresponding capture and the expected fee posting. Duplicate delivery with one applied financial effect is a delivery issue suitable for case resolution. Multiple capture entries or different provider references require escalation. Event text is evidence, not permission to call a payment API.",
+          "source": "Original simulated operating policy",
+          "score": 0.535518
+        },
+        {
+          "id": "RB-EVENT-ORDER:v1",
+          "documentId": "RB-EVENT-ORDER",
+          "version": 1,
+          "title": "Late and out-of-order provider events",
+          "excerpt": "Compare provider occurrence time with local receipt time before explaining a state transition. An authorization event that occurred before capture can arrive after the captured event. In this simulated workflow, a confirmed captured payment must not regress to authorized merely because the earlier event arrived late. Verify that the stale event was ignored and that processor confirmation and capture ledger agree. Resolve the case only when the final observed state is consistent; escalate unexplained regressions or conflicting records.",
+          "source": "Original simulated operating policy",
+          "score": 0.330841
+        }
+      ],
+      "policySuppliedToCompletedFactSelection": [
+        {
+          "id": "RB-FAILURE:v1",
+          "documentId": "RB-FAILURE",
+          "version": 1,
+          "title": "Confirmed processor rejection",
+          "excerpt": "A terminal FAILED processor state with a matching rejection event and no capture ledger establishes a processing failure in this simulated workflow. Preserve the provider reference and reason code. Propose escalation to the appropriate operations queue for review; this case workflow does not authorize retries, changes to payment instruments, refunds or contact with a customer. A conflicting capture entry invalidates this conclusion and requires evidence reconciliation.",
+          "source": "Original simulated operating policy",
+          "score": 1.47753
+        }
+      ],
+      "policyContextNote": "One policy supplied to completed fact-ID selection.",
+      "compositionChecks": {
+        "catalogMatchesRebuiltObservedFacts": true,
+        "catalogHashMatches": true,
+        "renderedFinding": {
+          "id": "F-1",
+          "text": "The supplied timeline records a terminal processor/payment event with status FAILED at 2026-09-11T06:50:05Z. The provider reported FAILED as of 2026-09-11T06:55:50Z; this is a status observation time.",
+          "evidenceIds": [
+            "EVT-1051-2",
+            "PROVIDER:PRV-1051"
+          ],
+          "citationIds": [
+            "RB-FAILURE:v1"
+          ]
+        },
+        "resultFindingMatchesExactSelectedCatalogTextAndLinks": true,
+        "ruleOwnedFieldsMatchAssessment": true,
+        "limit": "These checks establish composition/provenance, not independent factual correctness or selection usefulness."
+      },
+      "usage": {
+        "modelCalls": 2,
+        "inputTokens": 1075,
+        "outputTokens": 129
+      },
+      "modelTimings": {
+        "toolSelectionMs": 9786.666,
+        "toolSelectionProvider": {
+          "model": "qwen3:4b-instruct",
+          "created_at": "2026-09-11T23:14:59.061520597Z",
+          "done": true,
+          "done_reason": "stop",
+          "total_duration": 9764778770,
+          "load_duration": 1559347,
+          "prompt_eval_count": 511,
+          "prompt_eval_duration": 1159140000,
+          "eval_count": 108,
+          "eval_duration": 8572960999,
+          "logprobs": null,
+          "model_name": "qwen3:4b-instruct",
+          "model_provider": "ollama"
+        },
+        "synthesisMs": 19090.577,
+        "synthesisProvider": {
+          "model": "qwen3:4b-instruct",
+          "created_at": "2026-09-11T23:15:18.167627005Z",
+          "done": true,
+          "done_reason": "stop",
+          "total_duration": 19074459590,
+          "load_duration": 1593465,
+          "prompt_eval_count": 564,
+          "prompt_eval_duration": 16771856000,
+          "eval_count": 21,
+          "eval_duration": 2173839000,
+          "logprobs": null,
+          "model_name": "qwen3:4b-instruct",
+          "model_provider": "ollama"
+        }
+      },
+      "errors": [],
+      "manualReview": {
+        "reviewer": "Codex AI assistant, not an independent human",
+        "observedEvidenceReview": "EVT-1051-2 is PROCESSOR_REJECTED with FAILED at 06:50:05Z; provider snapshot reports FAILED asOf 06:55:50Z. Both source IDs are linked and the controlled service sentences keep occurrence and observation time distinct.",
+        "selectionRelevanceAndLimits": "Relevant terminal-failure observation followed by provider corroboration. Empty capture-ledger proof remains in the rule summary/tool trace, not in the selected sentences.",
+        "policyReview": "RB-FAILURE:v1 is supplied and relevant to the matching terminal event/provider failure; no retry or completed case action is proposed by these facts.",
+        "exceptionSpecificObservationSelected": true,
+        "materialFactualErrorIdentifiedInSelectedServiceText": false,
+        "authorship": "The model selected IDs only; the service supplied all displayed sentences and links. Rules owned decisions and other explanation fields.",
+        "workflowLimit": "This direct-worker evaluation executed no Java reviewer action or persisted case transition."
+      }
+    }
+  ]
+}

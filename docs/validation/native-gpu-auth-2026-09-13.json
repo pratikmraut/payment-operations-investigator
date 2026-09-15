@@ -1,0 +1,116 @@
+{
+  "checkedAtUtc": "2026-09-13T17:14:35.050300+00:00",
+  "status": "passed",
+  "scope": "Fresh in-memory cookie jar shared across loopback ports; no existing browser session access",
+  "modelCalls": 0,
+  "requests": [
+    {
+      "label": "cpu_login",
+      "port": 5178,
+      "status": 200,
+      "setCookieNames": [
+        "POI_SESSION"
+      ],
+      "expiredCookieNames": [],
+      "jarCookieNamesAfter": [
+        "POI_SESSION"
+      ]
+    },
+    {
+      "label": "gpu_login",
+      "port": 5179,
+      "status": 200,
+      "setCookieNames": [
+        "POI_GPU_SESSION"
+      ],
+      "expiredCookieNames": [],
+      "jarCookieNamesAfter": [
+        "POI_GPU_SESSION",
+        "POI_SESSION"
+      ]
+    },
+    {
+      "label": "cpu_me_before_gpu_logout",
+      "port": 5178,
+      "status": 200,
+      "setCookieNames": [],
+      "expiredCookieNames": [],
+      "jarCookieNamesAfter": [
+        "POI_GPU_SESSION",
+        "POI_SESSION"
+      ]
+    },
+    {
+      "label": "gpu_me_before_gpu_logout",
+      "port": 5179,
+      "status": 200,
+      "setCookieNames": [],
+      "expiredCookieNames": [],
+      "jarCookieNamesAfter": [
+        "POI_GPU_SESSION",
+        "POI_SESSION"
+      ]
+    },
+    {
+      "label": "gpu_logout",
+      "port": 5179,
+      "status": 200,
+      "setCookieNames": [
+        "POI_GPU_SESSION"
+      ],
+      "expiredCookieNames": [
+        "POI_GPU_SESSION"
+      ],
+      "jarCookieNamesAfter": [
+        "POI_SESSION"
+      ]
+    },
+    {
+      "label": "gpu_me_after_logout",
+      "port": 5179,
+      "status": 401,
+      "setCookieNames": [],
+      "expiredCookieNames": [],
+      "jarCookieNamesAfter": [
+        "POI_SESSION"
+      ]
+    },
+    {
+      "label": "cpu_me_after_gpu_logout",
+      "port": 5178,
+      "status": 200,
+      "setCookieNames": [],
+      "expiredCookieNames": [],
+      "jarCookieNamesAfter": [
+        "POI_SESSION"
+      ]
+    },
+    {
+      "label": "cleanup_probe_cpu_session",
+      "port": 5178,
+      "status": 200,
+      "setCookieNames": [
+        "POI_SESSION"
+      ],
+      "expiredCookieNames": [
+        "POI_SESSION"
+      ],
+      "jarCookieNamesAfter": []
+    }
+  ],
+  "checks": {
+    "cpu_login_authenticated": true,
+    "cpu_cookie_name": true,
+    "gpu_login_authenticated": true,
+    "distinct_cookies_coexist": true,
+    "both_sessions_authenticated": true,
+    "gpu_logout_success": true,
+    "gpu_logout_expires_only_gpu_cookie": true,
+    "cpu_cookie_remains_after_gpu_logout": true,
+    "gpu_session_unauthorized_after_logout": true,
+    "cpu_session_authorized_after_gpu_logout": true,
+    "probe_cpu_session_cleanup": true
+  },
+  "cookieValuesStored": false,
+  "credentialsStored": false
+}

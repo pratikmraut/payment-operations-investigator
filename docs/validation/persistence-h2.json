@@ -1,0 +1,18 @@
+{
+  "status": "PASS",
+  "checkedAt": "2026-09-11T18:48:17.8341636Z",
+  "caseId": "CASE-1058",
+  "investigationId": "INV-af24636d-4322-49b7-9ebe-f577069669b3",
+  "decisionId": "DEC-575f2a17-b982-44aa-991b-c87e06d2cc24",
+  "processIdBefore": 41912,
+  "processIdAfter": 37372,
+  "checks": [
+    "actual API process restart",
+    "immutable investigation preserved",
+    "audit preserved",
+    "durable idempotency replay",
+    "no extra audit after replay",
+    "case status and version preserved"
+  ],
+  "auditCount": 3
+}

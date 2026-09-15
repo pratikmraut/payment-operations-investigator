@@ -1,0 +1,833 @@
+{
+  "status": "PASS",
+  "executedAt": "2026-09-12T10:58:15.938660+00:00",
+  "mode": "ollama",
+  "scope": "Original synthetic outbound NEFT ECA; actual local Java/PostgreSQL/worker HTTP path, no Oracle connection",
+  "checks": [
+    "authenticated catalog exposes three original validated snapshots",
+    "viewer import and missing-CSRF import denied",
+    "inexact source decimal conversion rejected",
+    "atomic import and duplicate identity/version behavior",
+    "bank snapshot preserved with unknown accounting and native payment status",
+    "cross-tenant case/history/import receipts inaccessible",
+    "real graph/tool/retrieval path diagnoses recorded timeout with OBPM-only citations",
+    "refresh resets case and retains immutable earlier investigation evidence",
+    "server rejects stale proposal even with current version and rejects older source",
+    "current pending request cannot inherit historical timeout outcome",
+    "independent reviewer decision is durable and idempotent; no payment completion",
+    "export contains verifiable snapshot hashes, decisions and complete case audit",
+    "partial/unknown evidence produces specific evidence requests",
+    "legacy generic investigation still works and excludes OBPM-only policies"
+  ],
+  "checkCount": 14,
+  "durationSeconds": 46.845,
+  "modelCalls": 4,
+  "imports": [
+    {
+      "importId": "IMP-27c2a1f8-ba57-4911-8e5a-da3014b9680e",
+      "caseId": "OBPM-8de8550730090983efba04347b5349bb",
+      "status": "CREATED",
+      "evidenceVersion": 1,
+      "evidenceHash": "8a10324f01fdf1ff811091591c470f67ce2493f2bac16bb6c34c77993b1e7758",
+      "caseVersion": 1,
+      "importedAt": "2026-09-12T10:57:29.593247784Z"
+    },
+    {
+      "importId": "IMP-3c20a48b-682d-4ea4-9b9a-7042328f40f7",
+      "caseId": "OBPM-8de8550730090983efba04347b5349bb",
+      "status": "UPDATED",
+      "evidenceVersion": 2,
+      "evidenceHash": "c6bb2e66aec21d323c021e2ccc35778802d0b5a3c3a5e71bb71fc62467b0aa35",
+      "caseVersion": 3,
+      "importedAt": "2026-09-12T10:58:01.214990214Z"
+    },
+    {
+      "importId": "IMP-f70ed152-8c6b-47c1-8e6a-39a6bc9bb9cd",
+      "caseId": "OBPM-365d8de7bad969527a95b5678908a685",
+      "status": "CREATED",
+      "evidenceVersion": 1,
+      "evidenceHash": "b44cffa29b1fcba9821fa4b2275acea2c3243ad5616e55806b9a8cc22c83576c",
+      "caseVersion": 1,
+      "importedAt": "2026-09-12T10:58:05.098780421Z"
+    }
+  ],
+  "investigations": [
+    {
+      "outcome": "OBPM_ECA_TIMEOUT",
+      "summary": "The supplied NEFT snapshot establishes one current EC/T queue record correlated to an ECA request: a recorded ECA timeout only. External funds, block/posting outcome, beneficiary credit and settlement are not established.",
+      "confidence": "HIGH",
+      "findings": [
+        {
+          "id": "F-1",
+          "text": "The supplied NEFT queue snapshot has one current EC/T record observed at 2026-09-12T05:20:00Z, correlated to an ECA request made at 2026-09-12T05:00:30Z. This establishes a recorded ECA timeout only, not an external funds or settlement outcome.",
+          "evidenceIds": [
+            "DEMO-NEFT-0001-e03f9401-QUEUE-001",
+            "DEMO-NEFT-0001-e03f9401-REQUEST-001"
+          ],
+          "citationIds": [
+            "RB-OBPM-ECA-TIMEOUT:v1"
+          ]
+        }
+      ],
+      "missingEvidence": [
+        "Obtain the external-core response or confirmed response absence for this ECA request through a stated cutoff.",
+        "Obtain separately correlated accounting/block confirmation with source coverage before drawing a funds or posting conclusion."
+      ],
+      "proposal": {
+        "action": "REQUEST_EVIDENCE",
+        "reason": "Request correlated external-core outcome and accounting evidence for independent review. This proposal does not authorize resending or changing a payment."
+      },
+      "id": "INV-fb9fa421-4be4-44e6-9393-b0386bdb24ee",
+      "caseId": "OBPM-8de8550730090983efba04347b5349bb",
+      "createdAt": "2026-09-12T10:58:01.135746433Z",
+      "createdBy": "analyst",
+      "mode": "ollama",
+      "status": "AWAITING_REVIEW",
+      "citations": [
+        {
+          "id": "RB-OBPM-ECA-TIMEOUT:v1",
+          "documentId": "RB-OBPM-ECA-TIMEOUT",
+          "version": 1,
+          "title": "NEFT outbound: recorded ECA timeout and next evidence checks",
+          "excerpt": "For this original synthetic OBPM 14.7 outbound NEFT workflow, correlate the payment, current EC queue record and its ECA request attempt. A current T response means that OBPM recorded an ECA timeout. Confirm queue coverage is complete for the declared scope and cutoff and that attempt and observation times agree. A historical timeout does not establish the state of a newer attempt. The recorded timeout does not prove insufficient funds, absence of a DDA amount block, posting failure, beneficiary-credit failure or settlement. Request the authorized external-core outcome for that exact attempt and accounting or message evidence where relevant. Preserve unavailable groups as unknown. Oracle documents ECA Resend for timeout with a new reference and no native authorization step. Retry instead requires a rejected ECA record, cancellation not done and a current activation date; it supports save and authorize. These facts are conditional guidance, not permission to execute either operation. Confirm the exact release, latest state and approved local procedure before recommending recovery. Propose REQUEST_EVIDENCE or an appropriate human case escalation. This milestone cannot resolve an OBPM case or perform payment actions; independent case review changes only the investigation workflow.",
+          "source": "Original synthetic NEFT operating guidance; informed by public Oracle documentation",
+          "score": 1.12302
+        },
+        {
+          "id": "RB-OBPM-EVIDENCE-GAPS:v1",
+          "documentId": "RB-OBPM-EVIDENCE-GAPS",
+          "version": 1,
+          "title": "NEFT outbound: incomplete, unknown or changed evidence",
+          "excerpt": "Preserve native payment and queue codes without guessing their meaning. In this original synthetic OBPM 14.7 outbound NEFT workflow, unmapped codes, partial queue coverage, ambiguous current records, missing attempt correlation or conflicting times require evidence. Name the missing source, identity and cutoff. COMPLETE covers only the declared scope; PARTIAL, UNAVAILABLE and NOT_REQUESTED cannot establish absence of an event. Request current payment status, complete correlated queue history and the external-core response for the current ECA attempt. A pending P record must not inherit the timeout conclusion of an earlier T record. A null enteredAt means unknown queue age. A refreshed snapshot supersedes evidence for new assessments but preserves historical investigations; reassess before reviewing a proposal based on old evidence. SFMS message acknowledgments and N10 have different meanings: a correctly correlated N10 reports beneficiary credit, whereas an SFMS acknowledgment alone does not establish that credit. This first milestone supplies neither messages nor accounting records, so it cannot assess those events. Request the exact maintenance release and eligible local guidance. Propose REQUEST_EVIDENCE; never infer success, failure or permission to resend from missing records, and never resolve the OBPM case in this milestone.",
+          "source": "Original synthetic NEFT operating guidance; informed by public Oracle documentation",
+          "score": 0.912992
+        }
+      ],
+      "toolCalls": [
+        {
+          "name": "inspect_obpm_queue",
+          "status": "COMPLETED",
+          "durationMs": 0.002,
+          "evidenceIds": [
+            "DEMO-NEFT-0001-e03f9401-QUEUE-001"
+          ]
+        },
+        {
+          "name": "inspect_obpm_eca_requests",
+          "status": "COMPLETED",
+          "durationMs": 0.002,
+          "evidenceIds": [
+            "DEMO-NEFT-0001-e03f9401-REQUEST-001"
+          ]
+        },
+        {
+          "name": "inspect_obpm_coverage",
+          "status": "COMPLETED",
+          "durationMs": 0.002,
+          "evidenceIds": []
+        },
+        {
+          "name": "inspect_obpm_payment",
+          "status": "COMPLETED",
+          "durationMs": 0.001,
+          "evidenceIds": []
+        }
+      ],
+      "metrics": {
+        "durationMs": 31339.904,
+        "retrievalMs": 11.161,
+        "toolCount": 4,
+        "modelCalls": 2,
+        "inputTokens": 923,
+        "outputTokens": 46,
+        "retrievalMode": "lexical",
+        "model": "qwen3:4b-instruct",
+        "assessmentSource": "deterministic-evidence-rules",
+        "synthesisScope": "fact-selection",
+        "modelThreads": 4,
+        "modelContextTokens": 4096,
+        "modelTimeoutSeconds": 180.0,
+        "toolOutputTokenLimit": 384,
+        "synthesisOutputTokenLimit": 384,
+        "toolPlanningScope": "mandatory-evidence-order",
+        "orderedToolNames": [
+          "inspect_obpm_queue",
+          "inspect_obpm_eca_requests",
+          "inspect_obpm_coverage",
+          "inspect_obpm_payment"
+        ],
+        "findingSource": "service-rendered-facts",
+        "factCatalogVersion": 1,
+        "factCatalogHash": "cb407649d50d199cfcf1947ee75ab847f8076d140876fcf2e644d25af129cb5c",
+        "selectedFactIds": [
+          "FACT-OBPM-ECA-TIMEOUT"
+        ],
+        "selectedFactProvenance": [
+          {
+            "id": "FACT-OBPM-ECA-TIMEOUT",
+            "sourceTools": [
+              "inspect_obpm_payment",
+              "inspect_obpm_queue",
+              "inspect_obpm_eca_requests",
+              "inspect_obpm_coverage"
+            ],
+            "evidenceIds": [
+              "DEMO-NEFT-0001-e03f9401-QUEUE-001",
+              "DEMO-NEFT-0001-e03f9401-REQUEST-001"
+            ],
+            "citationIds": [
+              "RB-OBPM-ECA-TIMEOUT:v1"
+            ]
+          }
+        ],
+        "toolSelectionMs": 12709.49,
+        "toolSelectionProvider": {
+          "model": "qwen3:4b-instruct",
+          "created_at": "2026-09-12T10:57:42.422084349Z",
+          "done": true,
+          "done_reason": "stop",
+          "total_duration": 12668133644,
+          "load_duration": 4346217415,
+          "prompt_eval_count": 292,
+          "prompt_eval_duration": 6089839000,
+          "eval_count": 31,
+          "eval_duration": 2214905000,
+          "logprobs": null,
+          "model_name": "qwen3:4b-instruct",
+          "model_provider": "ollama"
+        },
+        "synthesisMs": 18604.899,
+        "synthesisProvider": {
+          "model": "qwen3:4b-instruct",
+          "created_at": "2026-09-12T10:58:01.070235191Z",
+          "done": true,
+          "done_reason": "stop",
+          "total_duration": 18592006918,
+          "load_duration": 1601543,
+          "prompt_eval_count": 631,
+          "prompt_eval_duration": 16487605000,
+          "eval_count": 15,
+          "eval_duration": 2042992000,
+          "logprobs": null,
+          "model_name": "qwen3:4b-instruct",
+          "model_provider": "ollama"
+        }
+      },
+      "warnings": [
+        "Synthetic data only; proposals change case disposition, never payment or ledger balances.",
+        "Original synthetic OBPM NEFT ECA evidence only; no Oracle connection. EC/T records a timeout, not funds availability, block/posting outcome, beneficiary credit or settlement.",
+        "The OBPM model planned the order of four mandatory evidence tools; the service required all four and fixed the authorized case identity. The model cannot omit a required source or execute a banking action.",
+        "Ollama planned diagnostic tools and selected authorized fact IDs. The service rendered the selected facts and supplied their evidence links; no model-authored prose was used. Decisions and all other explanation fields come from deterministic evidence rules. Fact relevance, completeness and source accuracy still require analyst review.",
+        "Lexical retrieval baseline; semantic embeddings are not enabled."
+      ],
+      "caseVersion": 2,
+      "snapshotHash": "14d0cfb55d6d94f1445923bad4f6c3dd14fe6c91c4251e01a9cf9d38c846a52b",
+      "caseSnapshot": {
+        "id": "OBPM-8de8550730090983efba04347b5349bb",
+        "tenantId": "northstar",
+        "paymentId": "DEMO-NEFT-0001-e03f9401",
+        "domain": "OBPM_NEFT",
+        "rail": "NEFT",
+        "title": "NEFT evidence · DEMO-NEFT-0001-e03f9401",
+        "description": "Original synthetic outbound NEFT evidence; investigate its recorded queue state.",
+        "priority": "HIGH",
+        "status": "OPEN",
+        "merchant": "Synthetic OBPM deployment",
+        "amountMinor": 1250000,
+        "currency": "INR",
+        "createdAt": "2026-09-12T05:00:00Z",
+        "updatedAt": "2026-09-12T10:57:29.590155765Z",
+        "policyDate": "2026-09-12",
+        "version": 1,
+        "evidenceVersion": 1,
+        "evidenceHash": "8a10324f01fdf1ff811091591c470f67ce2493f2bac16bb6c34c77993b1e7758",
+        "obpm": {
+          "schemaVersion": "obpm-evidence-v1",
+          "dataClassification": "SYNTHETIC",
+          "snapshotId": "DEMO-NEFT-0001-e03f9401-SNAPSHOT-001",
+          "mappingVersion": "original-synthetic-neft-v1",
+          "extractedAt": "2026-09-12T05:20:00Z",
+          "source": {
+            "deploymentId": "SYNTHETIC-OBPM",
+            "releaseFamily": "14.7",
+            "exactMaintenanceRelease": null,
+            "hostCode": "DEMO-HOST",
+            "branchCode": "DEMO-BRANCH"
+          },
+          "payment": {
+            "sourcePaymentId": "DEMO-NEFT-0001-e03f9401",
+            "rail": "NEFT",
+            "direction": "OUTBOUND",
+            "sourceAmountDecimal": "12500.00",
+            "amountMinor": 1250000,
+            "currency": "INR",
+            "activationDate": "2026-09-12",
+            "createdAt": "2026-09-12T05:00:00Z",
+            "nativeTransactionStatus": null,
+            "statusUnavailableReason": "The synthetic source does not supply payment status."
+          },
+          "queueRecords": [
+            {
+              "evidenceId": "DEMO-NEFT-0001-e03f9401-QUEUE-001",
+              "sourcePaymentId": "DEMO-NEFT-0001-e03f9401",
+              "queueReference": "DEMO-ECA-QUEUE-0001-e03f9401-001",
+              "requestAttemptId": "DEMO-ECA-ATTEMPT-0001-e03f9401-001",
+              "nativeQueueCode": "EC",
+              "nativeResponseStatus": "T",
+              "enteredAt": "2026-09-12T05:01:00Z",
+              "exitedAt": null,
+              "isCurrentQueueRecord": true,
+              "observedAt": "2026-09-12T05:20:00Z"
+            }
+          ],
+          "externalRequestAttempts": [
+            {
+              "evidenceId": "DEMO-NEFT-0001-e03f9401-REQUEST-001",
+              "requestAttemptId": "DEMO-ECA-ATTEMPT-0001-e03f9401-001",
+              "sourcePaymentId": "DEMO-NEFT-0001-e03f9401",
+              "requestType": "ECA",
+              "requestedAt": "2026-09-12T05:00:30Z",
+              "timeoutRecordedAt": "2026-09-12T05:01:00Z",
+              "externalSystemFinalOutcome": null
+            }
+          ],
+          "messages": [],
+          "accountingEntries": [],
+          "sourceCoverage": {
+            "queueRecords": {
+              "status": "COMPLETE",
+              "scope": "DEMO-NEFT-0001-e03f9401 queue records from 05:00 through 05:20 UTC only.",
+              "asOf": "2026-09-12T05:20:00Z",
+              "paginationComplete": true
+            },
+            "messages": {
+              "status": "NOT_REQUESTED",
+              "reason": "This original synthetic slice does not supply message history."
+            },
+            "externalCoreResponses": {
+              "status": "UNAVAILABLE",
+              "reason": "No DDA/core response source is connected in this synthetic example."
+            },
+            "accountingEntries": {
+              "status": "UNAVAILABLE",
+              "reason": "No accounting instruction or posting evidence is supplied."
+            }
+          }
+        },
+        "events": [],
+        "ledgerEntries": [],
+        "webhooks": [],
+        "provider": null,
+        "tags": [
+          "synthetic",
+          "obpm",
+          "neft"
+        ],
+        "reconciliation": {
+          "validMoney": true,
+          "providerAvailable": false,
+          "currency": "INR",
+          "calculatedBy": "java-api",
+          "scope": "OBPM_EVIDENCE",
+          "captureCount": null,
+          "captureMinor": null,
+          "refundMinor": null,
+          "ledgerNetMinor": null,
+          "providerPayoutMinor": null,
+          "discrepancyMinor": null
+        }
+      }
+    },
+    {
+      "outcome": "INSUFFICIENT_EVIDENCE",
+      "summary": "The supplied NEFT ECA evidence does not establish an unambiguous current recorded timeout. Obtain or reconcile the listed source evidence.",
+      "confidence": "INSUFFICIENT",
+      "findings": [],
+      "missingEvidence": [
+        "Obtain the supported current EC/T ECA timeout codes or verified meanings for the supplied native queue/response codes."
+      ],
+      "proposal": {
+        "action": "REQUEST_EVIDENCE",
+        "reason": "Request the listed NEFT evidence for independent review; do not change payment state."
+      },
+      "id": "INV-afceea0b-bfce-492f-968d-bb6419ecda03",
+      "caseId": "OBPM-8de8550730090983efba04347b5349bb",
+      "createdAt": "2026-09-12T10:58:05.023706337Z",
+      "createdBy": "analyst",
+      "mode": "ollama",
+      "status": "AWAITING_REVIEW",
+      "citations": [
+        {
+          "id": "RB-OBPM-ECA-TIMEOUT:v1",
+          "documentId": "RB-OBPM-ECA-TIMEOUT",
+          "version": 1,
+          "title": "NEFT outbound: recorded ECA timeout and next evidence checks",
+          "excerpt": "For this original synthetic OBPM 14.7 outbound NEFT workflow, correlate the payment, current EC queue record and its ECA request attempt. A current T response means that OBPM recorded an ECA timeout. Confirm queue coverage is complete for the declared scope and cutoff and that attempt and observation times agree. A historical timeout does not establish the state of a newer attempt. The recorded timeout does not prove insufficient funds, absence of a DDA amount block, posting failure, beneficiary-credit failure or settlement. Request the authorized external-core outcome for that exact attempt and accounting or message evidence where relevant. Preserve unavailable groups as unknown. Oracle documents ECA Resend for timeout with a new reference and no native authorization step. Retry instead requires a rejected ECA record, cancellation not done and a current activation date; it supports save and authorize. These facts are conditional guidance, not permission to execute either operation. Confirm the exact release, latest state and approved local procedure before recommending recovery. Propose REQUEST_EVIDENCE or an appropriate human case escalation. This milestone cannot resolve an OBPM case or perform payment actions; independent case review changes only the investigation workflow.",
+          "source": "Original synthetic NEFT operating guidance; informed by public Oracle documentation",
+          "score": 1.242778
+        },
+        {
+          "id": "RB-OBPM-EVIDENCE-GAPS:v1",
+          "documentId": "RB-OBPM-EVIDENCE-GAPS",
+          "version": 1,
+          "title": "NEFT outbound: incomplete, unknown or changed evidence",
+          "excerpt": "Preserve native payment and queue codes without guessing their meaning. In this original synthetic OBPM 14.7 outbound NEFT workflow, unmapped codes, partial queue coverage, ambiguous current records, missing attempt correlation or conflicting times require evidence. Name the missing source, identity and cutoff. COMPLETE covers only the declared scope; PARTIAL, UNAVAILABLE and NOT_REQUESTED cannot establish absence of an event. Request current payment status, complete correlated queue history and the external-core response for the current ECA attempt. A pending P record must not inherit the timeout conclusion of an earlier T record. A null enteredAt means unknown queue age. A refreshed snapshot supersedes evidence for new assessments but preserves historical investigations; reassess before reviewing a proposal based on old evidence. SFMS message acknowledgments and N10 have different meanings: a correctly correlated N10 reports beneficiary credit, whereas an SFMS acknowledgment alone does not establish that credit. This first milestone supplies neither messages nor accounting records, so it cannot assess those events. Request the exact maintenance release and eligible local guidance. Propose REQUEST_EVIDENCE; never infer success, failure or permission to resend from missing records, and never resolve the OBPM case in this milestone.",
+          "source": "Original synthetic NEFT operating guidance; informed by public Oracle documentation",
+          "score": 1.215855
+        }
+      ],
+      "toolCalls": [
+        {
+          "name": "inspect_obpm_queue",
+          "status": "COMPLETED",
+          "durationMs": 0.004,
+          "evidenceIds": [
+            "DEMO-NEFT-0001-e03f9401-QUEUE-001",
+            "DEMO-NEFT-0001-e03f9401-QUEUE-002"
+          ]
+        },
+        {
+          "name": "inspect_obpm_eca_requests",
+          "status": "COMPLETED",
+          "durationMs": 0.002,
+          "evidenceIds": [
+            "DEMO-NEFT-0001-e03f9401-REQUEST-001",
+            "DEMO-NEFT-0001-e03f9401-REQUEST-002"
+          ]
+        },
+        {
+          "name": "inspect_obpm_coverage",
+          "status": "COMPLETED",
+          "durationMs": 0.002,
+          "evidenceIds": []
+        },
+        {
+          "name": "inspect_obpm_payment",
+          "status": "COMPLETED",
+          "durationMs": 0.002,
+          "evidenceIds": []
+        }
+      ],
+      "metrics": {
+        "durationMs": 3560.186,
+        "retrievalMs": 6.578,
+        "toolCount": 4,
+        "modelCalls": 1,
+        "inputTokens": 292,
+        "outputTokens": 31,
+        "retrievalMode": "lexical",
+        "model": "qwen3:4b-instruct",
+        "assessmentSource": "deterministic-evidence-rules",
+        "synthesisScope": "skipped-insufficient-evidence",
+        "modelThreads": 4,
+        "modelContextTokens": 4096,
+        "modelTimeoutSeconds": 180.0,
+        "toolOutputTokenLimit": 384,
+        "synthesisOutputTokenLimit": 384,
+        "toolPlanningScope": "mandatory-evidence-order",
+        "orderedToolNames": [
+          "inspect_obpm_queue",
+          "inspect_obpm_eca_requests",
+          "inspect_obpm_coverage",
+          "inspect_obpm_payment"
+        ],
+        "toolSelectionMs": 3535.634,
+        "toolSelectionProvider": {
+          "model": "qwen3:4b-instruct",
+          "created_at": "2026-09-12T10:58:04.954139592Z",
+          "done": true,
+          "done_reason": "stop",
+          "total_duration": 3502559196,
+          "load_duration": 10396053,
+          "prompt_eval_count": 292,
+          "prompt_eval_duration": 148772000,
+          "eval_count": 31,
+          "eval_duration": 3126696000,
+          "logprobs": null,
+          "model_name": "qwen3:4b-instruct",
+          "model_provider": "ollama"
+        }
+      },
+      "warnings": [
+        "Synthetic data only; proposals change case disposition, never payment or ledger balances.",
+        "Original synthetic OBPM NEFT ECA evidence only; no Oracle connection. EC/T records a timeout, not funds availability, block/posting outcome, beneficiary credit or settlement.",
+        "The OBPM model planned the order of four mandatory evidence tools; the service required all four and fixed the authorized case identity. The model cannot omit a required source or execute a banking action.",
+        "Ollama planned diagnostic tools; fact selection was skipped because evidence was insufficient. All explanation text comes from deterministic evidence rules.",
+        "Lexical retrieval baseline; semantic embeddings are not enabled."
+      ],
+      "caseVersion": 4,
+      "snapshotHash": "76c4803c0d9ba1f4ae7e839e5c4d9d73a6936e859e74676c6899b8283db11276",
+      "caseSnapshot": {
+        "id": "OBPM-8de8550730090983efba04347b5349bb",
+        "tenantId": "northstar",
+        "paymentId": "DEMO-NEFT-0001-e03f9401",
+        "domain": "OBPM_NEFT",
+        "rail": "NEFT",
+        "title": "NEFT evidence · DEMO-NEFT-0001-e03f9401",
+        "description": "Original synthetic outbound NEFT evidence; investigate its recorded queue state.",
+        "priority": "HIGH",
+        "status": "OPEN",
+        "merchant": "Synthetic OBPM deployment",
+        "amountMinor": 1250000,
+        "currency": "INR",
+        "createdAt": "2026-09-12T05:00:00Z",
+        "updatedAt": "2026-09-12T10:58:01.206773117Z",
+        "policyDate": "2026-09-12",
+        "version": 3,
+        "evidenceVersion": 2,
+        "evidenceHash": "c6bb2e66aec21d323c021e2ccc35778802d0b5a3c3a5e71bb71fc62467b0aa35",
+        "obpm": {
+          "schemaVersion": "obpm-evidence-v1",
+          "dataClassification": "SYNTHETIC",
+          "snapshotId": "DEMO-NEFT-0001-e03f9401-SNAPSHOT-002",
+          "mappingVersion": "original-synthetic-neft-v1",
+          "extractedAt": "2026-09-12T05:40:00Z",
+          "source": {
+            "deploymentId": "SYNTHETIC-OBPM",
+            "releaseFamily": "14.7",
+            "exactMaintenanceRelease": null,
+            "hostCode": "DEMO-HOST",
+            "branchCode": "DEMO-BRANCH"
+          },
+          "payment": {
+            "sourcePaymentId": "DEMO-NEFT-0001-e03f9401",
+            "rail": "NEFT",
+            "direction": "OUTBOUND",
+            "sourceAmountDecimal": "12500.00",
+            "amountMinor": 1250000,
+            "currency": "INR",
+            "activationDate": "2026-09-12",
+            "createdAt": "2026-09-12T05:00:00Z",
+            "nativeTransactionStatus": null,
+            "statusUnavailableReason": "The synthetic source does not supply payment status."
+          },
+          "queueRecords": [
+            {
+              "evidenceId": "DEMO-NEFT-0001-e03f9401-QUEUE-001",
+              "sourcePaymentId": "DEMO-NEFT-0001-e03f9401",
+              "queueReference": "DEMO-ECA-QUEUE-0001-e03f9401-001",
+              "requestAttemptId": "DEMO-ECA-ATTEMPT-0001-e03f9401-001",
+              "nativeQueueCode": "EC",
+              "nativeResponseStatus": "T",
+              "enteredAt": "2026-09-12T05:01:00Z",
+              "exitedAt": "2026-09-12T05:25:00Z",
+              "isCurrentQueueRecord": false,
+              "observedAt": "2026-09-12T05:40:00Z"
+            },
+            {
+              "evidenceId": "DEMO-NEFT-0001-e03f9401-QUEUE-002",
+              "sourcePaymentId": "DEMO-NEFT-0001-e03f9401",
+              "queueReference": "DEMO-ECA-QUEUE-0001-e03f9401-002",
+              "requestAttemptId": "DEMO-ECA-ATTEMPT-0001-e03f9401-002",
+              "nativeQueueCode": "EC",
+              "nativeResponseStatus": "P",
+              "enteredAt": "2026-09-12T05:25:00Z",
+              "exitedAt": null,
+              "isCurrentQueueRecord": true,
+              "observedAt": "2026-09-12T05:40:00Z"
+            }
+          ],
+          "externalRequestAttempts": [
+            {
+              "evidenceId": "DEMO-NEFT-0001-e03f9401-REQUEST-001",
+              "requestAttemptId": "DEMO-ECA-ATTEMPT-0001-e03f9401-001",
+              "sourcePaymentId": "DEMO-NEFT-0001-e03f9401",
+              "requestType": "ECA",
+              "requestedAt": "2026-09-12T05:00:30Z",
+              "timeoutRecordedAt": "2026-09-12T05:01:00Z",
+              "externalSystemFinalOutcome": null
+            },
+            {
+              "evidenceId": "DEMO-NEFT-0001-e03f9401-REQUEST-002",
+              "requestAttemptId": "DEMO-ECA-ATTEMPT-0001-e03f9401-002",
+              "sourcePaymentId": "DEMO-NEFT-0001-e03f9401",
+              "requestType": "ECA",
+              "requestedAt": "2026-09-12T05:25:00Z",
+              "timeoutRecordedAt": null,
+              "externalSystemFinalOutcome": null
+            }
+          ],
+          "messages": [],
+          "accountingEntries": [],
+          "sourceCoverage": {
+            "queueRecords": {
+              "status": "COMPLETE",
+              "scope": "DEMO-NEFT-0001-e03f9401 queue records from 05:00 through 05:40 UTC only.",
+              "asOf": "2026-09-12T05:40:00Z",
+              "paginationComplete": true
+            },
+            "messages": {
+              "status": "NOT_REQUESTED",
+              "reason": "This original synthetic slice does not supply message history."
+            },
+            "externalCoreResponses": {
+              "status": "UNAVAILABLE",
+              "reason": "No DDA/core response source is connected in this synthetic example."
+            },
+            "accountingEntries": {
+              "status": "UNAVAILABLE",
+              "reason": "No accounting instruction or posting evidence is supplied."
+            }
+          }
+        },
+        "events": [],
+        "ledgerEntries": [],
+        "webhooks": [],
+        "provider": null,
+        "tags": [
+          "synthetic",
+          "obpm",
+          "neft"
+        ],
+        "reconciliation": {
+          "validMoney": true,
+          "providerAvailable": false,
+          "currency": "INR",
+          "calculatedBy": "java-api",
+          "scope": "OBPM_EVIDENCE",
+          "captureCount": null,
+          "captureMinor": null,
+          "refundMinor": null,
+          "ledgerNetMinor": null,
+          "providerPayoutMinor": null,
+          "discrepancyMinor": null
+        }
+      }
+    },
+    {
+      "outcome": "INSUFFICIENT_EVIDENCE",
+      "summary": "The supplied NEFT ECA evidence does not establish an unambiguous current recorded timeout. Obtain or reconcile the listed source evidence.",
+      "confidence": "INSUFFICIENT",
+      "findings": [],
+      "missingEvidence": [
+        "Obtain complete queue history for this payment through a stated cutoff, including pagination and current-record coverage.",
+        "Obtain the supported current EC/T ECA timeout codes or verified meanings for the supplied native queue/response codes."
+      ],
+      "proposal": {
+        "action": "REQUEST_EVIDENCE",
+        "reason": "Request the listed NEFT evidence for independent review; do not change payment state."
+      },
+      "id": "INV-dd9fd749-b848-4577-8ef6-afa11f10687f",
+      "caseId": "OBPM-365d8de7bad969527a95b5678908a685",
+      "createdAt": "2026-09-12T10:58:15.855174105Z",
+      "createdBy": "analyst",
+      "mode": "ollama",
+      "status": "AWAITING_REVIEW",
+      "citations": [
+        {
+          "id": "RB-OBPM-ECA-TIMEOUT:v1",
+          "documentId": "RB-OBPM-ECA-TIMEOUT",
+          "version": 1,
+          "title": "NEFT outbound: recorded ECA timeout and next evidence checks",
+          "excerpt": "For this original synthetic OBPM 14.7 outbound NEFT workflow, correlate the payment, current EC queue record and its ECA request attempt. A current T response means that OBPM recorded an ECA timeout. Confirm queue coverage is complete for the declared scope and cutoff and that attempt and observation times agree. A historical timeout does not establish the state of a newer attempt. The recorded timeout does not prove insufficient funds, absence of a DDA amount block, posting failure, beneficiary-credit failure or settlement. Request the authorized external-core outcome for that exact attempt and accounting or message evidence where relevant. Preserve unavailable groups as unknown. Oracle documents ECA Resend for timeout with a new reference and no native authorization step. Retry instead requires a rejected ECA record, cancellation not done and a current activation date; it supports save and authorize. These facts are conditional guidance, not permission to execute either operation. Confirm the exact release, latest state and approved local procedure before recommending recovery. Propose REQUEST_EVIDENCE or an appropriate human case escalation. This milestone cannot resolve an OBPM case or perform payment actions; independent case review changes only the investigation workflow.",
+          "source": "Original synthetic NEFT operating guidance; informed by public Oracle documentation",
+          "score": 1.242778
+        },
+        {
+          "id": "RB-OBPM-EVIDENCE-GAPS:v1",
+          "documentId": "RB-OBPM-EVIDENCE-GAPS",
+          "version": 1,
+          "title": "NEFT outbound: incomplete, unknown or changed evidence",
+          "excerpt": "Preserve native payment and queue codes without guessing their meaning. In this original synthetic OBPM 14.7 outbound NEFT workflow, unmapped codes, partial queue coverage, ambiguous current records, missing attempt correlation or conflicting times require evidence. Name the missing source, identity and cutoff. COMPLETE covers only the declared scope; PARTIAL, UNAVAILABLE and NOT_REQUESTED cannot establish absence of an event. Request current payment status, complete correlated queue history and the external-core response for the current ECA attempt. A pending P record must not inherit the timeout conclusion of an earlier T record. A null enteredAt means unknown queue age. A refreshed snapshot supersedes evidence for new assessments but preserves historical investigations; reassess before reviewing a proposal based on old evidence. SFMS message acknowledgments and N10 have different meanings: a correctly correlated N10 reports beneficiary credit, whereas an SFMS acknowledgment alone does not establish that credit. This first milestone supplies neither messages nor accounting records, so it cannot assess those events. Request the exact maintenance release and eligible local guidance. Propose REQUEST_EVIDENCE; never infer success, failure or permission to resend from missing records, and never resolve the OBPM case in this milestone.",
+          "source": "Original synthetic NEFT operating guidance; informed by public Oracle documentation",
+          "score": 1.215855
+        }
+      ],
+      "toolCalls": [
+        {
+          "name": "inspect_obpm_queue",
+          "status": "COMPLETED",
+          "durationMs": 0.002,
+          "evidenceIds": [
+            "DEMO-NEFT-0002-e03f9401-QUEUE-001"
+          ]
+        },
+        {
+          "name": "inspect_obpm_eca_requests",
+          "status": "COMPLETED",
+          "durationMs": 0.001,
+          "evidenceIds": [
+            "DEMO-NEFT-0002-e03f9401-REQUEST-001"
+          ]
+        },
+        {
+          "name": "inspect_obpm_coverage",
+          "status": "COMPLETED",
+          "durationMs": 0.002,
+          "evidenceIds": []
+        },
+        {
+          "name": "inspect_obpm_payment",
+          "status": "COMPLETED",
+          "durationMs": 0.002,
+          "evidenceIds": []
+        }
+      ],
+      "metrics": {
+        "durationMs": 10668.912,
+        "retrievalMs": 8.914,
+        "toolCount": 4,
+        "modelCalls": 1,
+        "inputTokens": 293,
+        "outputTokens": 31,
+        "retrievalMode": "lexical",
+        "model": "qwen3:4b-instruct",
+        "assessmentSource": "deterministic-evidence-rules",
+        "synthesisScope": "skipped-insufficient-evidence",
+        "modelThreads": 4,
+        "modelContextTokens": 4096,
+        "modelTimeoutSeconds": 180.0,
+        "toolOutputTokenLimit": 384,
+        "synthesisOutputTokenLimit": 384,
+        "toolPlanningScope": "mandatory-evidence-order",
+        "orderedToolNames": [
+          "inspect_obpm_queue",
+          "inspect_obpm_eca_requests",
+          "inspect_obpm_coverage",
+          "inspect_obpm_payment"
+        ],
+        "toolSelectionMs": 10649.898,
+        "toolSelectionProvider": {
+          "model": "qwen3:4b-instruct",
+          "created_at": "2026-09-12T10:58:15.779028638Z",
+          "done": true,
+          "done_reason": "stop",
+          "total_duration": 10633569241,
+          "load_duration": 1327693,
+          "prompt_eval_count": 293,
+          "prompt_eval_duration": 8090450000,
+          "eval_count": 31,
+          "eval_duration": 2466476000,
+          "logprobs": null,
+          "model_name": "qwen3:4b-instruct",
+          "model_provider": "ollama"
+        }
+      },
+      "warnings": [
+        "Synthetic data only; proposals change case disposition, never payment or ledger balances.",
+        "Original synthetic OBPM NEFT ECA evidence only; no Oracle connection. EC/T records a timeout, not funds availability, block/posting outcome, beneficiary credit or settlement.",
+        "The OBPM model planned the order of four mandatory evidence tools; the service required all four and fixed the authorized case identity. The model cannot omit a required source or execute a banking action.",
+        "Ollama planned diagnostic tools; fact selection was skipped because evidence was insufficient. All explanation text comes from deterministic evidence rules.",
+        "Lexical retrieval baseline; semantic embeddings are not enabled."
+      ],
+      "caseVersion": 2,
+      "snapshotHash": "8aacf3b124e0e7281d6c5e24e2d20996b48b4419d6ecd618c58395ef0da5fe6a",
+      "caseSnapshot": {
+        "id": "OBPM-365d8de7bad969527a95b5678908a685",
+        "tenantId": "northstar",
+        "paymentId": "DEMO-NEFT-0002-e03f9401",
+        "domain": "OBPM_NEFT",
+        "rail": "NEFT",
+        "title": "NEFT evidence · DEMO-NEFT-0002-e03f9401",
+        "description": "Original synthetic outbound NEFT evidence; investigate its recorded queue state.",
+        "priority": "HIGH",
+        "status": "OPEN",
+        "merchant": "Synthetic OBPM deployment",
+        "amountMinor": 87525,
+        "currency": "INR",
+        "createdAt": "2026-09-12T05:00:00Z",
+        "updatedAt": "2026-09-12T10:58:05.096808581Z",
+        "policyDate": "2026-09-12",
+        "version": 1,
+        "evidenceVersion": 1,
+        "evidenceHash": "b44cffa29b1fcba9821fa4b2275acea2c3243ad5616e55806b9a8cc22c83576c",
+        "obpm": {
+          "schemaVersion": "obpm-evidence-v1",
+          "dataClassification": "SYNTHETIC",
+          "snapshotId": "DEMO-NEFT-0002-e03f9401-SNAPSHOT-001",
+          "mappingVersion": "original-synthetic-neft-v1",
+          "extractedAt": "2026-09-12T05:20:00Z",
+          "source": {
+            "deploymentId": "SYNTHETIC-OBPM",
+            "releaseFamily": "14.7",
+            "exactMaintenanceRelease": null,
+            "hostCode": "DEMO-HOST",
+            "branchCode": "DEMO-BRANCH"
+          },
+          "payment": {
+            "sourcePaymentId": "DEMO-NEFT-0002-e03f9401",
+            "rail": "NEFT",
+            "direction": "OUTBOUND",
+            "sourceAmountDecimal": "875.25",
+            "amountMinor": 87525,
+            "currency": "INR",
+            "activationDate": "2026-09-12",
+            "createdAt": "2026-09-12T05:00:00Z",
+            "nativeTransactionStatus": null,
+            "statusUnavailableReason": "The synthetic source does not supply payment status."
+          },
+          "queueRecords": [
+            {
+              "evidenceId": "DEMO-NEFT-0002-e03f9401-QUEUE-001",
+              "sourcePaymentId": "DEMO-NEFT-0002-e03f9401",
+              "queueReference": "DEMO-ECA-QUEUE-0002-e03f9401-001",
+              "requestAttemptId": "DEMO-ECA-ATTEMPT-0002-e03f9401-001",
+              "nativeQueueCode": "EC",
+              "nativeResponseStatus": "DEMO_UNMAPPED",
+              "enteredAt": null,
+              "exitedAt": null,
+              "isCurrentQueueRecord": true,
+              "observedAt": "2026-09-12T05:20:00Z"
+            }
+          ],
+          "externalRequestAttempts": [
+            {
+              "evidenceId": "DEMO-NEFT-0002-e03f9401-REQUEST-001",
+              "requestAttemptId": "DEMO-ECA-ATTEMPT-0002-e03f9401-001",
+              "sourcePaymentId": "DEMO-NEFT-0002-e03f9401",
+              "requestType": "ECA",
+              "requestedAt": "2026-09-12T05:00:30Z",
+              "timeoutRecordedAt": null,
+              "externalSystemFinalOutcome": null
+            }
+          ],
+          "messages": [],
+          "accountingEntries": [],
+          "sourceCoverage": {
+            "queueRecords": {
+              "status": "PARTIAL",
+              "scope": "DEMO-NEFT-0002-e03f9401 queue history through 05:20 UTC; not all pages supplied.",
+              "asOf": "2026-09-12T05:20:00Z",
+              "paginationComplete": false,
+              "reason": "Original synthetic partial-page example; the response code has no approved mapping."
+            },
+            "messages": {
+              "status": "NOT_REQUESTED",
+              "reason": "This original synthetic slice does not supply message history."
+            },
+            "externalCoreResponses": {
+              "status": "UNAVAILABLE",
+              "reason": "No DDA/core response source is connected in this synthetic example."
+            },
+            "accountingEntries": {
+              "status": "UNAVAILABLE",
+              "reason": "No accounting instruction or posting evidence is supplied."
+            }
+          }
+        },
+        "events": [],
+        "ledgerEntries": [],
+        "webhooks": [],
+        "provider": null,
+        "tags": [
+          "synthetic",
+          "obpm",
+          "neft"
+        ],
+        "reconciliation": {
+          "validMoney": true,
+          "providerAvailable": false,
+          "currency": "INR",
+          "calculatedBy": "java-api",
+          "scope": "OBPM_EVIDENCE",
+          "captureCount": null,
+          "captureMinor": null,
+          "refundMinor": null,
+          "ledgerNetMinor": null,
+          "providerPayoutMinor": null,
+          "discrepancyMinor": null
+        }
+      }
+    }
+  ]
+}

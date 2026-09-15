@@ -1,0 +1,644 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Original synthetic NEFT inquiry contract",
+    "version": "1.0.0",
+    "description": "Read-only local mock. No Oracle DB, native table semantics, payment mutations or real bank authentication are implemented."
+  },
+  "servers": [
+    {
+      "url": "http://127.0.0.1:8092"
+    }
+  ],
+  "security": [
+    {
+      "ServiceKey": []
+    }
+  ],
+  "paths": {
+    "/inquiry/v1/neft/payments/{reference}": {
+      "get": {
+        "operationId": "inquireSyntheticNeftPayment",
+        "parameters": [
+          {
+            "name": "reference",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 100,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,99}$"
+            }
+          },
+          {
+            "name": "referenceType",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "const": "PAYMENT_REFERENCE"
+            }
+          },
+          {
+            "name": "deploymentId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "const": "SYNTHETIC-OBPM"
+            }
+          },
+          {
+            "name": "hostCode",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "const": "DEMO-HOST"
+            }
+          },
+          {
+            "name": "branchCode",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "const": "DEMO-BRANCH"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Fixed original synthetic snapshot; repeated reads preserve the source cutoff.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ObpmEvidenceSnapshot"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid reference or missing/duplicate/mismatched scope",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MockError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid service key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MockError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Valid reference not in the fixed catalog",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MockError"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "ServiceKey": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-Service-Key"
+      }
+    },
+    "schemas": {
+      "ObpmIdentifier": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 100,
+        "pattern": "^[A-Za-z0-9._:-]{1,100}$"
+      },
+      "ObpmUtcTimestamp": {
+        "type": "string",
+        "format": "date-time",
+        "pattern": "^(?!0000)[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(\\.[0-9]{1,6})?Z$",
+        "description": "Valid UTC calendar timestamp ending in Z, year 0001-9999, at most six fractional-second digits. Offsets, naive times, leap seconds and finer precision are rejected by Java."
+      },
+      "ObpmDate": {
+        "type": "string",
+        "format": "date",
+        "pattern": "^(?!0000)[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+        "description": "Valid YYYY-MM-DD calendar date, year 0001-9999."
+      },
+      "ObpmSource": {
+        "type": "object",
+        "properties": {
+          "deploymentId": {
+            "type": "string",
+            "const": "SYNTHETIC-OBPM"
+          },
+          "releaseFamily": {
+            "type": "string",
+            "const": "14.7"
+          },
+          "exactMaintenanceRelease": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 200,
+                "pattern": "^(?=.*\\S)[^\\u0000-\\u001f\\u007f-\\u009f]+$"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "hostCode": {
+            "type": "string",
+            "const": "DEMO-HOST"
+          },
+          "branchCode": {
+            "type": "string",
+            "const": "DEMO-BRANCH"
+          }
+        },
+        "required": [
+          "deploymentId",
+          "releaseFamily",
+          "exactMaintenanceRelease",
+          "hostCode",
+          "branchCode"
+        ],
+        "additionalProperties": false,
+        "description": "Only the original synthetic source identity is accepted. exactMaintenanceRelease must be present; null means unknown and does not claim an installed patch."
+      },
+      "ObpmPayment": {
+        "type": "object",
+        "properties": {
+          "sourcePaymentId": {
+            "$ref": "#/components/schemas/ObpmIdentifier"
+          },
+          "rail": {
+            "type": "string",
+            "const": "NEFT"
+          },
+          "direction": {
+            "type": "string",
+            "const": "OUTBOUND"
+          },
+          "sourceAmountDecimal": {
+            "type": "string",
+            "pattern": "^(0|[1-9][0-9]{0,13})(\\.[0-9]{1,2})?$",
+            "description": "Nonnegative decimal INR string, no sign/exponent/leading zeroes except zero. Decimal value times100 must exactly equal amountMinor; cross-field equality is enforced by Java."
+          },
+          "currency": {
+            "type": "string",
+            "const": "INR"
+          },
+          "activationDate": {
+            "$ref": "#/components/schemas/ObpmDate"
+          },
+          "createdAt": {
+            "$ref": "#/components/schemas/ObpmUtcTimestamp"
+          },
+          "nativeTransactionStatus": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 80,
+                "pattern": "^(?=.*\\S)[^\\u0000-\\u001f\\u007f-\\u009f]+$"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "statusUnavailableReason": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 500,
+                "pattern": "^(?=.*\\S)[^\\u0000-\\u001f\\u007f-\\u009f]+$"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "sourcePaymentId",
+          "rail",
+          "direction",
+          "sourceAmountDecimal",
+          "currency",
+          "activationDate",
+          "createdAt",
+          "nativeTransactionStatus"
+        ],
+        "additionalProperties": false,
+        "description": "Logical source payment with exact decimal INR amount. amountMinor is absent and derived by Java. Unknown native state remains explicit.",
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "nativeTransactionStatus": {
+                  "type": "null"
+                }
+              },
+              "required": [
+                "nativeTransactionStatus"
+              ]
+            },
+            "then": {
+              "required": [
+                "statusUnavailableReason"
+              ],
+              "properties": {
+                "statusUnavailableReason": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 500,
+                  "pattern": "^(?=.*\\S)[^\\u0000-\\u001f\\u007f-\\u009f]+$"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "ObpmQueueRecord": {
+        "type": "object",
+        "properties": {
+          "evidenceId": {
+            "$ref": "#/components/schemas/ObpmIdentifier"
+          },
+          "sourcePaymentId": {
+            "$ref": "#/components/schemas/ObpmIdentifier"
+          },
+          "queueReference": {
+            "$ref": "#/components/schemas/ObpmIdentifier"
+          },
+          "requestAttemptId": {
+            "$ref": "#/components/schemas/ObpmIdentifier"
+          },
+          "nativeQueueCode": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80,
+            "pattern": "^(?=.*\\S)[^\\u0000-\\u001f\\u007f-\\u009f]+$"
+          },
+          "nativeResponseStatus": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80,
+            "pattern": "^(?=.*\\S)[^\\u0000-\\u001f\\u007f-\\u009f]+$"
+          },
+          "enteredAt": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ObpmUtcTimestamp"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "exitedAt": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ObpmUtcTimestamp"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "isCurrentQueueRecord": {
+            "type": "boolean"
+          },
+          "observedAt": {
+            "$ref": "#/components/schemas/ObpmUtcTimestamp"
+          }
+        },
+        "required": [
+          "evidenceId",
+          "sourcePaymentId",
+          "queueReference",
+          "requestAttemptId",
+          "nativeQueueCode",
+          "nativeResponseStatus",
+          "isCurrentQueueRecord",
+          "observedAt"
+        ],
+        "additionalProperties": false,
+        "description": "Unknown native queue/response codes are allowed. sourcePaymentId must match payment; requestAttemptId must reference a supplied ECA attempt. queueReference is unique within the snapshot. If enteredAt exists: request<=entry<=observation. Exit requires entry and entry<=exit<=observation; exited records cannot be current. Observations lie between payment creation and extraction. Multiple current flags remain evidence ambiguity for the worker; import does not choose the newest."
+      },
+      "ObpmEcaAttempt": {
+        "type": "object",
+        "properties": {
+          "evidenceId": {
+            "$ref": "#/components/schemas/ObpmIdentifier"
+          },
+          "requestAttemptId": {
+            "$ref": "#/components/schemas/ObpmIdentifier"
+          },
+          "sourcePaymentId": {
+            "$ref": "#/components/schemas/ObpmIdentifier"
+          },
+          "requestType": {
+            "type": "string",
+            "const": "ECA"
+          },
+          "requestedAt": {
+            "$ref": "#/components/schemas/ObpmUtcTimestamp"
+          },
+          "timeoutRecordedAt": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ObpmUtcTimestamp"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "externalSystemFinalOutcome": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 80,
+                "pattern": "^(?=.*\\S)[^\\u0000-\\u001f\\u007f-\\u009f]+$"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "evidenceId",
+          "requestAttemptId",
+          "sourcePaymentId",
+          "requestType",
+          "requestedAt",
+          "externalSystemFinalOutcome"
+        ],
+        "additionalProperties": false,
+        "description": "requestAttemptId is unique. sourcePaymentId must match payment. creation<=requestedAt<=extraction; if present, request<=timeoutRecordedAt<=extraction. externalSystemFinalOutcome must be present, null when unknown; unknown native strings are retained and require evidence instead of inferred completion."
+      },
+      "ObpmCoverage": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "COMPLETE",
+              "PARTIAL",
+              "UNAVAILABLE",
+              "NOT_REQUESTED"
+            ]
+          },
+          "scope": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 500,
+                "pattern": "^(?=.*\\S)[^\\u0000-\\u001f\\u007f-\\u009f]+$"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "asOf": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ObpmUtcTimestamp"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "paginationComplete": {
+            "type": "boolean"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 500,
+                "pattern": "^(?=.*\\S)[^\\u0000-\\u001f\\u007f-\\u009f]+$"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "status"
+        ],
+        "additionalProperties": false,
+        "description": "Completeness is confined to the declared query scope. Non-null asOf cannot exceed extraction. COMPLETE requires nonblank scope, asOf and paginationComplete=true; other states require a nonblank reason. Optional paginationComplete must be a JSON boolean if supplied, never null.",
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "status": {
+                  "const": "COMPLETE"
+                }
+              },
+              "required": [
+                "status"
+              ]
+            },
+            "then": {
+              "required": [
+                "scope",
+                "asOf",
+                "paginationComplete"
+              ],
+              "properties": {
+                "scope": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 500,
+                  "pattern": "^(?=.*\\S)[^\\u0000-\\u001f\\u007f-\\u009f]+$"
+                },
+                "asOf": {
+                  "$ref": "#/components/schemas/ObpmUtcTimestamp"
+                },
+                "paginationComplete": {
+                  "const": true
+                }
+              }
+            },
+            "else": {
+              "required": [
+                "reason"
+              ],
+              "properties": {
+                "reason": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 500,
+                  "pattern": "^(?=.*\\S)[^\\u0000-\\u001f\\u007f-\\u009f]+$"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "ObpmUnsupportedCoverage": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ObpmCoverage"
+          },
+          {
+            "properties": {
+              "status": {
+                "enum": [
+                  "UNAVAILABLE",
+                  "NOT_REQUESTED"
+                ]
+              }
+            }
+          }
+        ],
+        "description": "Messages/accounting are unsupported in this milestone, so their availability must be UNAVAILABLE or NOT_REQUESTED; neither COMPLETE nor PARTIAL is accepted."
+      },
+      "ObpmSourceCoverage": {
+        "type": "object",
+        "properties": {
+          "queueRecords": {
+            "$ref": "#/components/schemas/ObpmCoverage"
+          },
+          "messages": {
+            "$ref": "#/components/schemas/ObpmUnsupportedCoverage"
+          },
+          "externalCoreResponses": {
+            "$ref": "#/components/schemas/ObpmCoverage"
+          },
+          "accountingEntries": {
+            "$ref": "#/components/schemas/ObpmUnsupportedCoverage"
+          }
+        },
+        "required": [
+          "queueRecords",
+          "messages",
+          "externalCoreResponses",
+          "accountingEntries"
+        ],
+        "additionalProperties": false
+      },
+      "ObpmEvidenceSnapshot": {
+        "type": "object",
+        "properties": {
+          "schemaVersion": {
+            "type": "string",
+            "const": "neft-inquiry-v1"
+          },
+          "dataClassification": {
+            "type": "string",
+            "const": "SYNTHETIC"
+          },
+          "snapshotId": {
+            "$ref": "#/components/schemas/ObpmIdentifier"
+          },
+          "mappingVersion": {
+            "const": "original-synthetic-inquiry-v1"
+          },
+          "extractedAt": {
+            "$ref": "#/components/schemas/ObpmUtcTimestamp"
+          },
+          "source": {
+            "$ref": "#/components/schemas/ObpmSource"
+          },
+          "payment": {
+            "$ref": "#/components/schemas/ObpmPayment"
+          },
+          "queueRecords": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ObpmQueueRecord"
+            },
+            "maxItems": 100
+          },
+          "externalRequestAttempts": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ObpmEcaAttempt"
+            },
+            "maxItems": 100
+          },
+          "messages": {
+            "type": "array",
+            "items": {},
+            "maxItems": 0
+          },
+          "accountingEntries": {
+            "type": "array",
+            "items": {},
+            "maxItems": 0
+          },
+          "sourceCoverage": {
+            "$ref": "#/components/schemas/ObpmSourceCoverage"
+          }
+        },
+        "required": [
+          "schemaVersion",
+          "dataClassification",
+          "snapshotId",
+          "mappingVersion",
+          "extractedAt",
+          "source",
+          "payment",
+          "queueRecords",
+          "externalRequestAttempts",
+          "messages",
+          "accountingEntries",
+          "sourceCoverage"
+        ],
+        "additionalProperties": false,
+        "description": "Original synthetic ECA inquiry response, not Oracle physical table rows or an installed Oracle API. Reference correlation, chronology and exact money are additionally checked by Java. Core block, message and accounting extensions remain future work.",
+        "x-max-response-bytes": 131072
+      },
+      "MockError": {
+        "type": "object",
+        "required": [
+          "error"
+        ],
+        "properties": {
+          "error": {
+            "type": "object",
+            "required": [
+              "code",
+              "message"
+            ],
+            "properties": {
+              "code": {
+                "type": "string"
+              },
+              "message": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

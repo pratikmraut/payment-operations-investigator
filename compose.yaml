@@ -1,0 +1,104 @@
+name: payment-operations-investigator
+services:
+  postgres:
+    image: pgvector/pgvector:0.8.6-pg17-trixie
+    environment:
+      POSTGRES_DB: poi
+      POSTGRES_USER: poi
+      POSTGRES_PASSWORD: ${POI_DB_PASSWORD:-poi-local-only}
+      POI_VECTOR_DB_PASSWORD: ${POI_VECTOR_DB_PASSWORD:-poi-vector-local-only}
+    ports: ["127.0.0.1:5438:5432"]
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./infra/postgres/init.sql:/docker-entrypoint-initdb.d/010-vector.sql:ro
+      - ./infra/postgres/020-vector-role.sh:/docker-entrypoint-initdb.d/020-vector-role.sh:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U poi -d poi"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    restart: unless-stopped
+  ollama:
+    image: ollama/ollama:0.34.0
+    profiles: ["ai"]
+    ports: ["127.0.0.1:11438:11434"]
+    environment:
+      OLLAMA_NUM_PARALLEL: "1"
+      OLLAMA_MAX_LOADED_MODELS: "1"
+    volumes: ["ollama-models:/root/.ollama"]
+    restart: unless-stopped
+  investigator:
+    build: ./services/investigator
+    environment:
+      POI_SERVICE_KEY: ${POI_SERVICE_KEY:-poi-local-service-key}
+      POI_MODEL_TIMEOUT_SECONDS: ${POI_MODEL_TIMEOUT_SECONDS:-180}
+      POI_MODEL_THREADS: ${POI_MODEL_THREADS:-4}
+      POI_KNOWLEDGE_PATH: /data/knowledge/runbooks.json
+      POI_CHECKPOINT_PATH: /app/runtime/checkpoints.sqlite
+      POI_RETRIEVAL_MODE: ${POI_RETRIEVAL_MODE:-lexical}
+      POI_VECTOR_DB_URL: ${POI_VECTOR_DB_URL:-postgresql://poi_vectors:poi-vector-local-only@postgres:5432/poi}
+      OLLAMA_BASE_URL: http://ollama:11434
+      OLLAMA_MODEL: ${OLLAMA_MODEL:-qwen3:4b-instruct}
+      OLLAMA_EMBED_MODEL: ${OLLAMA_EMBED_MODEL:-nomic-embed-text:v1.5}
+    ports: ["127.0.0.1:8091:8091"]
+    volumes:
+      - ./data/knowledge:/data/knowledge:ro
+      - investigator-state:/app/runtime
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8091/health', timeout=3)"]
+      interval: 10s
+      timeout: 5s
+      start_period: 20s
+      retries: 12
+    depends_on:
+      postgres: {condition: service_healthy}
+    restart: unless-stopped
+  mock-inquiry:
+    build: ./services/mock-inquiry
+    environment:
+      POI_INQUIRY_SERVICE_KEY: ${POI_INQUIRY_SERVICE_KEY:-poi-local-inquiry-key}
+      POI_INQUIRY_DATA_DIR: /app/data/inquiry
+    ports: ["127.0.0.1:8092:8092"]
+    volumes:
+      - ./data/obpm/inquiry:/app/data/inquiry:ro
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8092/health', timeout=3)"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+    restart: unless-stopped
+  api:
+    build: ./services/api
+    environment:
+      SPRING_PROFILES_ACTIVE: postgres
+      POI_DB_URL: jdbc:postgresql://postgres:5432/poi
+      POI_DB_USER: poi
+      POI_DB_PASSWORD: ${POI_DB_PASSWORD:-poi-local-only}
+      POI_WORKER_URL: http://investigator:8091
+      POI_WORKER_TIMEOUT_SECONDS: ${POI_WORKER_TIMEOUT_SECONDS:-390}
+      POI_SERVICE_KEY: ${POI_SERVICE_KEY:-poi-local-service-key}
+      POI_FIXTURES: /data/cases.json
+      POI_OBPM_SAMPLES: /data/obpm/samples
+      POI_OBPM_INQUIRY_ENABLED: ${POI_OBPM_INQUIRY_ENABLED:-true}
+      POI_OBPM_INQUIRY_URL: http://mock-inquiry:8092
+      POI_INQUIRY_SERVICE_KEY: ${POI_INQUIRY_SERVICE_KEY:-poi-local-inquiry-key}
+      POI_OBPM_INQUIRY_TIMEOUT_SECONDS: ${POI_OBPM_INQUIRY_TIMEOUT_SECONDS:-5}
+      POI_DATASET_VERSION: synthetic-payments-v1
+      POI_DEMO_PASSWORD: ${POI_DEMO_PASSWORD:-demo-pass-local}
+    ports: ["127.0.0.1:8088:8088"]
+    volumes:
+      - ./data/fixtures/cases.json:/data/cases.json:ro
+      - ./data/obpm:/data/obpm:ro
+    depends_on:
+      postgres: {condition: service_healthy}
+      investigator: {condition: service_healthy}
+    restart: unless-stopped
+  web:
+    build: ./apps/web
+    ports: ["127.0.0.1:5178:80"]
+    depends_on: [api]
+    restart: unless-stopped
+volumes:
+  postgres-data:
+  investigator-state:
+  ollama-models:

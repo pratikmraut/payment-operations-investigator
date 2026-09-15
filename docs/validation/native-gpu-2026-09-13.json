@@ -1,0 +1,149 @@
+{
+  "schemaVersion": "native-gpu-final-validation-v1",
+  "date": "2026-09-13",
+  "hardware": {
+    "cpu": "Intel Core Ultra 7 268V",
+    "gpu": "Intel Arc 140V integrated GPU",
+    "driver": "32.0.101.8724",
+    "systemRamGiB": 31.57,
+    "backend": "Vulkan",
+    "offloadedLayers": 37,
+    "totalLayers": 37,
+    "gpuAllocatedBytes": 9952873676,
+    "dedicatedVramEstablished": false
+  },
+  "model": {
+    "name": "qwen3:8b",
+    "digest": "500a1f067a9f782620b40bee6f7b0c89e17ae61f686b92c24933e4ca4b2b8b41",
+    "quantization": "Q4_K_M",
+    "ollamaVersion": "0.34.0",
+    "contextTokens": 32768,
+    "maxOutputTokens": 1400
+  },
+  "comparison": {
+    "historicalCpuMs": 640306,
+    "directGpuMs": 101750,
+    "directReductionPercent": 84.11,
+    "directSpeedup": 6.29,
+    "websiteDisplayedModelMs": 109101,
+    "websiteReductionPercent": 82.96,
+    "websiteSpeedup": 5.87,
+    "separatelyInstrumentedBrowserRoundTripMs": null,
+    "baselineInputCanonicallyMatches": true,
+    "inputTokens": 6474,
+    "cpuOutputTokens": 460,
+    "gpuOutputTokens": 475
+  },
+  "website": {
+    "url": "http://127.0.0.1:5179/#/uat-evidence",
+    "provider": "ollama",
+    "mode": "model-generated",
+    "actualCalls": 1,
+    "inputHash": "bf572accb04663f58b475bebb296e43d64dbd87a5fbeab7a635b12c52c5a0977",
+    "answerReceiptSha256": "a04abbd1c401b679076f4f4c71ab060d1ad210f86f6d757f7b880bd9830c63df",
+    "modelUnloadedAfterAnswer": true,
+    "experimentalWarningRetained": true
+  },
+  "privacy": {
+    "cloudInferenceCalls": 0,
+    "rawUatDataPublished": false,
+    "privateAnswerTextPublished": false
+  },
+  "validation": {
+    "fullAnswerSemanticStatus": "failed-full-evidence-review",
+    "benchmarkOfflineTests": 32,
+    "lifecycleOfflineGuardsPerShell": 40,
+    "lifecycleShells": [
+      "PowerShell 7.6.5",
+      "Windows PowerShell 5.1"
+    ],
+    "nativeCookieUnitTests": 6,
+    "httpAuthChecks": 11,
+    "typeCheck": "passed",
+    "nativeFrontendBuild": "passed",
+    "browserAnswerFlow": "passed",
+    "wholeProjectSuiteRerun": false
+  },
+  "protectedBaselineFiles": [
+    {
+      "path": "compose.yaml",
+      "sha256": "1aa7a14db8f6a52b2170d0a1d6227f40bd2f385f2eabae75b47754fc6df0586a",
+      "unchanged": true
+    },
+    {
+      "path": "infra/compose.uat-qa.yaml",
+      "sha256": "58b9cb1ec6bc6736929ab42efde9e4d7cfc7a8674a355e2f5b877d9f34e3586b",
+      "unchanged": true
+    },
+    {
+      "path": "services/investigator/investigator/uat_answer.py",
+      "sha256": "bcea6c6042c2afd376cc8cc56a1be661142555db8765fc9d5116415a5240312c",
+      "unchanged": true
+    },
+    {
+      "path": "services/investigator/investigator/config.py",
+      "sha256": "28599f491e7295cba122c6c0b7f14dcf92f67dd00c6c1557ccae263a1d7cf4fd",
+      "unchanged": true
+    },
+    {
+      "path": "services/investigator/investigator/main.py",
+      "sha256": "e0a1438cd019370282cce0a7b472f289b12cb30b032b64978708e6e93cd2a296",
+      "unchanged": true
+    },
+    {
+      "path": "apps/web/src/UatEvidence.tsx",
+      "sha256": "af3616e6efd6cd36dc8df38534aeb6c7567c9e051b858431f88bb7295842a7fa",
+      "unchanged": true
+    },
+    {
+      "path": "services/api/src/main/java/dev/pratik/poi/UatService.java",
+      "sha256": "a8732a80e7c88381a8646eff75a51f379c1f1b27e32b246b788af1f1ac6c75c1",
+      "unchanged": true
+    },
+    {
+      "path": "services/api/src/main/java/dev/pratik/poi/UatWorkerClient.java",
+      "sha256": "232d3b2b5907b5ea7924feaaa5d068c6551e8a4af6092dace5ad4da69525c1f4",
+      "unchanged": true
+    },
+    {
+      "path": "services/api/src/main/java/dev/pratik/poi/UatController.java",
+      "sha256": "84cbf6e26e694a420efa361411a4c535d3949ce4e2b18cde11cdbf3546109b2e",
+      "unchanged": true
+    }
+  ],
+  "limits": [
+    "Historical CPU and fresh native GPU runs were not simultaneous controlled trials.",
+    "One full benchmark and one website request do not establish p50/p95 or accuracy rates.",
+    "Website duration is reported model-generation wall time, not separately instrumented browser round-trip time.",
+    "Synthetic warm request reused cached prompt work.",
+    "Integrated graphics uses shared system memory."
+  ],
+  "lifecycle": {
+    "Reuse": "already-running",
+    "Stop": "stopped",
+    "NativeWebApiWorkerListenersAfterStop": 0,
+    "IndependentlyStartedOllamaPreserved": true,
+    "CpuWebsiteHttpStatusAfterStop": 200,
+    "Restart": "ready",
+    "NativeListeners": [
+      {
+        "LocalAddress": "127.0.0.1",
+        "LocalPort": 11435
+      },
+      {
+        "LocalAddress": "127.0.0.1",
+        "LocalPort": 8093
+      },
+      {
+        "LocalAddress": "127.0.0.1",
+        "LocalPort": 8089
+      },
+      {
+        "LocalAddress": "127.0.0.1",
+        "LocalPort": 5179
+      }
+    ],
+    "SavedAnswerSha256UnchangedAfterRestart": true,
+    "LoadedModelsAfterRestart": 0
+  }
+}

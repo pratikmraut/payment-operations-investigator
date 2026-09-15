@@ -1,0 +1,79 @@
+{
+  "recordedAt": "2026-09-12T10:58:11.697020+00:00",
+  "status": "PASS_WITH_DOCUMENTED_LIMITATIONS",
+  "scope": "Post-copy read-only browser recheck, not a rerun of the prior 16-check workflow.",
+  "url": "http://127.0.0.1:5178/#/cases/OBPM-01267fa9f71b0442424f74c232386c8f",
+  "caseId": "OBPM-01267fa9f71b0442424f74c232386c8f",
+  "investigationId": "INV-1cb49f89-d209-48cb-945a-9ed08bc5034a",
+  "finalState": "AWAITING_REVIEW",
+  "evidenceVersion": 1,
+  "runningWebImageId": "sha256:ce018424d275f4cf051283f0fca95311e603f17240c51c5e86699f0569827312",
+  "runningWebContainerId": "17fe3fb1175453ae1ea2eafb65f3b155f19be860243cb1457c81486d9dc86797",
+  "servedBundle": {
+    "path": "/assets/index-DWrrXBGX.js",
+    "sha256": "b4249be6d5c6ebe2c59336d729e01d4218eafdd42048549ada5cd46975cc29aa",
+    "browserObservedPath": true,
+    "hashSource": "Actual network-isolated packaged-file sha256sum matched native dist; Docker inspect confirmed deployment."
+  },
+  "currentChecks": [
+    {
+      "id": "served-bundle",
+      "status": "PASS",
+      "observation": "Actual browser DOM script src is /assets/index-DWrrXBGX.js; Docker inspect confirms running image ce018424d275."
+    },
+    {
+      "id": "source-timestamp-label",
+      "status": "PASS",
+      "observation": "Banking summary directly renders Payment created (source), with 12 Sept, 10:30 local display of source 05:00Z."
+    },
+    {
+      "id": "preserved-original-case",
+      "status": "PASS",
+      "observation": "Original timeout case remains Awaiting Review, Evidence v1, Investigations 1, Audit trail 2. No new import, investigation or decision performed."
+    }
+  ],
+  "currentPassedChecks": 3,
+  "priorFullWorkflow": {
+    "receipt": "obpm-browser-pre-copy.json",
+    "sha256": "b3c20a78db9445e31bb43cb723cee269b0a7caae756ca47c9207379f5588c48b",
+    "passedChecks": 16,
+    "imageId": "sha256:35b1bb4a44220395f791d7d6b1816d03a7eb51af552ceec0348cdf55e79b28b6",
+    "rerun": false,
+    "coverage": "Original import/queue retention, bank evidence, raw codes, unknowns and cutoff age, coverage and version history, replay, sources, keyboard focus, tool trace and independent review gate and desktop isolation."
+  },
+  "firstInvestigationHelper": {
+    "status": "verified-by-component-test-and-bundle",
+    "text": "Run an investigation to connect banking queue records, ECA request attempts, source coverage, and operating guidance.",
+    "componentSuitePassed": 44,
+    "directlyObservedInPostDeployBrowser": false,
+    "reason": "All existing banking cases have saved investigations; coordinator requested no additional original import merely for this label."
+  },
+  "authorizationResolution": {
+    "initialRejection": {
+      "status": "blocked-by-automatic-approval-review",
+      "runningImageId": "sha256:35b1bb4a44220395f791d7d6b1816d03a7eb51af552ceec0348cdf55e79b28b6",
+      "pendingImageId": "sha256:ce018424d275f4cf051283f0fca95311e603f17240c51c5e86699f0569827312",
+      "reason": "Automatic review described latest retag and web restart as unrequested deployment beyond build/QA scope. No retag or restart executed. Root is resolving recorded authorization; no workaround or retry by this agent."
+    },
+    "resolution": "Coordinator reported resubmitting the same web deployment to automatic review with original user coding authorization, earlier approved loopback deployment and verified candidate evidence. Review approved it; same web-only operation executed, not a bypass."
+  },
+  "screenshots": {
+    "currentLocalFiles": [],
+    "historicalInlineImage": {
+      "caption": "Bank evidence and Replay result",
+      "delivery": "Emitted inline from actual CUA screenshot; not saved as a local file",
+      "localPath": null,
+      "mimeType": "image/jpeg",
+      "bytes": 133502,
+      "sha256": "b6dbc1fc9ed8dfbaf0039d180fdc1acffc093e98febf0c568617729762788f9a",
+      "hashMethod": "SHA256 computed over actual returned Uint8Array; helper verified against standard empty-message SHA256; JPEG FF D8 FF E0 signature observed."
+    },
+    "note": "Actual earlier image is preserved in conversation output and its digest in prior receipt; no current local screenshot claim."
+  },
+  "limitations": [
+    "No new functional replay or model call was made for copy verification.",
+    "Initial helper was checked through the existing meaningful component test and packaged bundle, not a new empty-case browser state.",
+    "No local screenshot export was performed; prior actual inline image provenance remains scoped to its earlier image.",
+    "Real Oracle schema/release mapping and connection are unverified."
+  ]
+}

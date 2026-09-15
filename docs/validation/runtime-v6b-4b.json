@@ -1,0 +1,232 @@
+{
+  "capturedAt": "2026-09-11T23:11:50.793381+00:00",
+  "status": "running",
+  "services": [
+    {
+      "service": "api",
+      "containerId": "7246a208e68f5b396fc9b4ac193b0585df40071b86cd070eebbf57ecf2ddbedd",
+      "image": "payment-operations-investigator-api",
+      "imageId": "sha256:f2b77ca3b3fd9b062d26ad120b8cd5ac713bdb22424c7eea7fa45240261f88fe",
+      "startedAt": "2026-09-11T22:56:23.25622556Z",
+      "running": true,
+      "health": null,
+      "ports": {
+        "8088/tcp": [
+          {
+            "HostIp": "127.0.0.1",
+            "HostPort": "8088"
+          }
+        ]
+      },
+      "selectedNonSecretEnvironment": [
+        "POI_WORKER_TIMEOUT_SECONDS=390"
+      ]
+    },
+    {
+      "service": "investigator",
+      "containerId": "f6f3664f98d6a2a888fb710a82fdf33ca1e2d488b44f2bf68f5dfaddce01e5d4",
+      "image": "payment-operations-investigator-investigator",
+      "imageId": "sha256:ae5b391eb19a902d8b20c65ea170783555b37f998502e15adb1cb008bc3dd505",
+      "startedAt": "2026-09-11T23:11:31.523255452Z",
+      "running": true,
+      "health": "healthy",
+      "ports": {
+        "8091/tcp": [
+          {
+            "HostIp": "127.0.0.1",
+            "HostPort": "8091"
+          }
+        ]
+      },
+      "selectedNonSecretEnvironment": [
+        "OLLAMA_EMBED_MODEL=nomic-embed-text:v1.5",
+        "OLLAMA_MODEL=qwen3:4b-instruct",
+        "POI_MODEL_THREADS=4",
+        "POI_MODEL_TIMEOUT_SECONDS=180",
+        "POI_RETRIEVAL_MODE=lexical"
+      ]
+    },
+    {
+      "service": "ollama",
+      "containerId": "4f6c76fdd9ef312ebad8ae76e84336da0038a96ef5fb9dcefe0cb1b928765aab",
+      "image": "ollama/ollama:0.34.0",
+      "imageId": "sha256:684d8674b4315fa18f4f0e973a118ec2652ed96f67563277839985175858e0ba",
+      "startedAt": "2026-09-11T18:40:59.296140216Z",
+      "running": true,
+      "health": null,
+      "ports": {
+        "11434/tcp": [
+          {
+            "HostIp": "127.0.0.1",
+            "HostPort": "11438"
+          }
+        ]
+      },
+      "selectedNonSecretEnvironment": [
+        "OLLAMA_MAX_LOADED_MODELS=1",
+        "OLLAMA_NUM_PARALLEL=1"
+      ]
+    },
+    {
+      "service": "postgres",
+      "containerId": "87cbbb327b98ec28d6c49ba47b44819f294985ecc78898b201fb2f9d5acf676f",
+      "image": "pgvector/pgvector:0.8.6-pg17-trixie",
+      "imageId": "sha256:724a4041afdb1750446e3f6b5cfa8f3b0ac5a2cf538ddfa6bfee4f94c2fa85c6",
+      "startedAt": "2026-09-11T19:43:36.211821154Z",
+      "running": true,
+      "health": "healthy",
+      "ports": {
+        "5432/tcp": [
+          {
+            "HostIp": "127.0.0.1",
+            "HostPort": "5438"
+          }
+        ]
+      },
+      "selectedNonSecretEnvironment": []
+    },
+    {
+      "service": "web",
+      "containerId": "379d1b027256129df10fc81bc0516116ccf69407c501bf882acaa2767296b21f",
+      "image": "payment-operations-investigator-web",
+      "imageId": "sha256:ab12ff1818841ed981deff5ede030b40bdbae6dc2c4fe8fb2d64445729c6aaa8",
+      "startedAt": "2026-09-11T22:33:21.866142717Z",
+      "running": true,
+      "health": null,
+      "ports": {
+        "80/tcp": [
+          {
+            "HostIp": "127.0.0.1",
+            "HostPort": "5178"
+          }
+        ]
+      },
+      "selectedNonSecretEnvironment": []
+    }
+  ],
+  "downloadedModels": {
+    "models": [
+      {
+        "name": "qwen3:8b",
+        "model": "qwen3:8b",
+        "modified_at": "2026-09-11T21:42:16.570437291Z",
+        "size": 5225388164,
+        "digest": "500a1f067a9f782620b40bee6f7b0c89e17ae61f686b92c24933e4ca4b2b8b41",
+        "details": {
+          "parent_model": "",
+          "format": "gguf",
+          "family": "qwen3",
+          "families": [
+            "qwen3"
+          ],
+          "parameter_size": "8.2B",
+          "quantization_level": "Q4_K_M",
+          "context_length": 40960,
+          "embedding_length": 4096
+        },
+        "capabilities": [
+          "completion",
+          "tools",
+          "thinking"
+        ]
+      },
+      {
+        "name": "qwen3:4b-instruct",
+        "model": "qwen3:4b-instruct",
+        "modified_at": "2026-09-11T18:55:19.455692817Z",
+        "size": 2497293803,
+        "digest": "0edcdef34593eac1aa2be9c7d06c432dcf81945adca5eca2f27662c18f168ba0",
+        "details": {
+          "parent_model": "",
+          "format": "gguf",
+          "family": "qwen3",
+          "families": [
+            "qwen3"
+          ],
+          "parameter_size": "4.0B",
+          "quantization_level": "Q4_K_M",
+          "context_length": 262144,
+          "embedding_length": 2560
+        },
+        "capabilities": [
+          "completion",
+          "tools"
+        ]
+      },
+      {
+        "name": "nomic-embed-text:v1.5",
+        "model": "nomic-embed-text:v1.5",
+        "modified_at": "2026-09-11T18:51:30.043723825Z",
+        "size": 274302450,
+        "digest": "0a109f422b47e3a30ba2b10eca18548e944e8a23073ee3f3e947efcf3c45e59f",
+        "details": {
+          "parent_model": "",
+          "format": "gguf",
+          "family": "nomic-bert",
+          "families": [
+            "nomic-bert"
+          ],
+          "parameter_size": "137M",
+          "quantization_level": "F16",
+          "context_length": 2048,
+          "embedding_length": 768
+        },
+        "capabilities": [
+          "embedding"
+        ]
+      }
+    ]
+  },
+  "workerHealth": {
+    "status": "UP",
+    "service": "investigator",
+    "supportedModes": [
+      "replay",
+      "ollama"
+    ],
+    "retrievalMode": "lexical",
+    "vectorStorage": "disabled",
+    "liveModelConfigured": "qwen3:4b-instruct",
+    "limitations": [
+      "Health does not assert an Ollama server/model or vector database is available.",
+      "SQLite graph execution is serialized for this local deployment."
+    ]
+  },
+  "apiHealthViaNginx": {
+    "status": "UP",
+    "mode": "synthetic",
+    "service": "payment-operations-api"
+  },
+  "servedFrontend": {
+    "javascriptAsset": "/assets/index-BV_8yNgi.js",
+    "sha256": "713e126cec613968c1ea71bee10d0ef278f7290829ce030daa1d9bdb3d2ebfb0"
+  },
+  "runningWorkerModuleSha256": {
+    "investigator/__init__.py": "b5391400f0a9c6a6d4f0d8913021edf256e87d0577fa86146ae489bd45bf2173",
+    "investigator/config.py": "d660f8ce92e00ef8a7a00dd3790f6fa8cf3f5e2b46f698ab057ef453fd6024b0",
+    "investigator/errors.py": "e57dde3e04b0f9cd31bfd827d5193f6e331251bf52a1a0c09a29ff2c285a4469",
+    "investigator/evidence.py": "3d0ef74b64bd528bf966918d3ee9f58175a9c00868fbf89caeb9457f3bfd95b0",
+    "investigator/facts.py": "a7745c344efb3100c8b6a762b9c073e0f45804b0f5c95f0e90b373c5001d6bb4",
+    "investigator/graph.py": "b1116509b1ffdf5157a878e772d37421d7a6508afc5dd0904f22383cd1b01180",
+    "investigator/main.py": "8ed3dcb86e2c8facad9f54c20a31ce4f6c418fa759e95ee3e14c906d3c4509a0",
+    "investigator/models.py": "0ad10f8f8d65472d20d2da366643472d02d6aae23e395da4ecda6e32b071ea89",
+    "investigator/retrieval.py": "06e1c41d73daaef156c78905e9112f9adcc84d723f7f97dd080a275ab28f0c19",
+    "investigator/vector_store.py": "d1fc0b89efb7c9bcc62b57a2c5cce10e623a719724efb7c30380c979d11358bb"
+  },
+  "localConfigurationSha256": {
+    "compose.yaml": "2b8eba29148e1b7482de71d7bd1b273c3f92068674c07ab58a9add7137f77d0f",
+    ".env.example": "727b515edf21132810ec5447bbf0da0b188499ea3bb038125fe1c03a6a8d9a98",
+    "services/api/src/main/resources/application.yml": "146b963afec6522512ed8db054041b944eedc95e7bfce50901816741297b75df",
+    "apps/web/nginx.conf": "b3f39e28e4e295e02b88f6e22ced7c8ccfeb39b9a4e659566ae9bde5b897e0c7",
+    "apps/web/vite.config.ts": "33666f715738218ce6f0fb1661a64bffcbccd06112b97b7ab4f6971d4a6db5ab",
+    "services/investigator/investigator/config.py": "d660f8ce92e00ef8a7a00dd3790f6fa8cf3f5e2b46f698ab057ef453fd6024b0",
+    "services/investigator/investigator/graph.py": "b1116509b1ffdf5157a878e772d37421d7a6508afc5dd0904f22383cd1b01180",
+    "services/investigator/requirements.txt": "fd3bc3e05ba5925401cd18b051428f582e17fd4543e378c9aa69e8edf25bf4e2"
+  },
+  "limitations": [
+    "Read-only deployment/configuration snapshot; live inference and workflow results are separate evidence.",
+    "Health does not assert model availability. Model tags describe files present at capture.",
+    "Only an allowlist of non-secret environment values is included.",
+    "Running worker module hashes were read inside its current container; frontend hash was read through nginx."
+  ]
+}

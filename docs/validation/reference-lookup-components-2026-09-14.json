@@ -1,0 +1,15 @@
+{
+  "javaTests": 134,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "matchedSourceFiles": 42,
+  "preservedModelRuntimeFiles": 7,
+  "jarSha256": "EADF6E29BB03BDE8E5ECF5105D614C832A905594BC95C25A4F334922A17750F6",
+  "frontendAsset": "index-DCI_MQf0.js",
+  "evidenceUiTests": 21,
+  "discoveryRoutingObpmUiTests": 37,
+  "liveHttpScenarioGroups": 8,
+  "bankCalls": 0,
+  "modelCalls": 0
+}

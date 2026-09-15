@@ -1,0 +1,20 @@
+{
+  "date": "2026-09-13",
+  "scope": "Restore original appearance and keep CPU demo stopped during normal GPU operation",
+  "gpuWebsite": "http://127.0.0.1:5178/#/uat-evidence",
+  "extraHeaderRemoved": true,
+  "originalAppAndStylesUsedDirectly": true,
+  "protectedSourceFilesUnchanged": 9,
+  "frontendTypeCheck": "passed",
+  "frontendBuild": "passed",
+  "cpuStopOfflineChecks": 9,
+  "runningCpuContainersAfterStop": 0,
+  "gpuApiHealth": "UP",
+  "gpuWorkerHealth": "UP",
+  "nativeOllamaVersion": "0.34.0",
+  "gpuRuntimeConfigurationChanged": false,
+  "newInferenceCalls": 0,
+  "cpuDataAndModelsDeleted": false,
+  "browserHeaderAbsent": true,
+  "browserSignedInEvidencePage": true
+}

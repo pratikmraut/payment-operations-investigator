@@ -1,0 +1,40 @@
+{
+  "files.exclude": {
+    "**/node_modules": true,
+    "**/.venv": true,
+    "**/__pycache__": true,
+    "**/.pytest_cache": true,
+    "**/target": true,
+    "**/dist": true,
+    "**/runtime": true,
+    "**/.runtime": true,
+    "**/*.log": true,
+    "**/*.tsbuildinfo": true
+  },
+  "search.exclude": {
+    "**/node_modules/**": true,
+    "**/.venv/**": true,
+    "**/runtime/**": true,
+    "**/target/**": true,
+    "**/dist/**": true
+  },
+  "python.defaultInterpreterPath": "${workspaceFolder}/services/investigator/.venv",
+  "python.analysis.extraPaths": [
+    "${workspaceFolder}/services/investigator"
+  ],
+  "python.analysis.exclude": [
+    "**/node_modules",
+    "**/.venv",
+    "**/runtime",
+    "**/target",
+    "**/dist"
+  ],
+  "python.testing.cwd": "${workspaceFolder}/services/investigator",
+  "python.testing.pytestEnabled": true,
+  "python.testing.unittestEnabled": false,
+  "python.testing.pytestArgs": [
+    "tests",
+    "--basetemp=runtime/pytest-vscode"
+  ],
+  "python.testing.autoTestDiscoverOnSaveEnabled": false
+}

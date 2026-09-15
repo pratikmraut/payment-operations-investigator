@@ -1,0 +1,17 @@
+# Optional private local export-review workspace. No database connector.
+services:
+  api:
+    environment:
+      POI_UAT_BUNDLE_DIR: /data/uat/bundles
+      POI_UAT_RESULT_DIR: /data/uat/answers
+      POI_UAT_WORKER_TIMEOUT_SECONDS: "930"
+    volumes:
+      - ./runtime/obpm-uat/private/qa/bundles:/data/uat/bundles:ro
+      - ./runtime/obpm-uat/private/qa/answers:/data/uat/answers
+  investigator:
+    environment:
+      POI_UAT_MODEL: "qwen3:8b"
+      POI_UAT_CONTEXT_TOKENS: "32768"
+      POI_UAT_OUTPUT_TOKENS: "1400"
+      POI_UAT_MODEL_TIMEOUT_SECONDS: "900"
+      POI_UAT_MODEL_KEEP_ALIVE_SECONDS: "1800"

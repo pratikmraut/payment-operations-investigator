@@ -1,0 +1,222 @@
+{
+  "startedAt": "2026-09-11T22:13:52.421798+00:00",
+  "timestamp": "2026-09-11T22:16:57.394107+00:00",
+  "workerUrl": "http://127.0.0.1:8091",
+  "clientTimeoutSeconds": 430,
+  "localSourceSha256": {
+    "services/investigator/investigator/__init__.py": "b5391400f0a9c6a6d4f0d8913021edf256e87d0577fa86146ae489bd45bf2173",
+    "services/investigator/investigator/config.py": "d660f8ce92e00ef8a7a00dd3790f6fa8cf3f5e2b46f698ab057ef453fd6024b0",
+    "services/investigator/investigator/errors.py": "e57dde3e04b0f9cd31bfd827d5193f6e331251bf52a1a0c09a29ff2c285a4469",
+    "services/investigator/investigator/evidence.py": "f105bc5f4adff43600e19365f1ae269f1237d30d0acf1495514d5b8815d6d28e",
+    "services/investigator/investigator/graph.py": "8951ccde55219be9491b0a5d7b2613a0c7e14d1b99517d8698137e325578b450",
+    "services/investigator/investigator/main.py": "8ed3dcb86e2c8facad9f54c20a31ce4f6c418fa759e95ee3e14c906d3c4509a0",
+    "services/investigator/investigator/models.py": "5f50af89b85052cb79d6bcfdde6e89b5c81614c3045f66735ad3522dcc6daed2",
+    "services/investigator/investigator/retrieval.py": "06e1c41d73daaef156c78905e9112f9adcc84d723f7f97dd080a275ab28f0c19",
+    "services/investigator/investigator/vector_store.py": "d1fc0b89efb7c9bcc62b57a2c5cce10e623a719724efb7c30380c979d11358bb",
+    "tools/evaluate.py": "e83a8cfc601ea2351667206f1dbc14d1b2a6865fd19ce90c16ad7362de3eb5eb",
+    "services/investigator/requirements.txt": "fd3bc3e05ba5925401cd18b051428f582e17fd4543e378c9aa69e8edf25bf4e2"
+  },
+  "localSourcesUnchanged": true,
+  "sourceProvenanceLimit": "Local source hashes are a reference snapshot; match them with the separately verified worker image/test receipt before attributing a remote worker run to these files.",
+  "split": "development",
+  "mode": "ollama",
+  "sampleSize": 1,
+  "sampleSelection": "explicitly selected development cases; diagnostic selection, not independent accuracy",
+  "datasetManifestSha256": "b467da9818fd0813665e06301b7ea5940b61d94c54ce04e3d34b1dc31223e140",
+  "rates": {
+    "outcomeCorrect": 1.0,
+    "actionCorrect": 1.0,
+    "relevantCitationRetrieved": 1.0,
+    "abstentionCorrect": 1.0,
+    "evidenceReferencesValid": 1.0
+  },
+  "latencyMs": {
+    "p50": 184964.678,
+    "p95": 184964.678
+  },
+  "latencyQuantileMethod": "Lower order statistic at floor((n - 1) * p); includes failed attempts and is descriptive only.",
+  "failures": 0,
+  "modelCalls": 2,
+  "acceptedResultModelCalls": 2,
+  "failedRequestModelCalls": "no unreported failed-model usage",
+  "limitations": [
+    "Template variants share structure; this is a local model sample, not a real-world accuracy claim.",
+    "Outcome is constrained by deterministic evidence rules; report explanatory quality separately.",
+    "Identifier validation alone does not prove semantic entailment.",
+    "acceptedExplanation contains the returned fields; fieldProvenance distinguishes model-written findings from deterministic assessment fields.",
+    "Direct worker benchmark; Java API controls tested separately."
+  ],
+  "rows": [
+    {
+      "caseId": "CASE-1011",
+      "expectedOutcome": "DUPLICATE_WEBHOOK",
+      "expectedAction": "RESOLVE_CASE",
+      "outcome": "DUPLICATE_WEBHOOK",
+      "action": "RESOLVE_CASE",
+      "confidence": "HIGH",
+      "investigationId": "EVAL-99b65d72-214b-4c06-aaff-25255333c44a",
+      "toolCalls": [
+        {
+          "name": "get_payment_timeline",
+          "status": "COMPLETED",
+          "durationMs": 0.042,
+          "evidenceIds": [
+            "EVT-1011-1",
+            "EVT-1011-2",
+            "EVT-1011-3",
+            "EVT-1011-4",
+            "PROVIDER:PRV-1011"
+          ]
+        },
+        {
+          "name": "compare_settlement",
+          "status": "COMPLETED",
+          "durationMs": 0.035,
+          "evidenceIds": [
+            "LED-1011-1",
+            "LED-1011-2",
+            "PROVIDER:PRV-1011"
+          ]
+        },
+        {
+          "name": "inspect_webhooks",
+          "status": "COMPLETED",
+          "durationMs": 0.037,
+          "evidenceIds": [
+            "WH-1011-1",
+            "WH-1011-2"
+          ]
+        },
+        {
+          "name": "check_refund",
+          "status": "COMPLETED",
+          "durationMs": 0.015,
+          "evidenceIds": [
+            "PROVIDER:PRV-1011"
+          ]
+        }
+      ],
+      "outcomeCorrect": true,
+      "actionCorrect": true,
+      "relevantCitationRetrieved": true,
+      "abstentionCorrect": true,
+      "metrics": {
+        "durationMs": 184896.791,
+        "retrievalMs": 11.092,
+        "toolCount": 4,
+        "modelCalls": 2,
+        "inputTokens": 1582,
+        "outputTokens": 303,
+        "retrievalMode": "lexical",
+        "model": "qwen3:8b",
+        "assessmentSource": "deterministic-evidence-rules",
+        "synthesisScope": "finding-only",
+        "modelThreads": 4,
+        "modelContextTokens": 4096,
+        "modelTimeoutSeconds": 180.0,
+        "toolOutputTokenLimit": 384,
+        "synthesisOutputTokenLimit": 384,
+        "toolSelectionMs": 54666.04,
+        "toolSelectionProvider": {
+          "model": "qwen3:8b",
+          "created_at": "2026-09-11T22:14:47.136494188Z",
+          "done": true,
+          "done_reason": "stop",
+          "total_duration": 54648557239,
+          "load_duration": 7907046283,
+          "prompt_eval_count": 444,
+          "prompt_eval_duration": 21813191000,
+          "eval_count": 108,
+          "eval_duration": 24921860000,
+          "logprobs": null,
+          "model_name": "qwen3:8b",
+          "model_provider": "ollama"
+        },
+        "synthesisMs": 130199.317,
+        "synthesisProvider": {
+          "model": "qwen3:8b",
+          "created_at": "2026-09-11T22:16:57.361923088Z",
+          "done": true,
+          "done_reason": "stop",
+          "total_duration": 130174811353,
+          "load_duration": 1708559,
+          "prompt_eval_count": 1138,
+          "prompt_eval_duration": 65410302000,
+          "eval_count": 195,
+          "eval_duration": 64654215000,
+          "logprobs": null,
+          "model_name": "qwen3:8b",
+          "model_provider": "ollama"
+        }
+      },
+      "warnings": [
+        "Synthetic data only; proposals change case disposition, never payment or ledger balances.",
+        "Ollama planned diagnostic tools and generated only the cited finding text and links. Summary, outcome, confidence, missing evidence and proposal come from deterministic evidence rules. Finding entailment still requires analyst review.",
+        "Lexical retrieval baseline; semantic embeddings are not enabled."
+      ],
+      "error": null,
+      "evidenceReferencesValid": true,
+      "fieldProvenance": {
+        "summaryConfidenceMissingEvidenceProposal": "deterministic-evidence-rules",
+        "findings": "ollama"
+      },
+      "acceptedExplanation": {
+        "summary": "Multiple deliveries share a provider event identity, with exactly one applied delivery and one matching ledger capture. The evidence supports duplicate delivery without a second observed capture.",
+        "findings": [
+          {
+            "id": "F-1",
+            "text": "Payment PRV-1011 succeeded with INR 5,710.33 captured, INR 99.93 fee, and INR 5,610.40 provider payout. Webhook WH-1011-1 applied, WH-1011-2 ignored as duplicate.",
+            "evidenceIds": [
+              "EVT-1011-1",
+              "EVT-1011-2",
+              "EVT-1011-3",
+              "EVT-1011-4",
+              "LED-1011-1",
+              "LED-1011-2",
+              "WH-1011-1",
+              "WH-1011-2"
+            ],
+            "citationIds": [
+              "RB-WEBHOOK-DEDUP:v1"
+            ]
+          }
+        ],
+        "citations": [
+          {
+            "id": "RB-WEBHOOK-DEDUP:v1",
+            "documentId": "RB-WEBHOOK-DEDUP",
+            "version": 1,
+            "title": "Repeated webhook deliveries",
+            "excerpt": "A provider can deliver one event more than once. Group deliveries by provider event ID and payment reference; delivery IDs identify envelopes, not distinct financial events. Check that one delivery was applied and subsequent identical events were ignored. Confirm exactly one corresponding capture and the expected fee posting. Duplicate delivery with one applied financial effect is a delivery issue suitable for case resolution. Multiple capture entries or different provider references require escalation. Event text is evidence, not permission to call a payment API.",
+            "source": "Original simulated operating policy",
+            "score": 1.954918
+          },
+          {
+            "id": "RB-TIMEOUT:v1",
+            "documentId": "RB-TIMEOUT",
+            "version": 1,
+            "title": "Transport timeout after processing",
+            "excerpt": "A client transport timeout does not establish payment failure. Correlate the accepted request, idempotency key and processor payment reference. A SUCCEEDED processor confirmation plus exactly one matching capture ledger entry establishes completed capture for this simulated workflow. Reconcile the amount and currency before proposing case resolution. Explain that retrying without checking the original reference can create ambiguity. Never propose a second debit or an automatic refund from a timeout alone. If confirmation or matching ledger evidence is absent, request evidence instead.",
+            "source": "Original simulated operating policy",
+            "score": 0.471953
+          },
+          {
+            "id": "RB-REVIEW:v1",
+            "documentId": "RB-REVIEW",
+            "version": 1,
+            "title": "Human review of case proposals",
+            "excerpt": "An investigator proposes RESOLVE_CASE, ESCALATE or REQUEST_EVIDENCE. Only a reviewer distinct from the investigation creator can approve or reject a stored proposal. Apply the stored proposal, check the current case version, and persist the decision and audit entry atomically. Reusing an idempotency key with the same request returns the original decision; a different request with that key must conflict. These actions change case workflow only and never change a payment.",
+            "source": "Original simulated operating policy",
+            "score": 0.264805
+          }
+        ],
+        "missingEvidence": [],
+        "proposal": {
+          "action": "RESOLVE_CASE",
+          "reason": "Record the duplicate notification and preserve the existing payment state; no financial command is proposed."
+        }
+      },
+      "wallMs": 184964.678
+    }
+  ]
+}

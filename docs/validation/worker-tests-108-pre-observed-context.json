@@ -1,0 +1,180 @@
+{
+  "schemaVersion": 1,
+  "status": "PASS",
+  "evidenceKind": "JUnit extraction from the latest completed 108-test finding-only run, including real restricted-role PostgreSQL; no model inference during this suite",
+  "run": {
+    "timestamp": "2026-09-12T02:22:12.216246+05:30",
+    "timestampUtc": "2026-09-11T20:52:12.216246+00:00",
+    "suiteDurationSeconds": 4.01,
+    "totals": {
+      "tests": 108,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 108
+    },
+    "xmlTestcaseElements": 108,
+    "testsByModule": {
+      "tests.test_config": 7,
+      "tests.test_evidence": 41,
+      "tests.test_finding_synthesis": 12,
+      "tests.test_graph_service": 14,
+      "tests.test_ollama_adapter": 7,
+      "tests.test_retrieval": 3,
+      "tests.test_vector_store": 7,
+      "tests.test_workflow": 17
+    }
+  },
+  "junit": {
+    "path": "services/investigator/runtime/pytest-verified.xml",
+    "sha256": "3d2e6affaf82adb6fb061ce3d04b43913f3cc8e2984e40879da8b4ee7c862cef"
+  },
+  "provenance": {
+    "extractedAt": "2026-09-11T20:57:17.061033+00:00",
+    "sourceHashTiming": "Hashes captured after this test run while application source/configuration/dependencies remained frozen; the original JUnit does not embed source hashes.",
+    "treeHashAlgorithm": "SHA-256 of UTF-8 lines relativePath:sha256 followed by newline, sorted by relative path; include Python files only.",
+    "sourceTree": {
+      "sha256": "9caa83a9eb41063cc4dbf5f6d80cfafa9d13a2334f472eb77b406ee355b99c7c",
+      "files": {
+        "investigator/__init__.py": "b5391400f0a9c6a6d4f0d8913021edf256e87d0577fa86146ae489bd45bf2173",
+        "investigator/config.py": "d660f8ce92e00ef8a7a00dd3790f6fa8cf3f5e2b46f698ab057ef453fd6024b0",
+        "investigator/errors.py": "e57dde3e04b0f9cd31bfd827d5193f6e331251bf52a1a0c09a29ff2c285a4469",
+        "investigator/evidence.py": "03c62e3c00ec6b3fca7ccf0fcfa850663c32b56e42dcf89bf55821b528b2a22d",
+        "investigator/graph.py": "53b69747a46a206b06ba01dddf1b1241ae8ad40794b86668b7f29b7a83de41a3",
+        "investigator/main.py": "8ed3dcb86e2c8facad9f54c20a31ce4f6c418fa759e95ee3e14c906d3c4509a0",
+        "investigator/models.py": "5f50af89b85052cb79d6bcfdde6e89b5c81614c3045f66735ad3522dcc6daed2",
+        "investigator/retrieval.py": "06e1c41d73daaef156c78905e9112f9adcc84d723f7f97dd080a275ab28f0c19",
+        "investigator/vector_store.py": "d1fc0b89efb7c9bcc62b57a2c5cce10e623a719724efb7c30380c979d11358bb"
+      }
+    },
+    "testTreeSha256": "e52cb7b35d2b1f386b3308b1528928f0d3b6c4695a2116a457de2fcb4d3e9b0f",
+    "testFiles": 9,
+    "configuration": {
+      "path": "investigator/config.py",
+      "sha256": "d660f8ce92e00ef8a7a00dd3790f6fa8cf3f5e2b46f698ab057ef453fd6024b0"
+    },
+    "requirements": {
+      "path": "requirements.txt",
+      "sha256": "fd3bc3e05ba5925401cd18b051428f582e17fd4543e378c9aa69e8edf25bf4e2"
+    },
+    "projectMetadata": {
+      "path": "pyproject.toml",
+      "sha256": "7333fda9ef4075252712862f6bd0c206b4314e51d85a6a6d7c6c16066e7fa918"
+    }
+  },
+  "recordedInvocation": {
+    "command": ".venv/Scripts/python.exe -m pytest --basetemp=runtime/pytest-finding-only --junitxml=runtime/pytest-verified.xml --tb=short",
+    "databaseEnvironment": "POI_TEST_VECTOR_DB_URL was explicitly set to the restricted local PostgreSQL role in the recorded run command; credential omitted.",
+    "databaseContext": {
+      "host": "127.0.0.1",
+      "port": 5438,
+      "database": "poi",
+      "role": "poi_vectors",
+      "schema": "poi_knowledge",
+      "provenance": "Recorded run command and prior restricted-role setup; connection identity is not a field in JUnit XML."
+    }
+  },
+  "coverageEvidence": {
+    "actualPostgresql": {
+      "test": "tests.test_vector_store::test_actual_pgvector_persistence_scope_dates_and_model_filters",
+      "included": true,
+      "skipped": false,
+      "durationSeconds": 0.173,
+      "checks": [
+        "Persistent pgvector storage reused by a fresh store instance",
+        "Tenant, effective date, current-source, model and dimension filters before results",
+        "Historical policy retrieval"
+      ],
+      "vectorData": "Tiny fixed numeric vectors supplied by the test; no embedding model is called by this database test."
+    },
+    "actualLocalComponents": [
+      "FastAPI TestClient request handling and service authentication",
+      "LangChain typed snapshot-scoped tools",
+      "Compiled LangGraph nodes and durable SQLite checkpoints",
+      "Deterministic money/evidence gates and citation identity/link checks"
+    ],
+    "modelAdapterDouble": {
+      "test": "tests.test_ollama_adapter::test_generation_controls_are_ollama_options_and_reasoning_is_disabled",
+      "method": "Production ChatOllama construction and actual Ollama client serialization, with httpx.MockTransport supplying synthetic tool calls and synthesis JSON.",
+      "verifiedRequestOptions": {
+        "stream": false,
+        "think": false,
+        "num_thread": 4,
+        "num_ctx": 4096,
+        "num_predict": 384
+      },
+      "liveModelInference": false,
+      "note": "All provider response bodies, token counts and calls in this adapter test are test-double data, not real model usage.",
+      "verifiedSchemaScopes": "Provider schema contains only Finding fields id/text/evidenceIds/citationIds. F-1 constant, separately scoped operational/top-policy ID enums, policy link min/max 1. Rule-owned summary/outcome/confidence/missingEvidence/proposal are absent from provider output schema.",
+      "verifiedProviderHttpTimeoutSeconds": 180,
+      "verifiedWorkflowContext": {
+        "proposalOnly": true,
+        "reviewExecutedForThisProposal": false,
+        "caseActionExecutedByThisInvestigation": false,
+        "independentReviewRequired": true
+      },
+      "testCases": [
+        "supported evidence: actual adapter encodes tool planning and Finding-only synthesis requests",
+        "insufficient evidence: actual adapter encodes only planning; no synthesis request is made"
+      ],
+      "verifiedCompositionMetrics": {
+        "assessmentSource": "deterministic-evidence-rules",
+        "synthesisScopes": [
+          "finding-only",
+          "skipped-insufficient-evidence"
+        ],
+        "recordedModelCalls": [
+          2,
+          1
+        ]
+      }
+    },
+    "embeddingDoubles": "RecordingEmbeddings returns simple fixed vectors to inspect tenant filtering/cache behavior; BrokenEmbeddings raises a controlled error to test explicit failure without lexical fallback.",
+    "actualUnavailableProvider": "A real ChatOllama request to closed loopback port 1 verifies provider failure/no replay fallback. It is not successful model inference.",
+    "successfulLiveInferenceIncluded": false,
+    "actualEmbeddingModelIncluded": false,
+    "workflowGuard": {
+      "capturedRegressionSources": [
+        "Earlier live CASE-1002 summary",
+        "Earlier live CASE-1003 summary",
+        "First six-case development CASE-1021 proposal reason"
+      ],
+      "checks": [
+        "Rejects observed completed-case/proposal assertions and unqualified no-action prose without rewriting",
+        "Valid payment completion, financially scoped no-action wording, negated/modal case statements and review recommendations remain accepted",
+        "Untrusted question/policy strings cannot override service-built proposal context",
+        "Actual FastAPI/LangGraph rejection returns 422, checkpoints original candidate, and stores no accepted result"
+      ],
+      "limitation": "Targeted phrase checks are not general semantic entailment or paraphrase coverage."
+    },
+    "findingCompositionDouble": {
+      "method": "FindingResponse test double returns AIMessage containing controlled JSON; real snapshot tools, rules, graph stage code and final validators process it.",
+      "checks": [
+        "Finding text and links remain unchanged while all other fields come from deterministic assessment",
+        "Extra model-written rule-owned fields fail Finding schema validation, without silent dropping or remapping",
+        "Forged evidence, unsupplied policy, duplicate policy links, wrong local finding ID, named undeclared links and workflow wording are rejected",
+        "A legacy full-synthesis checkpoint cannot acquire the new finding-only provenance"
+      ],
+      "successfulLiveModelInference": false
+    }
+  },
+  "limitations": [
+    "108 passed tests do not establish real-world AI accuracy, production readiness or prompt-injection immunity.",
+    "Successful live Qwen/Nomic runs and full Java-to-worker acceptance are recorded separately; this report cannot substitute for them.",
+    "JUnit totals and duration are extracted as recorded; console-only warnings are not encoded by this XML."
+  ],
+  "build": {
+    "image": "payment-operations-investigator-investigator:latest",
+    "imageId": "sha256:b85058310f8baa9800ed839113bb892a04762500efe2319fab50ab333120aea3",
+    "createdAt": "2026-09-12T02:25:59.93823784+05:30",
+    "status": "BUILT",
+    "deploymentAtCapture": "Not deployed by worker agent; historical 96-test image 7ba4be remained running during build verification."
+  },
+  "historical96Evidence": {
+    "receipt": "docs/validation/worker-tests-96-pre-finding-only.json",
+    "runtimeSourceArchive": "services/investigator/runtime/history-worker96-20260912",
+    "sourceAndRequirementsMatchHistoricalHashes": true,
+    "originalJUnitXmlRetained": false,
+    "reason": "The 96-test XML had already been overwritten by the 108-test run. The receipt was preserved separately and no prior XML or test run was reconstructed."
+  }
+}

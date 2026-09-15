@@ -1,0 +1,80 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Proposed FCR Payment Discovery Inquiry",
+    "version": "0.2.0-draft",
+    "description": "Proposed distinct exact-reference and dated-list requests for the user-built inquiry API. The server URL is a reserved documentation placeholder. Bank authentication and any FLEXCUBE framework envelope remain to be agreed. Both operations return discovery observations, not full payment evidence or an outcome."
+  },
+  "servers": [{"url": "https://bank.example.test", "description": "Documentation placeholder; configure the real endpoint privately"}],
+  "paths": {
+    "/FCAPIService/OBPMTxnInquiryService/processRequest": {
+      "post": {
+        "operationId": "discoverNeftPayments",
+        "summary": "Find scoped transactions by exact reference or selected calendar date",
+        "requestBody": {
+          "required": true,
+          "content": {"application/json": {"schema": {"oneOf": [{"$ref": "#/components/schemas/ReferenceRequest"}, {"$ref": "#/components/schemas/InquiryRequest"}]}}}
+        },
+        "responses": {
+          "200": {
+            "description": "Completed discovery. Return all host rows for each retained payment. Exact lookup must return only matches to the requested bank/branch and reference, hasMore=false, with all matching payment groups within the 200-payment/2000-row safety bounds. Otherwise return an error. Dated list grouping and recordCount apply to payments, not joined rows.",
+            "content": {"application/json": {"schema": {"$ref": "#/components/schemas/InquiryResponse"}}}
+          },
+          "400": {"description": "Invalid request shape, reference, date, bank, branch or record limit"},
+          "401": {"description": "Caller authentication required"},
+          "403": {"description": "Caller is not authorized for this branch/bank scope"},
+          "409": {"description": "Ambiguous or contradictory source identity"},
+          "503": {"description": "Inquiry could not complete; do not return an empty successful list"}
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ReferenceRequest": {
+        "type": "object", "additionalProperties": false,
+        "required": ["orgBank", "orgBranch", "referenceType", "reference"],
+        "properties": {
+          "orgBank": {"type": "string", "pattern": "^[0-9]{1,10}$", "example": "760"},
+          "orgBranch": {"type": "string", "pattern": "^[0-9]{1,10}$", "example": "1352"},
+          "referenceType": {"type": "string", "enum": ["FCR", "UTR"]},
+          "reference": {"type": "string", "minLength": 1, "maxLength": 200, "example": "900000000000000000000001", "description": "Exact text reference in the selected namespace and authorized bank/branch. No date or record-count field is accepted."}
+        }
+      },
+      "InquiryRequest": {
+        "type": "object", "additionalProperties": false,
+        "required": ["orgBank", "orgBranch", "inquiryDate", "recordCount"],
+        "properties": {
+          "orgBank": {"type": "string", "pattern": "^[0-9]{1,10}$", "example": "760", "description": "Requested bank code. ESAF example 760; other banks use configured codes. Server must authorize the bank/branch pair."},
+          "orgBranch": {"type": "string", "pattern": "^[0-9]{1,10}$", "example": "1352", "description": "Requested branch within server-authorized bank and deployment scope"},
+          "inquiryDate": {"type": "string", "format": "date", "example": "2026-09-14", "description": "Selected source-local calendar day; the UI defaults to today. Not an implicit seven-day range."},
+          "recordCount": {"type": "integer", "minimum": 1, "maximum": 200, "example": 20, "description": "Maximum distinct payment identities, preserving their relevant host subsequences"}
+        }
+      },
+      "InquiryResponse": {
+        "type": "object", "additionalProperties": false,
+        "required": ["items", "observedAt", "hasMore"],
+        "properties": {
+          "observedAt": {"type": "string", "format": "date-time", "example": "2026-09-14T10:30:00+05:30"},
+          "hasMore": {"type": "boolean", "description": "Additional matching payments exist beyond this bounded result. No partial host group is permitted."},
+          "items": {"type": "array", "maxItems": 2000, "items": {"$ref": "#/components/schemas/NativeRow"}}
+        }
+      },
+      "NativeRow": {
+        "type": "object", "additionalProperties": false,
+        "required": ["PIO_REF_TXN_NO", "PIO_ORG_BRN", "PIO_ORG_BANK", "REF_SUBSEQ_NO", "UTR_REF_NO", "DATINITIATION", "NUMAMOUNT_4038"],
+        "properties": {
+          "PIO_REF_TXN_NO": {"type": "string", "minLength": 1, "maxLength": 200, "example": "900000000000000000000001"},
+          "PIO_ORG_BRN": {"type": "string", "pattern": "^[0-9]{1,10}$", "example": "1352"},
+          "PIO_ORG_BANK": {"type": "string", "pattern": "^[0-9]{1,10}$", "example": "760"},
+          "REF_SUBSEQ_NO": {"type": "string", "nullable": true, "pattern": "^([0-9]{1,38})?$", "example": "0", "description": "Required column; null or empty string means unknown. Known values remain exact integer strings. Never replace unknown with zero."},
+          "UTR_REF_NO": {"type": "string", "maxLength": 200, "example": "DEMO-UTR-0001", "description": "Empty string when not assigned; never invent a UTR"},
+          "DATINITIATION": {"type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(\\.[0-9]{1,9})?$", "example": "2026-09-14T09:15:00", "description": "Source-local timestamp. Oracle DATE carries no timezone; do not append an invented Z."},
+          "NUMAMOUNT_4038": {"type": "string", "pattern": "^(0|[1-9][0-9]{0,37})(\\.[0-9]{1,18})?$", "example": "1250.40", "description": "Exact nonnegative source decimal; preserve precision, no exponent notation or rounding"},
+          "CURRENCY": {"type": "string", "pattern": "^[A-Z]{3}$", "example": "INR", "description": "Optional ISO code from a verified installed mapping"},
+          "DIRECTION": {"type": "string", "enum": ["IN", "OUT", "INBOUND", "OUTBOUND"], "description": "Optional mapped direction, not an unverified raw code"}
+        }
+      }
+    }
+  }
+}

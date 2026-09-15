@@ -1,0 +1,15 @@
+{
+  "status": "passed",
+  "recordedAtUtc": "2026-09-13T09:43:45.298603Z",
+  "measurementTimestampRecorded": false,
+  "httpStatus": 200,
+  "currentSnapshotCount": 1,
+  "storedReceiptsInspected": 6,
+  "historyResponses": 6,
+  "legacySameCurrentHashCount": 2,
+  "legacySameCurrentHashReturnedExactly": true,
+  "allSixPriorReceiptHashesUnchanged": true,
+  "joinedModelClaimsAnswersObservedAtCheck": 0,
+  "requestedModelCalls": 0,
+  "rerunPerformedForReceipt": false
+}

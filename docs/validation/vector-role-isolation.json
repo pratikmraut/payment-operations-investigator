@@ -1,0 +1,23 @@
+{
+  "status": "PASS",
+  "checkedAt": "2026-09-11T18:57:14.2080579Z",
+  "database": "127.0.0.1:5438/poi",
+  "role": "poi_vectors",
+  "schema": "poi_knowledge",
+  "checks": [
+    "TCP password authentication and role-specific search_path",
+    "No superuser, role/database creation, inheritance, replication or RLS bypass",
+    "Own-schema vector table create, insert and select; probe rolled back",
+    "API table payment_case SELECT and DELETE denied",
+    "API table investigation SELECT and DELETE denied",
+    "API table review_decision SELECT and DELETE denied",
+    "API table audit_event SELECT and DELETE denied",
+    "Public schema CREATE denied",
+    "SET ROLE poi denied"
+  ],
+  "limitations": [
+    "API demo owner poi is still the dedicated development database administrator.",
+    "Permission probes use only original synthetic project data."
+  ],
+  "bootstrap": "infra/postgres/020-vector-role.sh"
+}

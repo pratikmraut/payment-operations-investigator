@@ -1,0 +1,161 @@
+{
+  "timestamp": "2026-09-11T19:42:46.516906+00:00",
+  "project": "payment-operations-investigator",
+  "status": "passed",
+  "checks": [
+    "Worker outage returns explicit 503 without fallback",
+    "Failed investigation creates no case transition or stored investigation",
+    "This worker failure creates exactly one new audit event without changing old events",
+    "Worker recovery permits a real replay investigation",
+    "API liveness remains UP during database outage, as documented",
+    "Database-backed read fails explicitly while database is stopped",
+    "Database restart preserves exact case, immutable investigation and failure audit bodies"
+  ],
+  "timings": [
+    {
+      "operation": "stop_investigator",
+      "startedAt": "2026-09-11T19:42:47.986884+00:00",
+      "status": "passed",
+      "elapsedSeconds": 1.783
+    },
+    {
+      "operation": "worker_outage_response",
+      "startedAt": "2026-09-11T19:42:49.770159+00:00",
+      "status": "passed",
+      "elapsedSeconds": 2.888
+    },
+    {
+      "operation": "start_investigator",
+      "startedAt": "2026-09-11T19:42:52.675624+00:00",
+      "status": "passed",
+      "elapsedSeconds": 1.485
+    },
+    {
+      "operation": "investigator_readiness",
+      "startedAt": "2026-09-11T19:42:54.160607+00:00",
+      "status": "passed",
+      "elapsedSeconds": 10.124
+    },
+    {
+      "operation": "recovered_replay_investigation",
+      "startedAt": "2026-09-11T19:43:04.284103+00:00",
+      "status": "passed",
+      "elapsedSeconds": 0.335
+    },
+    {
+      "operation": "stop_postgres",
+      "startedAt": "2026-09-11T19:43:04.624076+00:00",
+      "status": "passed",
+      "elapsedSeconds": 0.776
+    },
+    {
+      "operation": "database_outage_response",
+      "startedAt": "2026-09-11T19:43:05.404978+00:00",
+      "status": "passed",
+      "elapsedSeconds": 30.011
+    },
+    {
+      "operation": "start_postgres",
+      "startedAt": "2026-09-11T19:43:35.416851+00:00",
+      "status": "passed",
+      "elapsedSeconds": 1.077
+    },
+    {
+      "operation": "postgres_readiness",
+      "startedAt": "2026-09-11T19:43:36.493284+00:00",
+      "status": "passed",
+      "elapsedSeconds": 7.302
+    },
+    {
+      "operation": "finally_start_postgres",
+      "startedAt": "2026-09-11T19:43:43.832614+00:00",
+      "status": "passed",
+      "elapsedSeconds": 0.621
+    },
+    {
+      "operation": "finally_ready_postgres",
+      "startedAt": "2026-09-11T19:43:44.453331+00:00",
+      "status": "passed",
+      "elapsedSeconds": 0.007
+    },
+    {
+      "operation": "finally_start_investigator",
+      "startedAt": "2026-09-11T19:43:44.460150+00:00",
+      "status": "passed",
+      "elapsedSeconds": 0.761
+    },
+    {
+      "operation": "finally_ready_investigator",
+      "startedAt": "2026-09-11T19:43:45.219486+00:00",
+      "status": "passed",
+      "elapsedSeconds": 0.031
+    }
+  ],
+  "outages": {
+    "investigator": {
+      "stopAttemptedAt": "2026-09-11T19:42:47.986884+00:00",
+      "stopCompletedAt": "2026-09-11T19:42:49.770159+00:00",
+      "recoveredAt": "2026-09-11T19:43:04.284103+00:00",
+      "elapsedToReadinessSeconds": 16.297
+    },
+    "postgres": {
+      "stopAttemptedAt": "2026-09-11T19:43:04.624076+00:00",
+      "stopCompletedAt": "2026-09-11T19:43:05.400162+00:00",
+      "recoveredAt": "2026-09-11T19:43:43.795815+00:00",
+      "elapsedToReadinessSeconds": 39.171
+    }
+  },
+  "recovery": [
+    {
+      "service": "postgres",
+      "verifiedReady": true,
+      "errors": []
+    },
+    {
+      "service": "investigator",
+      "verifiedReady": true,
+      "errors": []
+    }
+  ],
+  "evidence": {
+    "workerError": {
+      "message": "Investigator worker is unavailable or timed out. No investigation result or fallback was fabricated.",
+      "code": "WORKER_UNAVAILABLE",
+      "requestId": "52d47683-7487-45f6-a34f-623fb0e45777"
+    },
+    "failureAudit": {
+      "occurredAt": "2026-09-11T19:42:52.563526304Z",
+      "action": "INVESTIGATION_FAILED",
+      "id": "AUD-a0f5d69c-031b-416d-a802-7b7fb278fc44",
+      "actor": "analyst",
+      "detail": "WORKER_UNAVAILABLE; requested mode replay; no fallback."
+    },
+    "investigationId": "INV-917e059a-be0a-46a0-9a14-b477e533348a",
+    "investigationHashBefore": "290741af1bfd31217c043a690ad549d1ecd6d7f7dcf33ae448c94ad6c4a34666",
+    "caseHashBefore": "c64dcd69a5a383381c5d7b747578e9e298d9f3440eb4d3c0284483a32adbaf6c",
+    "databaseError": {
+      "message": "The request could not be completed.",
+      "code": "INTERNAL_ERROR",
+      "requestId": "997e645f-7c23-41f6-976b-c0a2bf68efe2"
+    },
+    "investigationHashAfter": "290741af1bfd31217c043a690ad549d1ecd6d7f7dcf33ae448c94ad6c4a34666",
+    "caseHashAfter": "c64dcd69a5a383381c5d7b747578e9e298d9f3440eb4d3c0284483a32adbaf6c",
+    "exactFailureAuditPreserved": true
+  },
+  "limitations": [
+    "Only synthetic local Compose worker and database outages; no bank/provider interruption.",
+    "No in-flight model cancellation, partition, overload or multi-node failover test.",
+    "API process health is liveness, not database readiness.",
+    "Readiness probes cap socket timeouts to the remaining budget; socket idle timeouts are not hard wall-clock deadlines.",
+    "Run while other clients are idle; concurrent edits to the selected case deliberately fail exact persistence comparisons."
+  ],
+  "containers": {
+    "api": "3a17188fdd1e97a64357823c6112ed32c0c882f742a37ac45dd21cc4986126b1",
+    "investigator": "38b7e12b923dc71319d78916beb2df5e6e5b3b5800e795ed2ff16e3f7fea736e",
+    "postgres": "87cbbb327b98ec28d6c49ba47b44819f294985ecc78898b201fb2f9d5acf676f"
+  },
+  "testChecksCompleted": true,
+  "pendingRecovery": [],
+  "completedAt": "2026-09-11T19:43:45.252428+00:00",
+  "elapsedSeconds": 58.735
+}

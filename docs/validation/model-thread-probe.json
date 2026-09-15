@@ -1,0 +1,113 @@
+{
+  "scope": "Two sequential exploratory local Qwen requests. One sample per thread setting; not a speed benchmark or full-case acceptance.",
+  "startedAt": "2026-09-11T19:52:33.147478+00:00",
+  "endpoint": "http://127.0.0.1:11438/api/chat",
+  "model": "qwen3:4b-instruct",
+  "prompt": "Briefly explain three benefits of using a shared checklist.",
+  "httpTimeoutSeconds": 75,
+  "requestOrder": [
+    8,
+    4
+  ],
+  "results": [
+    {
+      "numThread": 8,
+      "startedAt": "2026-09-11T19:52:33.203813+00:00",
+      "request": {
+        "model": "qwen3:4b-instruct",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Briefly explain three benefits of using a shared checklist."
+          }
+        ],
+        "think": false,
+        "stream": false,
+        "options": {
+          "num_ctx": 4096,
+          "temperature": 0,
+          "num_predict": 48,
+          "num_thread": 8
+        }
+      },
+      "httpStatus": 200,
+      "status": "COMPLETED",
+      "model": "qwen3:4b-instruct",
+      "createdAt": "2026-09-11T19:53:25.359047699Z",
+      "done": true,
+      "doneReason": "length",
+      "message": {
+        "role": "assistant",
+        "content": "1. **Improved Consistency**: A shared checklist ensures that all team members follow the same steps and standards, reducing variability in work quality and outcomes.\n\n2. **Enhanced Communication**: By making the checklist accessible to everyone, team members can"
+      },
+      "providerMetrics": {
+        "total_duration": 52142968259,
+        "load_duration": 13354282492,
+        "prompt_eval_count": 19,
+        "prompt_eval_duration": 5561573000,
+        "eval_count": 48,
+        "eval_duration": 33221455000
+      },
+      "decodeTokensPerSecond": 1.4448,
+      "wallClockSeconds": 52.1517
+    },
+    {
+      "numThread": 4,
+      "startedAt": "2026-09-11T19:53:25.366100+00:00",
+      "request": {
+        "model": "qwen3:4b-instruct",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Briefly explain three benefits of using a shared checklist."
+          }
+        ],
+        "think": false,
+        "stream": false,
+        "options": {
+          "num_ctx": 4096,
+          "temperature": 0,
+          "num_predict": 48,
+          "num_thread": 4
+        }
+      },
+      "httpStatus": 200,
+      "status": "COMPLETED",
+      "model": "qwen3:4b-instruct",
+      "createdAt": "2026-09-11T19:53:32.644288134Z",
+      "done": true,
+      "doneReason": "length",
+      "message": {
+        "role": "assistant",
+        "content": "1. **Improved Consistency**: A shared checklist ensures that all team members follow the same steps and standards, reducing variability in work quality and outcomes.\n\n2. **Enhanced Communication**: By making the checklist accessible to everyone, team members can"
+      },
+      "providerMetrics": {
+        "total_duration": 7271020949,
+        "load_duration": 3384346756,
+        "prompt_eval_count": 19,
+        "prompt_eval_duration": 546266000,
+        "eval_count": 48,
+        "eval_duration": 3333564000
+      },
+      "decodeTokensPerSecond": 14.399,
+      "wallClockSeconds": 7.2789
+    }
+  ],
+  "limitations": [
+    "One request per setting, ordered 8 then 4; no repetitions or randomized order.",
+    "Different model load state, prompt caching and host conditions may affect timings.",
+    "Provider decoding time is reported separately from load and prefill; total latency is not attributed only to threads.",
+    "A later complete investigation must verify schema, citations, evidence gates and latency before changing worker configuration.",
+    "No application source, global CPU/GPU/VM settings or service configuration is changed."
+  ],
+  "finishedAt": "2026-09-11T19:53:32.648662+00:00",
+  "interpretation": {
+    "bothRequestsCompleted": true,
+    "sameGeneratedText": true,
+    "bothReachedOutputCap": true,
+    "observedSinglePairDecodeRateRatio4Over8": 9.9661,
+    "recommendation": "Four threads materially improved decoding in this single ordered pair. Run a later complete investigation with an explicit four-thread option and all evidence/schema/latency checks before deciding whether to configure the worker. Do not generalize this ratio as a benchmark speedup.",
+    "workerConfigurationChanged": false,
+    "inferenceInFlightAtCompletion": false
+  }
+}

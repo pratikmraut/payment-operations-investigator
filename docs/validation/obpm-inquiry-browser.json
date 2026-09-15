@@ -1,0 +1,21 @@
+{
+  "status": "PASS",
+  "recordedAt": "2026-09-12T16:58:34.286270+00:00",
+  "method": "Actual Codex in-app browser through CUA; DOM observations and one viewport screenshot reviewed by Codex",
+  "caseUrl": "http://127.0.0.1:5178/#/cases/OBPM-d12e50d9961040dbeae52b994fc08fbc",
+  "checks": [
+    "Reloaded deployed frontend and signed into local demo as analyst.",
+    "Opened original dummy-data inquiry form and observed all four references and ECA-only/source scope labels.",
+    "Unknown MOCK-NEFT-9999 displayed not-found error with request ID and no completed receipt.",
+    "Selected MOCK-NEFT-1001 and fetched over the configured mock path; UI showed UNCHANGED and evidence version1.",
+    "Open fetched case navigated to MOCK-NEFT-1001 with exact INR18450.75 header/source decimal.",
+    "Bank evidence showed current EC/T, its matching ECA attempt and39-minute age at fixed source cutoff.",
+    "Saved Replay investigation displayed recorded ECA timeout, explicit unknown external outcome and request-evidence proposal.",
+    "Sources tab displayed both original scoped NEFT procedure citations."
+  ],
+  "checkCount": 8,
+  "limitations": [
+    "No new browser-triggered model call; the saved Replay result came from actual HTTP acceptance.",
+    "Viewport screenshot was inspected inline; no screenshot file is claimed."
+  ]
+}

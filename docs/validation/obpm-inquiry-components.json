@@ -1,0 +1,127 @@
+{
+  "status": "PASS",
+  "recordedAt": "2026-09-12T22:28:33.971299+05:30",
+  "scope": "Original synthetic mock HTTP inquiry transport, exact Java mapping and existing ECA investigation; no Oracle connector",
+  "java": {
+    "totals": {
+      "tests": 68,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "suites": [
+      {
+        "name": "dev.pratik.poi.ApiIntegrationTest",
+        "tests": 25,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "reportSha256": "bd8027a8aad01d6df2a1ec8cd99542b2845b9d81305a28e1747238bd8531e4c7"
+      },
+      {
+        "name": "dev.pratik.poi.MoneyFactsTest",
+        "tests": 10,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "reportSha256": "3ade40a66978bf09a28e8060687dee4e2417449df7f073016ea0098847411f10"
+      },
+      {
+        "name": "dev.pratik.poi.ObpmImportTest",
+        "tests": 9,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "reportSha256": "4c4c21559c0be147ff168cb83f7a12580907ff920fd84edcb813a245eaebee5d"
+      },
+      {
+        "name": "dev.pratik.poi.ObpmInquiryClientTest",
+        "tests": 11,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "reportSha256": "399831a9284e3a352f8214c552df4d5171e7129276f5d4ca3f37df96b8fc3e1e"
+      },
+      {
+        "name": "dev.pratik.poi.ObpmInquiryControllerTest",
+        "tests": 5,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "reportSha256": "30df5fb6dc56a6663b99a28e98b7db5c2dfe0037aef438e3158518dcbd9be1e8"
+      },
+      {
+        "name": "dev.pratik.poi.ObpmReviewTest",
+        "tests": 8,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "reportSha256": "6315c7551520953e03745f9db29528a0ed1f2babd44c8ceb6386eb724b441e79"
+      }
+    ],
+    "testedAndRunningJarSha256": "e6986b215dfecab3b906e5484fe9409c365abb146a216cf58f163a3611826544",
+    "validationEnvironment": "Docker Maven build stage; reports extracted from retained inquiry-v1 test image"
+  },
+  "mock": {
+    "testsPassed": 37,
+    "reportedBy": "inquiry_mock agent, actual pytest execution; includes final reference/size alignment",
+    "runningSourceSha256": "4041d41c8a7b4465ec7428d08e8dcfdc71c98e37dadae61f1d86096e5d6904ec"
+  },
+  "react": {
+    "initialFullSuitePassed": 53,
+    "finalAffectedSuitePassed": 19,
+    "reportedBy": "inquiry_ui agent, actual Vitest execution",
+    "finalChange": "maxLength aligned from128 to100 after full suite; affected inquiry/importer tests and production build rerun",
+    "runningBundleSha256": {
+      "index-BfYV9brh.css": "dab3b4e89928ae2deb1e459757d97df155323274416f738efa1cab47d9c4e08c",
+      "index-MhpD6-8b.js": "8118c17b046a05af9667e5036d5fa7b47750c295e083d217e92241e1fa93ea7f"
+    }
+  },
+  "contracts": {
+    "localReferencesResolved": true,
+    "originalMockFixturesParsed": 4,
+    "validation": "All four fixtures passed authoritative Java validation through actual HTTP acceptance; a standalone JSON Schema validator was not run."
+  },
+  "runningImages": {
+    "api": "sha256:35d7f0e62036a50799106fecfbce4d712abc94ffdfbe16aaa4f1383001388dc4",
+    "web": "sha256:134aaa682bc5af7d124ced5a516efd2ae07d69ae6a0f0ebe409dfa6418862af8",
+    "mock-inquiry": "sha256:e77ce6fad79c2c854d284e579bf255452ac8585e91cb1f91fffbcb5de9d45e67",
+    "investigator": "sha256:86ef284d12004648a4a3862825f50e5c1c44a6338097cbe2aba9b18d12f90815"
+  },
+  "sourceSha256": {
+    "services/api/src/main/java/dev/pratik/poi/ObpmInquiryClient.java": "c50264c868dbfe8b739089f194092712ee9e41e4d87dfb872944b6cce1a61759",
+    "services/api/src/main/java/dev/pratik/poi/ObpmInquiryController.java": "8e6989ce1544e86d1ece9d35ad8fb4229806cb5e6360f5b00b3b007a0e69f992",
+    "services/api/src/test/java/dev/pratik/poi/ObpmInquiryClientTest.java": "69bd6d15d333546b20e9370ec670ad069f360e15ee75a0bd4d89d37c4286e2fa",
+    "services/api/src/test/java/dev/pratik/poi/ObpmInquiryControllerTest.java": "69b8b99a5af2e0583a73257bcc1e3ba11ca40440a4b8aa71bf9580ba0fea06d6",
+    "services/api/src/main/resources/application.yml": "e8f2f22baa81b84a2f2be8dc41dd0136b9bcf4f30f9d116a177aeb7bb9a73d1e",
+    "services/api/src/test/resources/inquiry-timeout.json": "560b4015fc3a8c4dbeecc88773717b1fdae0539bff18bc33463c624f3d520b3e",
+    "services/mock-inquiry/mock_inquiry/main.py": "4041d41c8a7b4465ec7428d08e8dcfdc71c98e37dadae61f1d86096e5d6904ec",
+    "services/mock-inquiry/mock_inquiry/__init__.py": "e201ad8b87dc1a26c528e2a6caa0f64d6cac61d3c1ebc92d8b8567e9aa245269",
+    "services/mock-inquiry/tests/test_inquiry.py": "648076763591bc7554eef2dad415965daa4e507b7d61dbdaff6d50b0eae440e3",
+    "services/mock-inquiry/requirements-test.txt": "da21b08f1bb33b76c738bb3733d898e23682a19a6ba742061c275df38b8d7958",
+    "services/mock-inquiry/requirements.txt": "2d6d8eb8662c42125d522e1e4abf5448a481cfd4d53c9751246263f4be9985a5",
+    "services/mock-inquiry/Dockerfile": "3eebf9eff8dea23e7a81b713fea265965bdb52d7338e623d917d216ae7f6132d",
+    "data/obpm/inquiry/MOCK-NEFT-1001.json": "0e5ef2d0b742e55696be0ae8879bcf960d5409c78100c2c4a727ced93b7020fe",
+    "data/obpm/inquiry/MOCK-NEFT-1002.json": "354adc6ab95429516a22824ae16f3552a9d331149d186e8afac4058f92f27041",
+    "data/obpm/inquiry/MOCK-NEFT-1003.json": "45fcfea17c1374440f63f9b093f72f420d5938d66d9ddd96dac32a8810d093b3",
+    "data/obpm/inquiry/MOCK-NEFT-1004.json": "b676a2ff44e5917c31b5e43c0e165706e1551bad8a678d4f46197c8b5ed7a764",
+    "apps/web/src/Obpm.test.tsx": "380fb1f8cdc879ce838e2967a4acf20b82054dcc86f25e812533c2b44fcedad9",
+    "apps/web/src/Obpm.tsx": "7e81776caf2b02ea1bbd5bab68dfcc7b2cd99fab8eb071435881f1ba9ebe0cc0",
+    "apps/web/src/ObpmInquiry.test.tsx": "95b391cfa35d0d30e887109e44661b2cfe7790bba5ca8b6b912b37cbe205f2b0",
+    "apps/web/src/ObpmInquiry.tsx": "e0c3ce2bd50b08875c517777ce30f507ec35b2ad3dd6b1fd80712cd022f7afa4",
+    "apps/web/src/styles.css": "676e2c528c35e33d64f1087846a90a7189831733219c3c48c9af0e2a86fb03a1",
+    "tools/generate_obpm_inquiry_samples.py": "e6bdd1615475e7e477248918f4e00260b5d3c57037da57208e44b27863cfbc07",
+    "tools/obpm_inquiry_acceptance.py": "0c300433cd3ea0a71d7fae3d810ee614244f4d6722d04aec919b44b7a7bb9fc7",
+    "compose.yaml": "1aa7a14db8f6a52b2170d0a1d6227f40bd2f385f2eabae75b47754fc6df0586a",
+    "docs/openapi.json": "15ccc3f84b1794030a6e28c4fbaf203faf5ce4ba2e2f48c4f5cf5c5b5c1b4904",
+    "docs/obpm-inquiry.openapi.json": "e0167421b9855890dbb0f830b2ab60d27c3b6bc7d76f3b56a14a302b1ac43f37",
+    "tools/start.ps1": "2063b181975c9f8ccbc9768b72dc09731d34e64b3e3872eabb58b388275d8894",
+    "infra/compose.rehearsal.yaml": "2dd74d14833a77bcfb1e394b7a67162518cc0dd9b1fcf50e0baecbd6b0f59731"
+  },
+  "limitations": [
+    "Native Windows Maven compiled main classes but test compilation could not resolve project classes; Docker package and all68tests passed instead.",
+    "Worker source/model behavior was not changed; actual Replay integration is recorded separately. No new Ollama inference is claimed.",
+    "Source and selected running artifact correspondence is checked; this is not a claim of byte-identical clean-room image reproducibility."
+  ],
+  "startupConfigurationChecks": "PowerShell syntax passed; merged rehearsal mock publishes no host port; API rehearsal port18088. Full launcher/rehearsal was not rerun."
+}

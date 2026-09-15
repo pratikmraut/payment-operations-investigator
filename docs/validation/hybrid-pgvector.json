@@ -1,0 +1,75 @@
+{
+  "verifiedAt": "2026-09-11T18:54:09.095384+00:00",
+  "retrievalMode": "hybrid",
+  "vectorStorage": "postgresql-pgvector",
+  "databaseRole": "poi_vectors",
+  "databaseSchema": "poi_knowledge",
+  "embeddingModel": "nomic-embed-text:v1.5",
+  "modelDigest": "0a109f422b47e3a30ba2b10eca18548e944e8a23073ee3f3e947efcf3c45e59f",
+  "storedVectorGroups": [
+    {
+      "model": "nomic-embed-text:v1.5",
+      "dimension": 768,
+      "documents": 12,
+      "contentHashLength": 64,
+      "documentKeyLength": 64
+    }
+  ],
+  "firstInstance": {
+    "documentBatches": 1,
+    "documentCount": 12,
+    "queryCount": 4
+  },
+  "newInstance": {
+    "documentBatches": 0,
+    "documentCount": 0,
+    "queryCount": 1,
+    "citationIds": [
+      "RB-TIMEOUT:v1",
+      "RB-REFUND:v1",
+      "RB-FAILURE:v1"
+    ]
+  },
+  "results": [
+    {
+      "query": "transport timeout succeeded successful capture idempotency retry",
+      "citationIds": [
+        "RB-TIMEOUT:v1",
+        "RB-REFUND:v1",
+        "RB-FAILURE:v1"
+      ],
+      "durationMs": 6257.2
+    },
+    {
+      "query": "duplicate webhook repeated delivery providerEventId exactly once idempotency",
+      "citationIds": [
+        "RB-WEBHOOK-DEDUP:v1",
+        "RB-REVIEW:v1",
+        "RB-TIMEOUT:v1"
+      ],
+      "durationMs": 451.06
+    },
+    {
+      "query": "out of order webhook late stale terminal state event timestamp",
+      "citationIds": [
+        "RB-EVENT-ORDER:v1",
+        "RB-FAILURE:v1",
+        "RB-UNCERTAINTY:v1"
+      ],
+      "durationMs": 324.02
+    },
+    {
+      "query": "refund confirmed requested missing ledger provider reconciliation refund amount",
+      "citationIds": [
+        "RB-REFUND:v1",
+        "RB-POLICY:v1",
+        "RB-FAILURE:v1"
+      ],
+      "durationMs": 268.26
+    }
+  ],
+  "limitations": [
+    "Four diagnostic development queries, not an independent quality benchmark.",
+    "Real neural embeddings and SQL retrieval tested; no generative model inference in this probe."
+  ]
+}

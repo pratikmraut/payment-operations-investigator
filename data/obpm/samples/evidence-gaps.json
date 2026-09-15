@@ -1,0 +1,74 @@
+{
+  "schemaVersion": "obpm-evidence-v1",
+  "dataClassification": "SYNTHETIC",
+  "snapshotId": "DEMO-NEFT-0002-SNAPSHOT-001",
+  "mappingVersion": "original-synthetic-neft-v1",
+  "extractedAt": "2026-09-12T05:20:00Z",
+  "source": {
+    "deploymentId": "SYNTHETIC-OBPM",
+    "releaseFamily": "14.7",
+    "exactMaintenanceRelease": null,
+    "hostCode": "DEMO-HOST",
+    "branchCode": "DEMO-BRANCH"
+  },
+  "payment": {
+    "sourcePaymentId": "DEMO-NEFT-0002",
+    "rail": "NEFT",
+    "direction": "OUTBOUND",
+    "sourceAmountDecimal": "875.25",
+    "amountMinor": 87525,
+    "currency": "INR",
+    "activationDate": "2026-09-12",
+    "createdAt": "2026-09-12T05:00:00Z",
+    "nativeTransactionStatus": null,
+    "statusUnavailableReason": "The synthetic source does not supply payment status."
+  },
+  "queueRecords": [
+    {
+      "evidenceId": "DEMO-NEFT-0002-QUEUE-001",
+      "sourcePaymentId": "DEMO-NEFT-0002",
+      "queueReference": "DEMO-ECA-QUEUE-0002-001",
+      "requestAttemptId": "DEMO-ECA-ATTEMPT-0002-001",
+      "nativeQueueCode": "EC",
+      "nativeResponseStatus": "DEMO_UNMAPPED",
+      "enteredAt": null,
+      "exitedAt": null,
+      "isCurrentQueueRecord": true,
+      "observedAt": "2026-09-12T05:20:00Z"
+    }
+  ],
+  "externalRequestAttempts": [
+    {
+      "evidenceId": "DEMO-NEFT-0002-REQUEST-001",
+      "requestAttemptId": "DEMO-ECA-ATTEMPT-0002-001",
+      "sourcePaymentId": "DEMO-NEFT-0002",
+      "requestType": "ECA",
+      "requestedAt": "2026-09-12T05:00:30Z",
+      "timeoutRecordedAt": null,
+      "externalSystemFinalOutcome": null
+    }
+  ],
+  "messages": [],
+  "accountingEntries": [],
+  "sourceCoverage": {
+    "queueRecords": {
+      "status": "PARTIAL",
+      "scope": "DEMO-NEFT-0002 queue history through 05:20 UTC; not all pages supplied.",
+      "asOf": "2026-09-12T05:20:00Z",
+      "paginationComplete": false,
+      "reason": "Original synthetic partial-page example; the response code has no approved mapping."
+    },
+    "messages": {
+      "status": "NOT_REQUESTED",
+      "reason": "This original synthetic slice does not supply message history."
+    },
+    "externalCoreResponses": {
+      "status": "UNAVAILABLE",
+      "reason": "No DDA/core response source is connected in this synthetic example."
+    },
+    "accountingEntries": {
+      "status": "UNAVAILABLE",
+      "reason": "No accounting instruction or posting evidence is supplied."
+    }
+  }
+}

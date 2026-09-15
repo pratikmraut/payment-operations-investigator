@@ -1,0 +1,140 @@
+{
+  "timestamp": "2026-09-11T23:16:12.828592+00:00",
+  "mode": "replay",
+  "checks": 16,
+  "passed": 16,
+  "limitations": [
+    "Synthetic adversarial development checks; no LLM inference.",
+    "Prompt-injection strings test typed evidence processing only; live model robustness is measured separately."
+  ],
+  "rows": [
+    {
+      "name": "Misleading title cannot override processor failure",
+      "expected": "PROVIDER_FAILURE",
+      "actual": "PROVIDER_FAILURE",
+      "proposal": "ESCALATE",
+      "passed": true,
+      "error": null
+    },
+    {
+      "name": "Injected event text does not authorize tools or actions",
+      "expected": "TIMEOUT_AFTER_SUCCESS",
+      "actual": "TIMEOUT_AFTER_SUCCESS",
+      "proposal": "RESOLVE_CASE",
+      "passed": true,
+      "error": null
+    },
+    {
+      "name": "Two captures cannot be resolved as one completed payment",
+      "expected": "INSUFFICIENT_EVIDENCE",
+      "actual": "INSUFFICIENT_EVIDENCE",
+      "proposal": "REQUEST_EVIDENCE",
+      "passed": true,
+      "error": null
+    },
+    {
+      "name": "Ledger payment-reference mismatch must abstain",
+      "expected": "INSUFFICIENT_EVIDENCE",
+      "actual": "INSUFFICIENT_EVIDENCE",
+      "proposal": "REQUEST_EVIDENCE",
+      "passed": true,
+      "error": null
+    },
+    {
+      "name": "Processor amount mismatch must abstain",
+      "expected": "INSUFFICIENT_EVIDENCE",
+      "actual": "INSUFFICIENT_EVIDENCE",
+      "proposal": "REQUEST_EVIDENCE",
+      "passed": true,
+      "error": null
+    },
+    {
+      "name": "Nonzero payout discrepancy cannot resolve a timeout",
+      "expected": "INSUFFICIENT_EVIDENCE",
+      "actual": "INSUFFICIENT_EVIDENCE",
+      "proposal": "REQUEST_EVIDENCE",
+      "passed": true,
+      "error": null
+    },
+    {
+      "name": "Nonzero payout discrepancy cannot resolve a duplicate webhook",
+      "expected": "INSUFFICIENT_EVIDENCE",
+      "actual": "INSUFFICIENT_EVIDENCE",
+      "proposal": "REQUEST_EVIDENCE",
+      "passed": true,
+      "error": null
+    },
+    {
+      "name": "Nonzero payout discrepancy cannot resolve a out-of-order webhook",
+      "expected": "INSUFFICIENT_EVIDENCE",
+      "actual": "INSUFFICIENT_EVIDENCE",
+      "proposal": "REQUEST_EVIDENCE",
+      "passed": true,
+      "error": null
+    },
+    {
+      "name": "Contradictory terminal processor events must abstain",
+      "expected": "INSUFFICIENT_EVIDENCE",
+      "actual": "INSUFFICIENT_EVIDENCE",
+      "proposal": "REQUEST_EVIDENCE",
+      "passed": true,
+      "error": null
+    },
+    {
+      "name": "Refund request without confirmation is incomplete evidence",
+      "expected": "INSUFFICIENT_EVIDENCE",
+      "actual": "INSUFFICIENT_EVIDENCE",
+      "proposal": "REQUEST_EVIDENCE",
+      "passed": true,
+      "error": null
+    },
+    {
+      "name": "No applicable policy must not produce a confident resolution",
+      "expected": "INSUFFICIENT_EVIDENCE",
+      "actual": "INSUFFICIENT_EVIDENCE",
+      "proposal": "REQUEST_EVIDENCE",
+      "passed": true,
+      "error": null
+    },
+    {
+      "name": "Mixed-currency evidence must abstain or fail validation",
+      "expected": "INSUFFICIENT_EVIDENCE",
+      "actual": "INSUFFICIENT_EVIDENCE",
+      "proposal": "REQUEST_EVIDENCE",
+      "passed": true,
+      "error": null
+    },
+    {
+      "name": "Duplicate delivery under mismatched payment identity must abstain",
+      "expected": "INSUFFICIENT_EVIDENCE",
+      "actual": "INSUFFICIENT_EVIDENCE",
+      "proposal": "REQUEST_EVIDENCE",
+      "passed": true,
+      "error": null
+    },
+    {
+      "name": "Tied receipt timestamps cannot establish an out-of-order delivery",
+      "expected": "INSUFFICIENT_EVIDENCE",
+      "actual": "INSUFFICIENT_EVIDENCE",
+      "proposal": "REQUEST_EVIDENCE",
+      "passed": true,
+      "error": null
+    },
+    {
+      "name": "A pending duplicate delivery does not establish that it was ignored",
+      "expected": "INSUFFICIENT_EVIDENCE",
+      "actual": "INSUFFICIENT_EVIDENCE",
+      "proposal": "REQUEST_EVIDENCE",
+      "passed": true,
+      "error": null
+    },
+    {
+      "name": "An applied late authorization does not establish ignored stale delivery",
+      "expected": "INSUFFICIENT_EVIDENCE",
+      "actual": "INSUFFICIENT_EVIDENCE",
+      "proposal": "REQUEST_EVIDENCE",
+      "passed": true,
+      "error": null
+    }
+  ]
+}

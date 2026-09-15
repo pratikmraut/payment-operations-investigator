@@ -1,0 +1,134 @@
+{
+  "status": "passed",
+  "evidenceCollectedAtUtc": "2026-09-11T20:33:12.188827+00:00",
+  "originalBuildCompletedAtUtc": "2026-09-11T20:31:11Z",
+  "originalBuildCommand": "docker compose --progress plain build api web",
+  "mavenCommandInBuildStage": "mvn -B -ntp package",
+  "originalBuildExecutedTests": true,
+  "extractionCommand": "docker build --progress plain --target build --tag payment-operations-investigator-api-test-evidence:timeout-alignment services/api",
+  "extractionReusedCachedTestLayer": true,
+  "testsRerunDuringExtraction": false,
+  "builderImage": "maven:3.9.9-eclipse-temurin-17@sha256:f58d59b6273e785ac0a4477f6e9b5ba1d7731c75b906c0f7b34076f1851318cc",
+  "runtime": {
+    "java.version": "17.0.15",
+    "java.runtime.version": "17.0.15+6",
+    "java.vendor": "Eclipse Adoptium",
+    "os.name": "Linux",
+    "os.arch": "amd64",
+    "os.version": "6.18.33.1-microsoft-standard-WSL2",
+    "user.timezone": "Etc/UTC"
+  },
+  "totals": {
+    "tests": 30,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "suites": [
+    {
+      "name": "dev.pratik.poi.ApiIntegrationTest",
+      "tests": 24,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "durationSeconds": 7.075,
+      "reportPath": "services/api/runtime/container-tests-timeout-alignment/TEST-dev.pratik.poi.ApiIntegrationTest.xml",
+      "reportSha256": "ee918dee7855a52a94b1887a4eea0d1fc18a43c5304661867e7344891d28b223"
+    },
+    {
+      "name": "dev.pratik.poi.MoneyFactsTest",
+      "tests": 6,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "durationSeconds": 0.205,
+      "reportPath": "services/api/runtime/container-tests-timeout-alignment/TEST-dev.pratik.poi.MoneyFactsTest.xml",
+      "reportSha256": "8613c3dbfff1c457856f710c4b6a6db6d2cc22fbdafb40f7e6cf3a783cd9dde3"
+    }
+  ],
+  "testedApiImage": "payment-operations-investigator-api:latest",
+  "testedApiImageManifestList": "sha256:3abfddb122af722121c46ece25f58ee11e436b0c4c177cf4fbadff9659519c84",
+  "cachedBuildImage": "payment-operations-investigator-api-test-evidence:timeout-alignment",
+  "cachedBuildImageManifestList": "sha256:0b48399349b10ffd5840e844ce66245a262899bf03f139266d8d1861849e2632",
+  "sourceProvenance": {
+    "method": "Copied /build/src and /build/pom.xml from the never-started cached build container; compared SHA-256 with working source.",
+    "allCopiedFilesMatchWorkingTree": true,
+    "filesCompared": 18,
+    "sourceFilesSha256": {
+      "services/api/src/main/java/dev/pratik/poi/Actor.java": "bb79480040fb0016ca4517d2f56bfa5dded2d936402e3cf64cfc04d97b4aeb1d",
+      "services/api/src/main/java/dev/pratik/poi/ApiController.java": "c3db98b47ed61d1a353c6d6b05e349c5fc6faa97613677f85147275991e5540e",
+      "services/api/src/main/java/dev/pratik/poi/ApiException.java": "86522fc2885d2f82ba1ed29fe18c9b28c930f47bcf5d0ad47fba23cccd4dfdc5",
+      "services/api/src/main/java/dev/pratik/poi/Application.java": "8c05a675c6ce0b45f7efaa992c4dab1f25d578c3eadc904c81969ae73624d5c9",
+      "services/api/src/main/java/dev/pratik/poi/AuthController.java": "2a058d1488a4d7eba2cc0f8e6636f0fca1bb009d9881c7c5c39150fb4e605e95",
+      "services/api/src/main/java/dev/pratik/poi/CaseStore.java": "c50280cebb7e6abc8d969be08c7c1becbaef9e69730a6ecfc9e85644718c1301",
+      "services/api/src/main/java/dev/pratik/poi/ErrorHandler.java": "a1ac4b6c2baa9f0341b9a069627c1446cf5dd9c7f767208c97e4e5c32be43e92",
+      "services/api/src/main/java/dev/pratik/poi/InvestigationService.java": "bfb4dce2b2a15b81a2b3511fee7dcd3c839f602724a1292667b8ff94e3d8e3de",
+      "services/api/src/main/java/dev/pratik/poi/JsonSupport.java": "25737aa83615383897faaf2b8f0e4b5aa86f402f5a139ec88dea8788da618bd0",
+      "services/api/src/main/java/dev/pratik/poi/MoneyFacts.java": "0946e87b1c48dd15633b1f627a8cb84531a345f78679543c3758f5f2fe17b5ce",
+      "services/api/src/main/java/dev/pratik/poi/SecurityConfig.java": "a42f7cc012e1445f4a2fa4d032fef7cdcc1463a999d6bc0feddfc9f41e3ad660",
+      "services/api/src/main/java/dev/pratik/poi/WorkerClient.java": "9ab07422abeb84c12a6a9f24e360f95b9e4b26eb45863052334e2dd1316aca4b",
+      "services/api/src/main/resources/application-postgres.yml": "1c00157aca0c4aed5b970ad650e2ef85f11c8ba0c9aa5e9a8c5384e235ec2a23",
+      "services/api/src/main/resources/application.yml": "146b963afec6522512ed8db054041b944eedc95e7bfce50901816741297b75df",
+      "services/api/src/main/resources/schema.sql": "2853a286ff0d83a4fc85c55bafc104fe1fb448102512903d825a5320f540df1f",
+      "services/api/src/test/java/dev/pratik/poi/ApiIntegrationTest.java": "ff9b1d32f7d8182fc8a635ad9df36552cdbb76a079f57ed35cec0653dba77a3c",
+      "services/api/src/test/java/dev/pratik/poi/MoneyFactsTest.java": "e056d9448b1cf4a6941ee19fa0b8d2c3cab6393982d8933e66572b477498167d",
+      "services/api/pom.xml": "55ffabae4905895d14d83d7a551d1c2b1eac2b4e054f784c3a565fbaa47f6ab4"
+    },
+    "workingDockerfileSha256": "a3983ee78c673ce7515523b3b3584cb62badfa3765f3bbdf5e6142caef1c86c4"
+  },
+  "regressionCoverage": [
+    "Reject resolution for positive and negative known payout discrepancies.",
+    "Reject resolution for unknown or absent provider payout.",
+    "Preserve balanced timeout, duplicate-webhook and out-of-order resolution proposals.",
+    "Reject wrong/missing case and investigation IDs before rewriting worker provenance.",
+    "Recursively reject only the existing scenarioFamily/groundTruth/expectedOutcome import keys.",
+    "Preserve ordinary nested domain fields and label words inside prose.",
+    "Capture the outgoing worker HttpRequest and verify configured 390 seconds remains 390, oversized 10000 clamps to 390, and zero clamps to 1."
+  ],
+  "timeoutAlignment": {
+    "providerHttpSeconds": 180,
+    "javaWorkerDefaultAndMaximumSeconds": 390,
+    "nginxProxyReadSeconds": 420,
+    "viteProxyTimeoutMilliseconds": 420000,
+    "transportLimitsAreNotDownstreamCancellationGuarantees": true
+  },
+  "frontendVerification": {
+    "tests": 18,
+    "testFiles": 2,
+    "vitestCommand": "npm test",
+    "viteFormatCommand": "node node_modules/prettier/bin/prettier.cjs --check vite.config.ts",
+    "dockerProductionBuildPassed": true,
+    "nginxSyntaxCommand": "docker run --rm --network none --add-host api:127.0.0.1 --entrypoint nginx payment-operations-investigator-web:latest -t",
+    "nginxSyntaxPassed": true,
+    "webImageManifestList": "sha256:2ca6ddd6938e596f45886bd7458012d8e2dd29daf74702af7e40c0bf062e9b33",
+    "configSha256": {
+      "apps/web/vite.config.ts": "33666f715738218ce6f0fb1661a64bffcbccd06112b97b7ab4f6971d4a6db5ab",
+      "apps/web/nginx.conf": "b3f39e28e4e295e02b88f6e22ced7c8ccfeb39b9a4e659566ae9bde5b897e0c7"
+    },
+    "browserJourneyRerun": false
+  },
+  "buildLog": {
+    "path": "services/api/runtime/timeout-alignment-build.log",
+    "sha256": "f2a24b37ea79e21fb11439d0972f4444018bb83c672e0267ca64984bf13a8664"
+  },
+  "cleanup": {
+    "container": "poi-api-timeout-evidence-20260912-9d31",
+    "stateBeforeRemoval": "created",
+    "started": false,
+    "removed": true,
+    "liveServicesRecreated": false
+  },
+  "limitations": [
+    "This Linux build executed 30 tests; the subsequent report extraction reused that successful cached test layer and was not another test execution.",
+    "JUnit uses Spring MockMvc, in-memory H2, a local HTTP stub and a mocked transport for timeout capture; no model call or real payment integration.",
+    "Native Windows Maven classpath limitation remains as previously documented; dependencies and test execution were not weakened.",
+    "No service deployment, browser journey, PostgreSQL persistence or live-model acceptance was performed in this timeout-alignment task.",
+    "Provider 180 seconds is the coordinated worker configuration; this API/web build does not claim to validate live provider latency or strict downstream cancellation."
+  ],
+  "previousReceipt": {
+    "path": "docs/validation/java-container-tests-29-pre-timeout.json",
+    "sha256": "fce662a3c2ebcad28892b6c18e36e66ff87b3902c8371a1bca029d4e8083ecd2",
+    "tests": 29,
+    "rawReportsPreservedAt": "services/api/runtime/container-tests"
+  }
+}

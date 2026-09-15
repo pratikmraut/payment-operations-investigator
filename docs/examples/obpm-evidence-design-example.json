@@ -1,0 +1,108 @@
+{
+  "exampleStatus": "DESIGN_ONLY_NOT_IMPLEMENTED_OR_EXECUTED",
+  "dataOrigin": "Original synthetic illustration; no Oracle or customer records",
+  "notice": "Logical field names only. This is not a current app or Oracle API request schema.",
+  "input": {
+    "schemaVersion": "proposed-obpm-evidence-v1",
+    "snapshotId": "DEMO-SNAPSHOT-001",
+    "mappingVersion": "synthetic-neft-example-v1",
+    "extractedAt": "2026-09-12T05:20:00Z",
+    "source": {
+      "deploymentId": "SYNTHETIC-OBPM",
+      "releaseFamily": "14.7",
+      "exactMaintenanceRelease": null,
+      "hostCode": "DEMO-HOST",
+      "branchCode": "DEMO-BRANCH",
+      "scopeNotice": "An implemented backend must bind source scope to authenticated permissions"
+    },
+    "payment": {
+      "sourcePaymentId": "DEMO-NEFT-0001",
+      "rail": "NEFT",
+      "direction": "OUTBOUND",
+      "sourceAmountDecimal": "12500.00",
+      "amountMinor": 1250000,
+      "currency": "INR",
+      "activationDate": "2026-09-12",
+      "createdAt": "2026-09-12T05:00:00Z",
+      "nativeTransactionStatus": null,
+      "statusUnavailableReason": "Not supplied by this illustrative extract"
+    },
+    "queueRecords": [
+      {
+        "evidenceId": "DEMO-QUEUE-EVIDENCE-001",
+        "sourcePaymentId": "DEMO-NEFT-0001",
+        "queueReference": "DEMO-ECA-QUEUE-001",
+        "requestAttemptId": "DEMO-ECA-ATTEMPT-001",
+        "nativeQueueCode": "EC",
+        "nativeResponseStatus": "T",
+        "enteredAt": "2026-09-12T05:01:00Z",
+        "exitedAt": null,
+        "isCurrentQueueRecord": true,
+        "observedAt": "2026-09-12T05:20:00Z"
+      }
+    ],
+    "externalRequestAttempts": [
+      {
+        "evidenceId": "DEMO-REQUEST-EVIDENCE-001",
+        "requestAttemptId": "DEMO-ECA-ATTEMPT-001",
+        "sourcePaymentId": "DEMO-NEFT-0001",
+        "requestType": "ECA",
+        "requestedAt": "2026-09-12T05:00:30Z",
+        "timeoutRecordedAt": "2026-09-12T05:01:00Z",
+        "externalSystemFinalOutcome": null
+      }
+    ],
+    "messages": [],
+    "accountingEntries": [],
+    "sourceCoverage": {
+      "queueRecords": {
+        "status": "COMPLETE",
+        "scope": "This payment's queue records from 05:00 through 05:20 UTC only",
+        "asOf": "2026-09-12T05:20:00Z",
+        "paginationComplete": true
+      },
+      "messages": {
+        "status": "NOT_REQUESTED",
+        "reason": "Message history has not been supplied"
+      },
+      "externalCoreResponses": {
+        "status": "UNAVAILABLE",
+        "reason": "No DDA/core evidence source in this illustration"
+      },
+      "accountingEntries": {
+        "status": "UNAVAILABLE",
+        "reason": "No accounting evidence source in this illustration"
+      }
+    }
+  },
+  "illustrativeDashboardOutput": {
+    "executionStatus": "ILLUSTRATIVE_EXPECTATION_NOT_A_RUN_RESULT",
+    "scope": "One imported synthetic payment; not bank-wide analytics",
+    "summary": "OBPM recorded an ECA timeout; the external system outcome remains unconfirmed.",
+    "proposedFindingCode": "ECA_TIMEOUT_RECORDED",
+    "paymentOutcome": "UNKNOWN",
+    "postingStatus": "UNKNOWN",
+    "nativeTransactionStatus": null,
+    "displayPaymentStatus": "UNKNOWN",
+    "observedQueue": "ECA",
+    "observedQueueResponse": "T",
+    "queueAgeSecondsAtSnapshot": 1140,
+    "slaBreach": "UNKNOWN_THRESHOLD_NOT_CONFIGURED",
+    "evidenceIds": ["DEMO-QUEUE-EVIDENCE-001", "DEMO-REQUEST-EVIDENCE-001"],
+    "missingEvidence": [
+      "Current DDA/core outcome for DEMO-ECA-ATTEMPT-001, including amount-block state where relevant",
+      "Payment status and message history through a declared cutoff",
+      "Accounting outcome where relevant to the requested investigation",
+      "Applicable local operating procedure and exact release mapping"
+    ],
+    "nextCaseAction": "REQUEST_EVIDENCE",
+    "nextEvidenceCheck": "Reconcile the recorded ECA attempt with the authorized external-system response source before recommending recovery.",
+    "procedureReference": {
+      "source": "https://docs.oracle.com/en/industries/financial-services/banking-payments/14.7.0.0.0/obpeq/external-credit-approval-queue.html",
+      "topic": "ECA Resend timeout prerequisite",
+      "scope": "Reference for a future procedure panel; not a retrieved or approved runtime result",
+      "actionEligibility": "NOT_CONFIRMED_FOR_EXECUTION"
+    },
+    "paymentActionExecuted": false
+  }
+}

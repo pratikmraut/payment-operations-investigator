@@ -1,0 +1,115 @@
+{
+  "status": "PASS",
+  "recordedAt": "2026-09-13T19:29:49.7949721Z",
+  "url": "http://127.0.0.1:5178/",
+  "inquiryMode": "MOCK",
+  "bankParameter": "orgBank",
+  "defaultBank": "760",
+  "java": {
+    "tests": 128,
+    "failures": 0,
+    "errors": 0,
+    "testSourceMatches": true,
+    "matchedSourceFiles": 42,
+    "buildImage": "poi-discovery-build:20260914-bank"
+  },
+  "frontend": {
+    "finalFocusedTests": 35,
+    "mainTypescript": "PASS",
+    "nativeTypescript": "PASS",
+    "productionBuild": "PASS"
+  },
+  "http": {
+    "report": "payment-discovery-http-2026-09-14.json",
+    "checks": 7,
+    "durationSeconds": 3.179
+  },
+  "browser": {
+    "rootLogin": "PASS",
+    "fourParameterForm": "PASS",
+    "mockCandidates": 6,
+    "excelCandidates": 3,
+    "excelGroupedSubsequences": "0, 1",
+    "caseCreation": "PASS",
+    "caseReload": "PASS",
+    "originalDemoCases": 48,
+    "finalUrl": "http://127.0.0.1:5178/",
+    "viewportOverrideReset": true
+  },
+  "preservedSource": [
+    {
+      "path": "services/investigator/investigator/uat_answer.py",
+      "sha256": "bcea6c6042c2afd376cc8cc56a1be661142555db8765fc9d5116415a5240312c",
+      "unchanged": true
+    },
+    {
+      "path": "services/api/src/main/java/dev/pratik/poi/UatWorkerClient.java",
+      "sha256": "232d3b2b5907b5ea7924feaaa5d068c6551e8a4af6092dace5ad4da69525c1f4",
+      "unchanged": true
+    },
+    {
+      "path": "services/api/src/main/java/dev/pratik/poi/ObpmEvidenceValidator.java",
+      "sha256": "0f35ff4d6e3dd5b163f1b1cce9f2026bcbd1dad352466ec23345f6c128c3db40",
+      "unchanged": true
+    },
+    {
+      "path": "services/api/src/main/java/dev/pratik/poi/UatService.java",
+      "sha256": "a8732a80e7c88381a8646eff75a51f379c1f1b27e32b246b788af1f1ac6c75c1",
+      "unchanged": true
+    },
+    {
+      "path": "tools/start-cpu-demo.ps1",
+      "sha256": "6010636c29137a16c36137d55d4d0c503de5e75e416a2d0f63e6440b8605cc15",
+      "unchanged": true
+    },
+    {
+      "path": "infra/compose.uat-qa.yaml",
+      "sha256": "58b9cb1ec6bc6736929ab42efde9e4d7cfc7a8674a355e2f5b877d9f34e3586b",
+      "unchanged": true
+    },
+    {
+      "path": "tools/start-native-ollama.ps1",
+      "sha256": "14fcbf5aaa5d61a9c59a854497cbbd073b297046a11339bc0e3885b9061a93e2",
+      "unchanged": true
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "runtime/native-ollama/artifacts/api.jar",
+      "sha256": "f0b034fb75db758153821f032a1a8829d1e39eafe3a35bc1b54a61decceb1cbe"
+    },
+    {
+      "path": "runtime/native-gpu/web-dist/index.html",
+      "sha256": "b07de35fdf6e0719906646a28cec63b7a0e4e953296565483bcc5c64ed932f89"
+    },
+    {
+      "path": "runtime/native-gpu/web-dist/assets/index-ixVXjBQG.js",
+      "sha256": "cb9f7fcf2503adad1eba374741c2d0a306f8d1d1b45f9a45d85a1076d339ab66"
+    },
+    {
+      "path": "runtime/native-gpu/web-dist/assets/index-hZkx-4vP.css",
+      "sha256": "750424e329878dac44d4abf325259c706dfd515809a8ccbfa608697bed7e109b"
+    },
+    {
+      "path": "apps/web/public/payment-discovery-template.xlsx",
+      "sha256": "2e5869348a918b9e2e69612244557f27453130793fce4e504598bd04ee76c700"
+    },
+    {
+      "path": "docs/payment-discovery-bank.openapi.json",
+      "sha256": "63f2e4dc68d656041ebcaf646704b0f35d00e8f6975af9c7d0df5d3cd920ad87"
+    },
+    {
+      "path": "runtime/obpm-uat/sql/13_payment_discovery_api.sql",
+      "sha256": "8cd2d08cf7ae92957bca11f5d8f885b0a8879c6478475cdaa52a8a9f22a8283a"
+    }
+  ],
+  "bankCalls": 0,
+  "modelCalls": 0,
+  "limits": [
+    "Dummy bank endpoint not contacted.",
+    "No Oracle query or package was compiled or executed.",
+    "Discovery cases do not yet attach detailed inquiry evidence or run model questions.",
+    "Configured bank/branch authorization is required; one fixed bank endpoint per deployment.",
+    "Original model accuracy limitations remain; no new inference benchmark was run."
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "status": "PASS",
+  "timestamp": "2026-09-13T19:27:43.577404+00:00",
+  "durationSeconds": 3.179,
+  "checks": [
+    "session, role, CSRF and explicit bank/branch restrictions",
+    "mock list returns exact identifiers, amounts and explicit provenance",
+    "reference/UTR lookup and bounded no-match response",
+    "open/resume, idempotent retry and private case authorization",
+    "Excel template, long text IDs, grouped host rows and scope rejection",
+    "loaded Excel lookup and concurrent creation reuse one case",
+    "new payment cases persist separately from original demo cases"
+  ],
+  "checkCount": 7,
+  "bankCalls": 0,
+  "modelCalls": 0,
+  "data": "original mock and original downloadable workbook only",
+  "limitations": [
+    "No bank endpoint or UAT database was contacted.",
+    "Discovery records are not full inquiry evidence.",
+    "Local demo cases were created or resumed; no payment action was executed."
+  ]
+}

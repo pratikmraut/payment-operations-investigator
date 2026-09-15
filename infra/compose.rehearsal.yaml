@@ -1,0 +1,15 @@
+# Applied after compose.yaml with an isolated, generated project name.
+# Requires Docker Compose 2.24.4+ for !override.
+services:
+  postgres:
+    ports: !override ["127.0.0.1:15438:5432"]
+  investigator:
+    environment:
+      POI_RETRIEVAL_MODE: lexical
+    ports: !override ["127.0.0.1:18091:8091"]
+  mock-inquiry:
+    ports: !override []
+  api:
+    ports: !override ["127.0.0.1:18088:8088"]
+  web:
+    ports: !override ["127.0.0.1:15178:80"]

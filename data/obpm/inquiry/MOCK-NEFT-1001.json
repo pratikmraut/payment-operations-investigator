@@ -1,0 +1,72 @@
+{
+  "schemaVersion": "neft-inquiry-v1",
+  "dataClassification": "SYNTHETIC",
+  "snapshotId": "MOCK-NEFT-1001-SNAPSHOT-001",
+  "mappingVersion": "original-synthetic-inquiry-v1",
+  "extractedAt": "2026-09-12T07:40:00Z",
+  "source": {
+    "deploymentId": "SYNTHETIC-OBPM",
+    "releaseFamily": "14.7",
+    "exactMaintenanceRelease": null,
+    "hostCode": "DEMO-HOST",
+    "branchCode": "DEMO-BRANCH"
+  },
+  "payment": {
+    "sourcePaymentId": "MOCK-NEFT-1001",
+    "rail": "NEFT",
+    "direction": "OUTBOUND",
+    "sourceAmountDecimal": "18450.75",
+    "currency": "INR",
+    "activationDate": "2026-09-12",
+    "createdAt": "2026-09-12T07:00:00Z",
+    "nativeTransactionStatus": null,
+    "statusUnavailableReason": "The original mock inquiry does not supply payment status."
+  },
+  "queueRecords": [
+    {
+      "evidenceId": "MOCK-NEFT-1001-QUEUE-001",
+      "sourcePaymentId": "MOCK-NEFT-1001",
+      "queueReference": "MOCK-NEFT-1001-QUEUE-REF-001",
+      "requestAttemptId": "MOCK-NEFT-1001-ECA-001",
+      "nativeQueueCode": "EC",
+      "nativeResponseStatus": "T",
+      "enteredAt": "2026-09-12T07:01:00Z",
+      "exitedAt": null,
+      "isCurrentQueueRecord": true,
+      "observedAt": "2026-09-12T07:40:00Z"
+    }
+  ],
+  "externalRequestAttempts": [
+    {
+      "evidenceId": "MOCK-NEFT-1001-REQUEST-001",
+      "requestAttemptId": "MOCK-NEFT-1001-ECA-001",
+      "sourcePaymentId": "MOCK-NEFT-1001",
+      "requestType": "ECA",
+      "requestedAt": "2026-09-12T07:00:30Z",
+      "timeoutRecordedAt": "2026-09-12T07:01:00Z",
+      "externalSystemFinalOutcome": null
+    }
+  ],
+  "messages": [],
+  "accountingEntries": [],
+  "sourceCoverage": {
+    "queueRecords": {
+      "status": "COMPLETE",
+      "scope": "MOCK-NEFT-1001 queue records from 07:00 through 07:40 UTC only.",
+      "asOf": "2026-09-12T07:40:00Z",
+      "paginationComplete": true
+    },
+    "messages": {
+      "status": "NOT_REQUESTED",
+      "reason": "This original mock inquiry does not supply message history."
+    },
+    "externalCoreResponses": {
+      "status": "UNAVAILABLE",
+      "reason": "The mock has no external core response source."
+    },
+    "accountingEntries": {
+      "status": "UNAVAILABLE",
+      "reason": "The mock supplies no accounting instruction or posting evidence."
+    }
+  }
+}

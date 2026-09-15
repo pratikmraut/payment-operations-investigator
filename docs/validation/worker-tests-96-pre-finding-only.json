@@ -1,0 +1,147 @@
+{
+  "schemaVersion": 1,
+  "status": "PASS",
+  "evidenceKind": "JUnit extraction from the latest completed 96-test run, including real restricted-role PostgreSQL; no model inference during this suite",
+  "run": {
+    "timestamp": "2026-09-12T02:08:08.982861+05:30",
+    "timestampUtc": "2026-09-11T20:38:08.982861+00:00",
+    "suiteDurationSeconds": 3.994,
+    "totals": {
+      "tests": 96,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 96
+    },
+    "xmlTestcaseElements": 96,
+    "testsByModule": {
+      "tests.test_config": 7,
+      "tests.test_evidence": 41,
+      "tests.test_graph_service": 14,
+      "tests.test_ollama_adapter": 7,
+      "tests.test_retrieval": 3,
+      "tests.test_vector_store": 7,
+      "tests.test_workflow": 17
+    }
+  },
+  "junit": {
+    "path": "services/investigator/runtime/pytest-verified.xml",
+    "sha256": "b311d42050982e3be0e1601e8c01dd057efcff4082f2552dde94d764e54126af"
+  },
+  "provenance": {
+    "extractedAt": "2026-09-11T20:39:36.801063+00:00",
+    "sourceHashTiming": "Hashes captured after this test run while application source/configuration/dependencies remained frozen; the original JUnit does not embed source hashes.",
+    "treeHashAlgorithm": "SHA-256 of UTF-8 lines relativePath:sha256 followed by newline, sorted by relative path; include Python files only.",
+    "sourceTree": {
+      "sha256": "aed3df44a272809edb3307ec548583de03a110e8124120a59535bd55530bbc27",
+      "files": {
+        "investigator/__init__.py": "b5391400f0a9c6a6d4f0d8913021edf256e87d0577fa86146ae489bd45bf2173",
+        "investigator/config.py": "d660f8ce92e00ef8a7a00dd3790f6fa8cf3f5e2b46f698ab057ef453fd6024b0",
+        "investigator/errors.py": "e57dde3e04b0f9cd31bfd827d5193f6e331251bf52a1a0c09a29ff2c285a4469",
+        "investigator/evidence.py": "03c62e3c00ec6b3fca7ccf0fcfa850663c32b56e42dcf89bf55821b528b2a22d",
+        "investigator/graph.py": "642edbaf8443ef6742aaf5d502c5606401a692e8d7a078008c86e79276f58c47",
+        "investigator/main.py": "8ed3dcb86e2c8facad9f54c20a31ce4f6c418fa759e95ee3e14c906d3c4509a0",
+        "investigator/models.py": "5f50af89b85052cb79d6bcfdde6e89b5c81614c3045f66735ad3522dcc6daed2",
+        "investigator/retrieval.py": "06e1c41d73daaef156c78905e9112f9adcc84d723f7f97dd080a275ab28f0c19",
+        "investigator/vector_store.py": "d1fc0b89efb7c9bcc62b57a2c5cce10e623a719724efb7c30380c979d11358bb"
+      }
+    },
+    "testTreeSha256": "540949318f2f36772c8c6ba238b6aa349d5a64229647c0804c9776687773d772",
+    "testFiles": 8,
+    "configuration": {
+      "path": "investigator/config.py",
+      "sha256": "d660f8ce92e00ef8a7a00dd3790f6fa8cf3f5e2b46f698ab057ef453fd6024b0"
+    },
+    "requirements": {
+      "path": "requirements.txt",
+      "sha256": "fd3bc3e05ba5925401cd18b051428f582e17fd4543e378c9aa69e8edf25bf4e2"
+    },
+    "projectMetadata": {
+      "path": "pyproject.toml",
+      "sha256": "7333fda9ef4075252712862f6bd0c206b4314e51d85a6a6d7c6c16066e7fa918"
+    }
+  },
+  "recordedInvocation": {
+    "command": ".venv/Scripts/python.exe -m pytest --basetemp=runtime/pytest-workflow-guard --junitxml=runtime/pytest-verified.xml --tb=short",
+    "databaseEnvironment": "POI_TEST_VECTOR_DB_URL was explicitly set to the restricted local PostgreSQL role in the recorded run command; credential omitted.",
+    "databaseContext": {
+      "host": "127.0.0.1",
+      "port": 5438,
+      "database": "poi",
+      "role": "poi_vectors",
+      "schema": "poi_knowledge",
+      "provenance": "Recorded run command and prior restricted-role setup; connection identity is not a field in JUnit XML."
+    }
+  },
+  "coverageEvidence": {
+    "actualPostgresql": {
+      "test": "tests.test_vector_store::test_actual_pgvector_persistence_scope_dates_and_model_filters",
+      "included": true,
+      "skipped": false,
+      "durationSeconds": 0.183,
+      "checks": [
+        "Persistent pgvector storage reused by a fresh store instance",
+        "Tenant, effective date, current-source, model and dimension filters before results",
+        "Historical policy retrieval"
+      ],
+      "vectorData": "Tiny fixed numeric vectors supplied by the test; no embedding model is called by this database test."
+    },
+    "actualLocalComponents": [
+      "FastAPI TestClient request handling and service authentication",
+      "LangChain typed snapshot-scoped tools",
+      "Compiled LangGraph nodes and durable SQLite checkpoints",
+      "Deterministic money/evidence gates and citation identity/link checks"
+    ],
+    "modelAdapterDouble": {
+      "test": "tests.test_ollama_adapter::test_generation_controls_are_ollama_options_and_reasoning_is_disabled",
+      "method": "Production ChatOllama construction and actual Ollama client serialization, with httpx.MockTransport supplying synthetic tool calls and synthesis JSON.",
+      "verifiedRequestOptions": {
+        "stream": false,
+        "think": false,
+        "num_thread": 4,
+        "num_ctx": 4096,
+        "num_predict": 384
+      },
+      "liveModelInference": false,
+      "note": "The synthetic adapter response token counts and modelCalls=2 are test-double data, not real model usage.",
+      "verifiedSchemaScopes": "Separate evidence/policy ID enums; finding ID F-1 and authoritative outcome/action constants; one supplied policy bounds citationIds maxItems=1; insufficient assessments preserve empty finding behavior.",
+      "verifiedProviderHttpTimeoutSeconds": 180,
+      "verifiedWorkflowContext": {
+        "proposalOnly": true,
+        "reviewExecutedForThisProposal": false,
+        "caseActionExecutedByThisInvestigation": false,
+        "independentReviewRequired": true
+      }
+    },
+    "embeddingDoubles": "RecordingEmbeddings returns simple fixed vectors to inspect tenant filtering/cache behavior; BrokenEmbeddings raises a controlled error to test explicit failure without lexical fallback.",
+    "actualUnavailableProvider": "A real ChatOllama request to closed loopback port 1 verifies provider failure/no replay fallback. It is not successful model inference.",
+    "successfulLiveInferenceIncluded": false,
+    "actualEmbeddingModelIncluded": false,
+    "workflowGuard": {
+      "capturedRegressionSources": [
+        "Earlier live CASE-1002 summary",
+        "Earlier live CASE-1003 summary",
+        "First six-case development CASE-1021 proposal reason"
+      ],
+      "checks": [
+        "Rejects observed completed-case/proposal assertions and unqualified no-action prose without rewriting",
+        "Valid payment completion, financially scoped no-action wording, negated/modal case statements and review recommendations remain accepted",
+        "Untrusted question/policy strings cannot override service-built proposal context",
+        "Actual FastAPI/LangGraph rejection returns 422, checkpoints original candidate, and stores no accepted result"
+      ],
+      "limitation": "Targeted phrase checks are not general semantic entailment or paraphrase coverage."
+    }
+  },
+  "limitations": [
+    "96 passed tests do not establish real-world AI accuracy, production readiness or prompt-injection immunity.",
+    "Successful live Qwen/Nomic runs and full Java-to-worker acceptance are recorded separately; this report cannot substitute for them.",
+    "JUnit totals and duration are extracted as recorded; console-only warnings are not encoded by this XML."
+  ],
+  "build": {
+    "image": "payment-operations-investigator-investigator:latest",
+    "imageId": "sha256:7ba4be9208d9f6e9777d7463b2974d3944fdbe00d949d136152895fdee7fcea5",
+    "createdAt": "2026-09-12T02:08:37.66632039+05:30",
+    "status": "BUILT",
+    "deploymentAtCapture": "Not deployed by worker agent; prior image9c32a5 remained running during build verification."
+  }
+}

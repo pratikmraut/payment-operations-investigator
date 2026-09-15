@@ -1,0 +1,87 @@
+{
+  "status": "passed",
+  "timestamp": "2026-09-11T23:37:31.301080+00:00",
+  "method": "Manual Codex browser QA using CUA accessibility tree, actual UI interactions, inline screenshots and read-only DOM geometry; authenticated Java export corroborates the recorded decision.",
+  "url": "http://127.0.0.1:5178/#/cases/CASE-1031",
+  "frontendAsset": "/assets/index-BV_8yNgi.js",
+  "frontendAssetSha256": "713e126cec613968c1ea71bee10d0ef278f7290829ce030daa1d9bdb3d2ebfb0",
+  "componentReceipts": [
+    "frontend-tests.json",
+    "java-container-tests.json",
+    "worker-tests.json"
+  ],
+  "runtimeBeforeStartup": "runtime-v6b-hybrid.json",
+  "checks": [
+    "Current CASE-1041 planner-only result labels Ollama tool planning, no model explanation, three actionable evidence requests and rule-derived assessment.",
+    "CASE-1041 tool trace reports four executed tools and one actual chat stage.",
+    "Current CASE-1031 finding labels AI-selected evidence and explicitly attributes wording and evidence links to the service.",
+    "Refund finding shows confirmed INR 6,113.19, zero refund entries in the supplied ledger snapshot, INR 24,024.87 ledger net and INR 17,911.68 payout.",
+    "RB-REFUND:v1 opens the saved policy excerpt in a citation dialog; closing returns to the result.",
+    "Clicking LED-1031-1 selects Source evidence and identifies the exact referenced ledger record.",
+    "Hybrid trace shows four tools, two chat stages, 1314 input / 138 output tokens, hybrid retrieval and qwen3:4b-instruct.",
+    "Reviewer sign-in shows disabled approval until a required review note is supplied.",
+    "Independent reviewer approves the analyst investigation, transitioning the case from Awaiting Review to Escalated.",
+    "Audit trail shows analyst creation and reviewer approval with the exact investigation identifier and note.",
+    "Investigation history preserves prior replay labeling; selecting it displays Historical investigation and disables reviewing the older result.",
+    "Returning to the latest result restores the AI-selected evidence label and the already-reviewed case message.",
+    "Post-review Java export preserves the investigation unchanged and all events, ledger entries, webhooks and provider snapshot unchanged.",
+    "After final cached startup, fresh analyst login loads the 48-case tenant queue and preserves CASE-1031 Escalated; actual queue screenshot saved."
+  ],
+  "plannerInvestigationId": "INV-04267790-0d73-4d79-8324-0336b8a39461",
+  "hybridInvestigationId": "INV-938271e8-198e-4721-b883-80fd8c33c17f",
+  "decision": {
+    "investigationId": "INV-938271e8-198e-4721-b883-80fd8c33c17f",
+    "decision": "APPROVE",
+    "caseStatus": "ESCALATED",
+    "action": "ESCALATE",
+    "replayed": false,
+    "version": 5,
+    "id": "DEC-732f8275-7690-4d5e-8ef2-a5b363944181",
+    "caseId": "CASE-1031",
+    "reviewedBy": "reviewer",
+    "createdAt": "2026-09-11T23:29:31.272508487Z",
+    "note": "Reviewed the saved refund confirmation, supplied ledger snapshot and INR 6,113.19 discrepancy. Approve escalation for reconciliation review. No payment or ledger mutation is authorized."
+  },
+  "geometry": [
+    {
+      "innerWidth": 434,
+      "innerHeight": 938,
+      "documentWidth": 417,
+      "observation": "Narrow layout accessibility/DOM inspection; no element right edge beyond viewport in inspected DOM."
+    },
+    {
+      "innerWidth": 390,
+      "innerHeight": 844,
+      "documentWidth": 373,
+      "observation": "Inline screenshot captured after viewport reset: compact navigation, wrapped payment metadata and horizontally scrollable case tabs."
+    },
+    {
+      "innerWidth": 1422,
+      "innerHeight": 889,
+      "documentWidth": 1405,
+      "observation": "Wide layout DOM geometry; capture failed under viewport override."
+    }
+  ],
+  "evidence": {
+    "probe": "live-hybrid-java-v6b.json",
+    "probeSha256": "3c80cdcd62bdfabbb8b1fc82546cd708fb9beee1f469bed3b3369f5284bdf1b6",
+    "export": "runtime/browser-review-v6b-export.json",
+    "exportSha256": "8c8b369aa6dd1f1d6b475cfc0c9a57b387ad7098923d4edd5d3d15a92039e86b"
+  },
+  "limitations": [
+    "Two actual browser screenshots are saved under docs/screenshots; earlier intermediate and narrow-layout captures remain inline only.",
+    "CUA screenshot capture failed under explicit viewport overrides; resetting restored capture. Native viewport later returned to the app panel size, so this is bounded responsive inspection, not a complete device matrix.",
+    "This is a human-readable manual receipt, not an automated browser test or independent usability/accessibility certification.",
+    "Historical free-prose labeling is covered by component tests and earlier browser evidence; this pass directly exercised historical replay and current fact-selection/planner-only results."
+  ],
+  "screenshots": [
+    {
+      "path": "docs/screenshots/case-queue.jpg",
+      "sha256": "9f1f9d632f9464a00e3909eb1ab15b98fa7e721acc6bd9973c7bc1a28d96229f"
+    },
+    {
+      "path": "docs/screenshots/refund-investigation.jpg",
+      "sha256": "699b8570fb325a1f25fe0d5000dae0a1e9b6b05de55cbdaa07ab4f998dfa6953"
+    }
+  ]
+}

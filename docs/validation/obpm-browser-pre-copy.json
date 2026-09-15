@@ -1,0 +1,129 @@
+{
+  "recordedAt": "2026-09-12T10:53:17.032853+00:00",
+  "status": "PASS_WITH_DOCUMENTED_LIMITATIONS",
+  "scope": "Actual Edge browser interactions with deployed local app; original synthetic timeout only; replay only.",
+  "url": "http://127.0.0.1:5178/#/cases/OBPM-01267fa9f71b0442424f74c232386c8f",
+  "runningWebImageId": "sha256:35b1bb4a44220395f791d7d6b1816d03a7eb51af552ceec0348cdf55e79b28b6",
+  "runningWebContainerId": "c70eae79788a824795222d8f1b501df18211eeb9a40f58ab5587f9a9a3ee0d31",
+  "servedBundle": {
+    "path": "/assets/index-BGtH0cXB.js",
+    "sha256": "61bde8134a37a0310256f2cea6061c2b9ee6c741114af4cb196ee9f0bbf6af86",
+    "browserObservedPath": true,
+    "hashSource": "Prior actual packaged-file sha256sum matched native dist."
+  },
+  "caseId": "OBPM-01267fa9f71b0442424f74c232386c8f",
+  "importId": "IMP-43274a80-8317-4f18-b631-923cfc5b7c5a",
+  "investigationId": "INV-1cb49f89-d209-48cb-945a-9ed08bc5034a",
+  "finalState": "AWAITING_REVIEW",
+  "evidenceVersion": 1,
+  "evidenceHash": "4457a2bd040517c584c7b7a4992174c391cb73211d5686d78981b3017a28d20d",
+  "checks": [
+    {
+      "id": "analyst-login",
+      "status": "PASS",
+      "observation": "Signed into the running local app as analyst using its displayed demo credentials."
+    },
+    {
+      "id": "catalog",
+      "status": "PASS",
+      "observation": "Loaded synthetic sample catalog from app API; selected original eca timeout, not eca timeout updated."
+    },
+    {
+      "id": "original-import",
+      "status": "PASS",
+      "observation": "CREATED OBPM-01267fa9f71b0442424f74c232386c8f, Evidence v1, import IMP-43274a80-8317-4f18-b631-923cfc5b7c5a."
+    },
+    {
+      "id": "queue-retention",
+      "status": "PASS",
+      "observation": "Queue count increased51 to52; generic CASE-1001, CASE-1031 and other existing rows remained visible with their original context."
+    },
+    {
+      "id": "import-receipt",
+      "status": "PASS",
+      "observation": "Recent imports displayed new receipt/time/version and Open imported case navigated to the saved case."
+    },
+    {
+      "id": "native-unknown",
+      "status": "PASS",
+      "observation": "Native payment status and external system final outcome remained Unknown; exact maintenance release was not invented."
+    },
+    {
+      "id": "source-money",
+      "status": "PASS",
+      "observation": "Payment amount displayed INR12,500.00 with source decimal12500.00."
+    },
+    {
+      "id": "queue-attempt-time",
+      "status": "PASS",
+      "observation": "Raw EC/T codes, queue and ECA attempt IDs/times displayed; queue age19m0s at05:20Z cutoff, based on05:01Z entry."
+    },
+    {
+      "id": "scoped-coverage",
+      "status": "PASS",
+      "observation": "Queue completeness included declared payment/cutoff/pagination; external core/accounting unavailable and messages not requested, with reasons."
+    },
+    {
+      "id": "immutable-version-summary",
+      "status": "PASS",
+      "observation": "Evidence v1 current, source snapshot ID, extracted/imported timestamps and evidence hash displayed."
+    },
+    {
+      "id": "replay-assessment",
+      "status": "PASS",
+      "observation": "Run investigation with Replay produced OBPM_ECA_TIMEOUT/REQUEST_EVIDENCE and explicit no-language-model provenance."
+    },
+    {
+      "id": "tool-trace",
+      "status": "PASS",
+      "observation": "Four completed tools: inspect_obpm_payment, inspect_obpm_queue, inspect_obpm_eca_requests, inspect_obpm_coverage; model calls0 and input/output tokens0/0."
+    },
+    {
+      "id": "policy-citation",
+      "status": "PASS",
+      "observation": "RB-OBPM-ECA-TIMEOUT:v1 opened its policy excerpt/version; close button received focus, Escape closed dialog and restored citation-button focus."
+    },
+    {
+      "id": "evidence-link",
+      "status": "PASS",
+      "observation": "Finding queue-record button opened Bank evidence and highlighted DEMO-NEFT-0001-QUEUE-001 with current-snapshot disclosure."
+    },
+    {
+      "id": "history-review-state",
+      "status": "PASS",
+      "observation": "Saved investigation INV-1cb49f89-d209-48cb-945a-9ed08bc5034a appeared in history; case Awaiting Review; analyst saw reviewer gate. No decision submitted."
+    },
+    {
+      "id": "desktop-isolation",
+      "status": "PASS",
+      "observation": "Viewport1698x920, client/document widths1681/1681; banking DOM contained no Provider snapshot, Ledger entries or Webhook deliveries panels."
+    }
+  ],
+  "passedChecks": 16,
+  "screenshots": [
+    {
+      "caption": "Bank evidence and Replay result",
+      "delivery": "Emitted inline from actual CUA screenshot; not saved as a local file",
+      "localPath": null,
+      "mimeType": "image/jpeg",
+      "bytes": 133502,
+      "sha256": "b6dbc1fc9ed8dfbaf0039d180fdc1acffc093e98febf0c568617729762788f9a",
+      "hashMethod": "SHA256 computed over actual returned Uint8Array; helper verified against standard empty-message SHA256; JPEG FF D8 FF E0 signature observed."
+    }
+  ],
+  "copyObservations": {
+    "status": "Fixed in pending image, not yet deployed/rechecked",
+    "items": [
+      "Banking summary timestamp was labeled Case opened though it is source payment creation time.",
+      "Initial banking investigation helper mentioned generic ledger records."
+    ],
+    "pendingImageId": "sha256:ce018424d275f4cf051283f0fca95311e603f17240c51c5e86699f0569827312"
+  },
+  "limitations": [
+    "No Ollama inference was triggered by this browser QA.",
+    "No reviewer decision, original updated-snapshot import, mobile viewport or historical-snapshot reconstruction was performed.",
+    "Screenshot APIs documented capture/emission but not local file export; screenshot was emitted inline and hashed, no local screenshot path is claimed.",
+    "The subsequent copy correction deployment was blocked by automatic approval review; this browser receipt remains scoped to the earlier running image.",
+    "No live Oracle connection or exact maintenance-release mapping was verified."
+  ]
+}

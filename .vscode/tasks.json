@@ -1,0 +1,95 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "POI: Start application (GPU default)",
+      "type": "process",
+      "command": "powershell.exe",
+      "args": [
+        "-NoProfile",
+        "-File",
+        "${workspaceFolder}/tools/start.ps1"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "POI: Start preserved CPU demo",
+      "type": "process",
+      "command": "powershell.exe",
+      "args": [
+        "-NoProfile",
+        "-File",
+        "${workspaceFolder}/tools/start.ps1",
+        "-Mode",
+        "CPU",
+        "-WithAI"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "POI: CPU service status",
+      "type": "process",
+      "command": "docker",
+      "args": [
+        "compose",
+        "ps"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "POI: Stop GPU application (keep data)",
+      "type": "process",
+      "command": "powershell.exe",
+      "args": [
+        "-NoProfile",
+        "-File",
+        "${workspaceFolder}/tools/stop.ps1"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "POI: Build React",
+      "type": "shell",
+      "command": "npm",
+      "windows": {
+        "command": "npm.cmd"
+      },
+      "args": [
+        "run",
+        "build"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}/apps/web"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "POI: Check generated data",
+      "type": "process",
+      "command": "${workspaceFolder}/services/investigator/.venv/bin/python",
+      "windows": {
+        "command": "${workspaceFolder}\\services\\investigator\\.venv\\Scripts\\python.exe"
+      },
+      "args": [
+        "tools/generate_data.py",
+        "--check"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": []
+    }
+  ]
+}

@@ -1,0 +1,147 @@
+{
+  "date": "2026-09-13",
+  "recordedAt": "2026-09-13T10:00:27.992136+00:00",
+  "classification": "sanitized-development-receipt",
+  "delivery": "Local dynamic UAT Q&A implemented and live model request completed; final semantic review FAILED. Experimental only.",
+  "components": {
+    "javaFullDockerBuild": {
+      "passed": 90,
+      "failed": 0,
+      "errors": 0,
+      "uatTestsIncluded": 22
+    },
+    "react": {
+      "earlierFullSuitePassed": 64,
+      "finalTargetedSuitePassed": 14,
+      "productionBuild": "passed"
+    },
+    "workerEarlierFullSuite": {
+      "passed": 331,
+      "skipped": 1,
+      "scope": "Before final grounding changes"
+    },
+    "workerFinalTargetedSuite": {
+      "passed": 101,
+      "scope": "UAT answer and configuration tests on final source"
+    },
+    "toolsFullSuite": {
+      "passed": 45,
+      "exporter": 16,
+      "stagingValidator": 29
+    }
+  },
+  "httpAccess": {
+    "receipt": "uat-qa-http-access.json",
+    "expectedStatuses": 13,
+    "assertions": 14,
+    "requestedModelCalls": 0
+  },
+  "dynamicInputControls": {
+    "sameQuestion": true,
+    "differentOriginalInputValues": true,
+    "answersReflectedChangedValues": true,
+    "actualModelCalls": 2,
+    "usage": [
+      {
+        "provider": "ollama",
+        "name": "qwen3:4b-instruct",
+        "actualCalls": 1,
+        "promptTokens": 727,
+        "completionTokens": 238,
+        "durationMs": 61325
+      },
+      {
+        "provider": "ollama",
+        "name": "qwen3:4b-instruct",
+        "actualCalls": 1,
+        "promptTokens": 725,
+        "completionTokens": 215,
+        "durationMs": 36785
+      }
+    ],
+    "scope": "Earlier development revision; small original synthetic controls, not UAT accuracy evidence"
+  },
+  "reviewedHistoryRetest": {
+    "model": {
+      "provider": "ollama",
+      "name": "qwen3:4b-instruct",
+      "actualCalls": 1,
+      "promptTokens": 6079,
+      "completionTokens": 590,
+      "durationMs": 171445
+    },
+    "fieldChangeAndIntervalCorrect": true,
+    "remainingConcerns": [
+      "Limitation citation specificity",
+      "Next checks were identifiers",
+      "Timestamp-span wording could imply event semantics"
+    ],
+    "scope": "Previous grounding revision; raw evidence and computed comparison unchanged in current snapshot"
+  },
+  "currentBrowserAnswer": {
+    "model": {
+      "provider": "ollama",
+      "name": "qwen3:8b",
+      "actualCalls": 1,
+      "promptTokens": 6487,
+      "completionTokens": 453,
+      "durationMs": 270721
+    },
+    "generatedAt": "2026-09-13T09:51:29.607140Z",
+    "mode": "model-generated",
+    "validation": "structure-and-source-membership-only",
+    "documents": 14,
+    "citedDocuments": 3,
+    "claims": 5,
+    "unknowns": 3,
+    "nextChecks": 3,
+    "exactSourceObjectsVerified": true,
+    "persistedRequestHashVerified": true,
+    "answerComposition": "joined-model-claims",
+    "exactModelClaimCompositionVerified": true
+  },
+  "finalSemanticReview": {
+    "status": "failed",
+    "independentReviewAgreed": true,
+    "supportedClaims": 3,
+    "unsupportedClaims": 2,
+    "issues": [
+      "Invented N10 columns and values in the host record, where those columns are absent.",
+      "An uncertainty statement assigned message status 11 to two separate transaction-status fields whose recorded values are 2."
+    ],
+    "outcome": "The supplied exports do not establish whether beneficiary credit occurred.",
+    "scope": "Manual evidence review of the final browser answer; not an independent accuracy benchmark."
+  },
+  "browserChecks": {
+    "realQuestionSubmitted": true,
+    "pendingStateVisible": true,
+    "timeoutErrorVisibleWithoutFallback": true,
+    "savedHistoryReloaded": true,
+    "generatedClaimsAndCitationsDisplayed": true,
+    "experimentalWarningVisibleAfterFinalReload": true,
+    "scope": "Observed in the local browser during this development session; final warning build verified without another model call."
+  },
+  "runtime": {
+    "workerImage": "sha256:797925cf42bd529d89309038d2394a8f55a09505593ba0142d9b1fd2061d091b",
+    "apiImage": "sha256:e966c8a1d9b430cc1dc40ecf59fc0d078c828f80873ca60fb0834fa95523e207",
+    "webImage": "sha256:16d8b3b70c1070f6686b3e0f47297dad73b90dd2092b31e38b6f72124f5597ec",
+    "testedAndRunningWorkerModules": {
+      "uat_answer.py": "11f293bea3d297544b3998471a584925da8ca4df8eb4e5081c9cc1507cd2a060",
+      "config.py": "c04a79350e5a7c949a0d6d3c699cf8401f93ebaa46c63750f69d0c884e5c6a6c",
+      "main.py": "c7bbf83ffc6640ad3a70a6ed7822a60bb2585fb86aedb825c45777e381c3316a"
+    },
+    "servedWebAssets": [
+      "index-DvKqFTcv.js",
+      "index-C9_zdSo-.css"
+    ],
+    "apiJarSha256": "24f2b7a068a3ae3cd79bba3b3ae1c9001d8954a619a7272ad50feddb7dd095fc"
+  },
+  "failuresPreserved": "uat-qa-initial-failure.json",
+  "limits": [
+    "Citation membership and response shape do not prove semantic accuracy.",
+    "Actual CPU timeouts and semantic failures occurred and remain documented.",
+    "No bank database/API connection, payment execution or public UAT fixture was created.",
+    "Sources, full answers and original workbook hashes remain in private ignored directories.",
+    "This is a small development exercise, not a representative independent accuracy benchmark."
+  ]
+}

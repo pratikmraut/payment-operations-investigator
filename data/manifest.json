@@ -1,0 +1,23 @@
+{
+  "datasetVersion": "synthetic-payments-v1",
+  "seed": 20260911,
+  "synthetic": true,
+  "generatedAt": "2026-09-11T00:00:00Z",
+  "checks": {
+    "cases": 60,
+    "runbookVersions": 15,
+    "developmentCases": 30,
+    "testCases": 30,
+    "tenants": 2,
+    "checks": "passed"
+  },
+  "files": {
+    "data/fixtures/cases.json": "69b20aa628b7708033fee82bad8b0133986d889faba7a1900053b6365dcfe815",
+    "data/knowledge/runbooks.json": "003d306d04c03eaead6e8d891055b834ab94095a3760f6cf7e24d82e0ef601a6",
+    "data/evaluation/labels.json": "c0e617e1e2e3b925dfb3276c4ada404662587e101ea42b0d2a40ff391c8d2d0c"
+  },
+  "limitations": [
+    "Held-out template variants do not establish real-world generalization.",
+    "Fictional processor records; no live bank or scheme behavior."
+  ]
+}
