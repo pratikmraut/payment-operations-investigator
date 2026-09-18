@@ -15,7 +15,17 @@ import {
 import { api, ApiError, human } from "./api";
 import { navigateLink } from "./routing";
 import { paymentCaseNumber, paymentCasePath } from "./paymentCaseIdentity";
+import { caseListPath, validateCasePage } from "./paymentCaseList";
 import { parseEvidenceJson } from "./evidenceJson";
+import {
+  HistoryMore,
+  historyMeta,
+  mergeHistory,
+  validateHistoryPage,
+  type HistoryPage,
+  type HistoryPageMeta,
+} from "./caseHistory";
+import { useUnsavedChanges } from "./unsavedChanges";
 import {
   EvidenceProvenance,
   isSourceNull,
@@ -60,6 +70,7 @@ type Props = {
   canWrite: boolean;
   onSaved?: () => void;
   archived?: boolean;
+  resolved?: boolean;
 };
 type Mode = "inquiry" | "excel" | "manual";
 
@@ -101,6 +112,7 @@ function exactFields(
 function validatePayload(
   value: unknown,
   config: Config,
+  draft = false,
 ): asserts value is Payload {
   if (!record(value))
     throw new Error(
@@ -133,7 +145,7 @@ function validatePayload(
   }
   if (
     !bounded(value.sourceTimezone) ||
-    !value.sourceTimezone.trim() ||
+    (!draft && !value.sourceTimezone.trim()) ||
     value.sourceTimezone.length > 100
   )
     throw new Error(
@@ -179,7 +191,7 @@ function validatePayload(
   }
   const supplied = value.payment as Payload["payment"];
   if (
-    !["reference", "orgBank", "orgBranch"].every(
+    !(["reference", "orgBank", "orgBranch"] as const).every(
       (key) =>
         supplied[key as keyof typeof supplied] ===
         config.template.payment[key as keyof typeof supplied],
@@ -328,31 +340,59 @@ function ImportProblem({
   );
   const [loading, setLoading] = useState(false);
   const [lookupFailed, setLookupFailed] = useState(false);
+  const [truncated, setTruncated] = useState(false);
   useEffect(() => {
     setMatches([]);
     setLookupFailed(false);
+    setTruncated(false);
     if (!mismatch) {
       setLoading(false);
       return;
     }
     const controller = new AbortController();
     setLoading(true);
-    readEvidence<{ items: Record<string, unknown>[] }>("/payment-cases", {
-      signal: controller.signal,
-    })
+    readEvidence<unknown>(
+      caseListPath({
+        lifecycle: "ACTIVE",
+        bank: mismatch.supplied.orgBank,
+        branch: mismatch.supplied.orgBranch,
+        reference: mismatch.supplied.reference,
+        page: 1,
+        pageSize: 10,
+      }),
+      { signal: controller.signal },
+    )
       .then((result) => {
         if (controller.signal.aborted) return;
-        if (!Array.isArray(result?.items))
-          throw new Error("Case list unreadable.");
+        const found = validateCasePage(
+          result,
+          (
+            item,
+          ): item is {
+            id: string;
+            caseNumber?: string;
+            reference: string;
+            orgBank: string;
+            orgBranch: string;
+          } =>
+            record(item) &&
+            ["id", "reference", "orgBank", "orgBranch"].every(
+              (key) => typeof item[key] === "string",
+            ) &&
+            !!item.id &&
+            (item.caseNumber === undefined ||
+              typeof item.caseNumber === "string"),
+        );
+        setTruncated(found.total > found.items.length);
         setMatches(
-          result.items.filter(
+          found.items.filter(
             (item) =>
               record(item) &&
               typeof item.id === "string" &&
               (item.caseNumber === undefined ||
                 typeof item.caseNumber === "string") &&
               item.id !== caseId &&
-              ["reference", "orgBank", "orgBranch"].every(
+              (["reference", "orgBank", "orgBranch"] as const).every(
                 (key) =>
                   item[key] ===
                   mismatch.supplied[key as keyof Payload["payment"]],
@@ -419,10 +459,28 @@ function ImportProblem({
             <p>
               {lookupFailed
                 ? "The matching case lookup is unavailable."
-                : "No saved case matching all three identifiers is available in your workspace."}{" "}
+                : truncated
+                  ? "More matching cases are available in Case queue."
+                  : "No active saved case matching all three identifiers is available in your workspace."}{" "}
               Use Case queue to find this payment within your authorized bank
               and branch.
             </p>
+          )}
+          {truncated && matches.length > 0 && (
+            <p>
+              Showing the first {matches.length} matching cases. More matches
+              are available in Case queue.
+            </p>
+          )}
+          {!loading && (
+            <a
+              className="text-button"
+              href="/cases"
+              data-case-queue-mode="payment"
+              onClick={navigateLink}
+            >
+              Open Case queue
+            </a>
           )}
         </>
       )}
@@ -475,12 +533,15 @@ function EvidenceWorkspace({
   canWrite,
   onSaved,
   archived = false,
+  resolved = false,
 }: Props) {
   const base = `/payment-cases/${encodeURIComponent(caseId)}/evidence`;
-  const writable = canWrite && !archived;
+  const writable = canWrite && !archived && !resolved;
   const [config, setConfig] = useState<Config | null>(null);
   const [payload, setPayload] = useState<Payload | null>(null);
+  const [savedPayload, setSavedPayload] = useState("");
   const [history, setHistory] = useState<Summary[]>([]);
+  const [historyPage, setHistoryPage] = useState<HistoryPageMeta>();
   const [selectedId, setSelectedId] = useState("");
   const [snapshot, setSnapshot] = useState<Snapshot | null>(null);
   const [mode, setMode] = useState<Mode>("inquiry");
@@ -492,6 +553,10 @@ function EvidenceWorkspace({
   const [jsonName, setJsonName] = useState("");
   const [files, setFiles] = useState<Partial<Record<Group, File>>>({});
   const [excelTimezone, setExcelTimezone] = useState("UNKNOWN");
+  const [savedExcel, setSavedExcel] = useState<{
+    files: Partial<Record<Group, File>>;
+    timezone: string;
+  }>({ files: {}, timezone: "UNKNOWN" });
   const [error, setError] = useState<Error | null>(null);
   const [importError, setImportError] = useState<Error | null>(null);
   const [attemptedFile, setAttemptedFile] = useState("");
@@ -510,6 +575,12 @@ function EvidenceWorkspace({
   const historyRequest = useRef<AbortController | null>(null);
   const currentSnapshot = useRef<Snapshot | null>(null);
   const idempotency = useRef<{ signature: string; key: string } | null>(null);
+  const manualDirty = !!payload && JSON.stringify(payload) !== savedPayload;
+  const excelDirty =
+    excelTimezone !== savedExcel.timezone ||
+    GROUPS.some((key) => files[key] !== savedExcel.files[key]);
+  useUnsavedChanges(manualDirty, "Manual / JSON evidence");
+  useUnsavedChanges(excelDirty, "Excel evidence selection");
   useEffect(() => {
     if (writable) return;
     operation.current?.abort();
@@ -522,7 +593,7 @@ function EvidenceWorkspace({
     setInitialError(null);
     Promise.all([
       readEvidence<Config>(`${base}/config`, { signal: controller.signal }),
-      readEvidence<{ items: Summary[] }>(base, { signal: controller.signal }),
+      readEvidence<HistoryPage<Summary>>(base, { signal: controller.signal }),
     ])
       .then(([nextConfig, result]) => {
         if (controller.signal.aborted) return;
@@ -530,9 +601,20 @@ function EvidenceWorkspace({
         if (!Array.isArray(result?.items))
           throw new Error("The evidence version list is unreadable.");
         result.items.forEach((item) => validateSummary(item, caseId));
+        if (result.total !== undefined)
+          validateHistoryPage(result, caseId, (item) =>
+            validateSummary(item, caseId),
+          );
         setConfig(nextConfig);
         setPayload(structuredClone(nextConfig.template));
+        setSavedPayload(JSON.stringify(nextConfig.template));
         setHistory(result.items);
+        setHistoryPage(
+          historyMeta(
+            result.total === undefined ? undefined : result,
+            result.items.length,
+          ),
+        );
         setSelectedId(result.items[0]?.id ?? "");
       })
       .catch((failure: Error) => {
@@ -599,14 +681,29 @@ function EvidenceWorkspace({
     signal?.addEventListener("abort", abort, { once: true });
     setHistoryRefreshing(true);
     try {
-      const refreshed = await readEvidence<{ items: Summary[] }>(base, {
+      const refreshed = await readEvidence<HistoryPage<Summary>>(base, {
         signal: controller.signal,
       });
       if (!Array.isArray(refreshed?.items))
         throw new Error("The saved version list could not be refreshed.");
       refreshed.items.forEach((item) => validateSummary(item, caseId));
+      if (refreshed.total !== undefined)
+        validateHistoryPage(refreshed, caseId, (item) =>
+          validateSummary(item, caseId),
+        );
       if (!controller.signal.aborted) {
-        setHistory(refreshed.items);
+        setHistory((current) =>
+          mergeHistory(
+            refreshed.items,
+            current.filter((item) => item.id === selectedId),
+          ),
+        );
+        setHistoryPage(
+          historyMeta(
+            refreshed.total === undefined ? undefined : refreshed,
+            refreshed.items.length,
+          ),
+        );
         setHistoryError(null);
       }
     } catch (failure) {
@@ -657,13 +754,31 @@ function EvidenceWorkspace({
     setBusy("reading");
     try {
       const bytes = await readFile(file, controller.signal);
-      const value: unknown = parseEvidenceJson(
+      const uploaded: unknown = parseEvidenceJson(
         new TextDecoder("utf-8", { fatal: true }).decode(bytes),
       );
-      validatePayload(value, config);
+      const draft =
+        record(uploaded) && uploaded.draftVersion === "case-evidence-draft-v1";
+      if (draft) {
+        exactFields(uploaded, ["draftVersion", "caseId", "payload"], "Draft");
+        if (uploaded.caseId !== caseId)
+          throw new Error(
+            "This draft belongs to a different case. Your existing form has been preserved.",
+          );
+      }
+      const value: unknown = draft ? uploaded.payload : uploaded;
+      validatePayload(value, config, draft);
       if (controller.signal.aborted) return;
+      if (
+        manualDirty &&
+        JSON.stringify(value) !== JSON.stringify(payload) &&
+        !window.confirm(
+          "Replace the unsaved evidence form with this file? Cancel to keep your current draft.",
+        )
+      )
+        return;
       setPayload(value);
-      setJsonImported(true);
+      setJsonImported(!draft);
       setJsonName(file.name);
       setGroup("PAYMENT");
       setRowIndex(0);
@@ -772,6 +887,9 @@ function EvidenceWorkspace({
         `Evidence version ${result.version} saved. Previous versions remain unchanged.`,
       );
       idempotency.current = null;
+      if (mode === "manual") setSavedPayload(JSON.stringify(payload));
+      if (mode === "excel")
+        setSavedExcel({ files: { ...files }, timezone: excelTimezone });
       onSaved?.();
       await refreshHistory(controller.signal);
     } catch (failure) {
@@ -787,6 +905,25 @@ function EvidenceWorkspace({
     for (const key of GROUPS)
       value.sections[key].rows = [blankRow(config, key)];
     saveDownload(JSON.stringify(value, null, 2), `case-evidence-template.json`);
+  }
+  function downloadDraft() {
+    if (!payload || !config) return;
+    const content = JSON.stringify(
+      { draftVersion: "case-evidence-draft-v1", caseId, payload },
+      null,
+      2,
+    );
+    if (
+      new TextEncoder().encode(content).byteLength > config.limits.maxFileBytes
+    ) {
+      setError(
+        new Error(
+          "This draft exceeds the 5 MiB upload limit. Reduce the field content before downloading a recoverable draft.",
+        ),
+      );
+      return;
+    }
+    saveDownload(content, "case-evidence-draft.json");
   }
   if (loading)
     return (
@@ -877,7 +1014,9 @@ function EvidenceWorkspace({
         <p className="notice neutral">
           {archived
             ? "This case is archived. Saved evidence remains available below. Restore the case before adding a version."
-            : "Your role can read saved evidence. An analyst or reviewer can add a version."}
+            : resolved
+              ? "This case is resolved. Reopen it in Case management before adding evidence. Saved versions remain available below."
+              : "Your role can read saved evidence. An analyst or reviewer can add a version."}
         </p>
       ) : (
         <div
@@ -990,6 +1129,13 @@ function EvidenceWorkspace({
                   >
                     <Download size={15} /> Download JSON template
                   </button>
+                  <button
+                    type="button"
+                    className="secondary"
+                    onClick={downloadDraft}
+                  >
+                    <Download size={15} /> Download form draft
+                  </button>
                   <div>
                     <label htmlFor="case-evidence-json">
                       Upload JSON to fill the form
@@ -1013,6 +1159,12 @@ function EvidenceWorkspace({
                   The template includes one blank row per group with this case's
                   identity filled where applicable. Remove unused rows. JSON
                   upload fills the form and requires an explicit save.
+                </p>
+                <p className="muted">
+                  {manualDirty ? "Unsaved form changes. " : ""}Download form
+                  draft keeps your current entries in a file on this device.
+                  Upload that draft here to continue; it does not save evidence
+                  to the case. Draft files contain the entered payment data.
                 </p>
                 {jsonName && (
                   <p className="case-evidence-json-note">
@@ -1238,6 +1390,20 @@ function EvidenceWorkspace({
             </button>
           </>
         )}
+        <HistoryMore<Summary>
+          caseId={caseId}
+          path={base}
+          page={historyPage}
+          loaded={history.length}
+          label="evidence versions"
+          disabled={!!busy || historyRefreshing}
+          validate={(item) => validateSummary(item, caseId)}
+          onPage={(page) => {
+            setHistory((current) => mergeHistory(current, page.items));
+            setHistoryPage(page);
+          }}
+          onRefresh={() => void refreshHistory()}
+        />
         {historyRefreshing && (
           <p role="status">
             <LoaderCircle size={16} className="spin" /> Refreshing saved

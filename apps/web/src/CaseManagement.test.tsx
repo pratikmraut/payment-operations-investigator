@@ -392,6 +392,7 @@ describe("payment case management", () => {
       status: "FULFILLED",
       note: "Attached the supplied records",
       evidenceId: "EV-1",
+      assigneeId: null,
     });
   });
   it("binds independent reviewer conclusions to exact evidence and selected completed investigations", async () => {
@@ -414,6 +415,57 @@ describe("payment case management", () => {
       investigationIds: ["JOB-1"],
       conclusion: "The supplied records do not establish the final outcome.",
     });
+  });
+  it("records an evidence-only independent conclusion without an AI job", async () => {
+    const fetcher = mock({ work: { ...workbench, investigations: [] } });
+    await page();
+    tab("Reviewer conclusion");
+    expect(screen.getByText(/evidence-only reviewer conclusion/)).toBeVisible();
+    input("Reviewer conclusion", "Reviewed the source records directly; final payment outcome remains unknown.");
+    fireEvent.click(screen.getByRole("button", { name: "Record reviewer conclusion" }));
+    await screen.findByText("Saved to this case.");
+    expect(JSON.parse(posts(fetcher)[0][1].body as string)).toMatchObject({ evidenceId: "EV-1", evidenceHash: "hash-1", investigationIds: [] });
+  });
+  it("requires another reviewer for evidence saved by the current reviewer", async () => {
+    mock({ work: { ...workbench, evidence: [{ ...workbench.evidence[0], createdBy: "reviewer" }] } });
+    await page();tab("Reviewer conclusion");
+    input("Reviewer conclusion", "Check independence.");
+    expect(screen.getByText("A different reviewer must review evidence you saved.")).toBeVisible();
+    expect(screen.getByRole("button", { name: "Record reviewer conclusion" })).toBeDisabled();
+  });
+  it("submits explicit workflow changes with a reason and shared management version", async () => {
+    const fetcher = mock({ data: () => ({ ...initial(), status: "OPEN", allowedTransitions: ["INVESTIGATING", "AWAITING_EVIDENCE"] }) });
+    await page();
+    expect(screen.getByRole("button", { name: "Save investigation status" })).toBeDisabled();
+    input("Next investigation status", "INVESTIGATING");
+    input("Reason for status change", "Assigned analyst began inspecting the evidence.");
+    fireEvent.click(screen.getByRole("button", { name: "Save investigation status" }));
+    await screen.findByText("Saved to this case.");
+    expect(posts(fetcher)[0][0]).toBe("/api/payment-cases/PC-1/workflow");
+    expect(JSON.parse(posts(fetcher)[0][1].body as string)).toEqual({ expectedVersion: 0, status: "INVESTIGATING", reason: "Assigned analyst began inspecting the evidence." });
+  });
+  it("keeps resolved records read-only and permits an explicit reasoned reopen", async () => {
+    const fetcher = mock({ data: () => ({ ...initial(), version: 4, status: "RESOLVED", allowedTransitions: ["INVESTIGATING"] }) });
+    await page();
+    expect(screen.getByText(/This investigation is resolved/)).toBeVisible();
+    expect(screen.queryByRole("button", { name: "Save owner and priority" })).not.toBeInTheDocument();
+    tab("Notes");expect(screen.queryByRole("button", { name: "Add note" })).not.toBeInTheDocument();
+    tab("Reviewer conclusion");expect(screen.queryByRole("button", { name: "Record reviewer conclusion" })).not.toBeInTheDocument();
+    tab("Overview");input("Next investigation status", "INVESTIGATING");input("Reason for status change", "New supporting evidence needs review.");
+    fireEvent.click(screen.getByRole("button", { name: "Reopen investigation" }));
+    await screen.findByText("Saved to this case.");
+    expect(JSON.parse(posts(fetcher)[0][1].body as string)).toEqual({ expectedVersion: 4, status: "INVESTIGATING", reason: "New supporting evidence needs review." });
+  });
+  it("binds resolution to a reviewer conclusion for the latest evidence", async () => {
+    const reviewed = { id: "CON-1", status: "RECORDED" as const, conclusion: "Reviewed source records", evidenceId: "EV-1", evidenceHash: "hash-1", evidenceVersion: 1, investigationIds: [], createdAt: "2026-09-16", createdBy: "reviewer", createdByName: "Reviewer" };
+    const fetcher = mock({ data: () => ({ ...initial(), status: "AWAITING_REVIEW", allowedTransitions: ["INVESTIGATING", "RESOLVED"], reviewerConclusions: [reviewed, { ...reviewed, id: "CON-OLD", evidenceId: "EV-OLD" }] }) });
+    await page();input("Next investigation status", "RESOLVED");input("Reason for status change", "Reviewed findings are recorded; no investigation work remains.");
+    expect(screen.getByRole("button", { name: "Save investigation status" })).toBeDisabled();
+    expect(screen.queryByRole("option", { name: /CON-OLD/ })).not.toBeInTheDocument();
+    input("Reviewer conclusion for latest evidence", "CON-1");
+    fireEvent.click(screen.getByRole("button", { name: "Save investigation status" }));
+    await screen.findByText("Saved to this case.");
+    expect(JSON.parse(posts(fetcher)[0][1].body as string)).toMatchObject({ status: "RESOLVED", reviewerConclusionId: "CON-1" });
   });
   it("prevents a reviewer from reviewing a case or investigation they created", async () => {
     const fetcher = mock({

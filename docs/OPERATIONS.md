@@ -169,6 +169,8 @@ Project ports are 5178 (web), 8088 (API), 8091 (worker), 5438 (PostgreSQL), and 
 
 ## Persistence and retry limits
 
+The bullets below describe the original synthetic investigation workflow. Saved payment cases now use the separate [durable case queue](CASE_JOBS.md), with persisted preparation, worker receipts, acknowledged cancellation and scoped cleanup. Its API database and worker receipt store must be backed up together. The legacy workflow remains unchanged.
+
 - Java stores cases, immutable investigations, decisions and audit in H2 for the native default or PostgreSQL in Compose. Fixture import inserts missing IDs; it does not reset existing case decisions. Sessions are separate in-memory state.
 - Review storage, case transition and audit are one database transaction. Application append-only access is not protection against a database owner editing data. Backup/restore and tamper-evident external retention were not tested by this harness.
 - Worker SQLite checkpoints are keyed by tenant, investigation ID and an immutable-input fingerprint. An identical worker request can resume an interrupted graph or return its stored result; changed input under the same identity is rejected. The public Java API creates a **new investigation ID for each new POST**, so pressing Run again is not automatic continuation of an earlier worker checkpoint.

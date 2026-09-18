@@ -82,7 +82,7 @@ def test_real_query_request_and_cosine_ranking_are_deterministic_and_unload(sett
     lambda body: body.update(limit=4),
     lambda body: body.update(url="https://unapproved.invalid"),
     lambda body: body.update(entries=[]),
-    lambda body: body.update(entries=[{"id": str(i), "vector": vector()} for i in range(101)]),
+    lambda body: body.update(entries=[{"id": str(i), "vector": vector()} for i in range(1001)]),
     lambda body: body["entries"][1].update(id="Z-SAME"),
     lambda body: body["entries"][0].update(vector=[0.0] * 1024),
     lambda body: body["entries"][0].update(vector=[1.0] * 1023),
@@ -348,3 +348,13 @@ def test_failed_gpu_verification_or_unload_never_populates_query_cache(settings,
     engine.run(body)
     assert [path for path, _ in calls].count("/api/embed") == 2
     assert engine.last_search_metrics["queryVectorCache"] == "miss"
+
+
+def test_more_than_one_hundred_entries_rank_without_changing_query_recipe(settings):
+    engine, calls = mock_search(settings)
+    body = request_body()
+    body["entries"] = [{"id": f"GUIDE-{i:03}", "vector": vector()} for i in range(125)]
+    result = engine.run(KnowledgeSearchRequest.model_validate(body))
+    assert [match.id for match in result.matches] == ["GUIDE-000", "GUIDE-001", "GUIDE-002"]
+    assert sum(path == "/api/embed" for path, _ in calls) == 1
+    assert result.processor == "GPU"

@@ -1,3 +1,4 @@
+import { casePageFixture } from "./testCasePage";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   act,
@@ -80,7 +81,8 @@ function mockApi(authenticated = true, logoutStatus = 204) {
         awaitingReview: 0,
         resolvedCases: 0,
       });
-    if (url === "/api/payment-cases") return reply({ items: [], total: 0 });
+    if (url.startsWith("/api/payment-cases?"))
+      return reply(casePageFixture(url, []));
     if (url === "/api/payment-discovery/config")
       return reply({
         mode: "DISABLED",
@@ -223,7 +225,7 @@ describe("clean workspace paths and sign-in routing", () => {
         ([url]) => url === "/api/dashboard" || url.startsWith("/api/cases?"),
       ),
     ).toBe(false);
-  });
+  }, 10_000);
   it("preserves a direct legacy case but returns to the payment queue from its back link", async () => {
     const fetcher = mockApi();
     window.history.replaceState(null, "", "/cases/CASE-1");

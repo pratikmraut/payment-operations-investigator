@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 /** One source for the visible library and frozen case guidance. Reads never call a model. */
 @Component
 public final class CaseGuidanceSource {
-  private static final int MAX_GUIDANCE_BYTES = 256 * 1024;
+  private static final int MAX_GUIDANCE_BYTES = CaseKnowledgeLimits.SOURCE_BYTES;
   private static final String SCHEMA = "fcr-case-evidence-v1";
   private final ObjectMapper mapper;
   private final String guidanceFile;
@@ -26,7 +26,7 @@ public final class CaseGuidanceSource {
   ArrayNode documents(Actor actor, Set<String> warnings) {
     ArrayNode result = genericGuidance();
     result.addAll(privateGuidance(actor, warnings));
-    UatService.documentMap(result, tooLarge(), false);
+    CaseKnowledgeLimits.inventory(result, guidanceInvalid());
     return result;
   }
   ArrayNode genericGuidance() {
@@ -63,14 +63,13 @@ public final class CaseGuidanceSource {
       return empty;
     }
     JsonNode configured = config.path("documents");
-    if (configured.size() > 100) throw tooLarge();
+    if (configured.size() > CaseKnowledgeLimits.DOCUMENTS) throw guidanceInvalid();
     for (JsonNode document : configured) {
       if (!document.isObject() || !"knowledge".equals(document.path("kind").asText())
           || !names(document).equals(Set.of("id", "kind", "title", "content", "source"))
           || !document.path("source").isObject()
           || !Set.of("file", "sheet", "range", "locator").containsAll(names(document.path("source")))
-          || document.path("id").asText().matches("(?:PAYMENT|HOST|HISTORY|STATUS)-(?:ROW-[0-9]+|COVERAGE)")
-          || document.path("id").asText().equals("CASE-CONTEXT")) throw guidanceInvalid();
+          || CaseKnowledgeLimits.reserved(document.path("id").asText())) throw guidanceInvalid();
       empty.add(document.deepCopy());
     }
     return empty;

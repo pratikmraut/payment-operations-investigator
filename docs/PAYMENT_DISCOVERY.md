@@ -34,20 +34,21 @@ flowchart LR
 
 ## Search and paginate saved cases
 
-**Saved payment cases** remains below **Find payment**. Its search box filters the saved list immediately by case ID, payment reference, UTR or investigation reason. Matching ignores case and surrounding whitespace. For multiple words, every word must occur in at least one of those fields; they need not all occur in the same field. Partial references and partial words match. An empty search shows all authorized saved cases in the existing newest-first order. This is text matching, not fuzzy or semantic search.
+**Saved payment cases** remains below **Find payment**. Its search box requests matching saved cases after a 250 ms debounce. Search covers case number, internal case ID, payment reference, UTR, investigation reason, owner, priority and investigation status. Matching ignores case and surrounding whitespace. Every entered word must occur in the searchable metadata; different words may match different fields. Partial references and partial words match, while `%` and `_` remain literal text. An empty search adds no text filter. This is text matching, not fuzzy or semantic search.
 
-Filtering applies to the full authorized list before pagination. Each page shows at most ten matching cases. Numbered pages and Previous/Next controls navigate the results; the page indicator and displayed range describe the filtered list, while the title count and summary cards still describe all saved cases. Changing or clearing search returns to page 1. Refresh preserves the search and returns to page 1. No matching rows produces a clear empty result instead of displaying unrelated cases.
+The API applies tenant/bank/branch authorization, lifecycle/work filters, search and sorting in SQL before returning a page. The queue shows at most ten matching cases. Page controls, result count and displayed range use server metadata; dashboard cards remain separate summaries of their stated scope. Work filters include cases assigned to the signed-in user and each investigation status. Sort options include creation time, effective update time, case number and priority. Changing search, work, lifecycle or sort returns to page 1. Refresh preserves the chosen filters. No matching rows produces a clear empty result instead of displaying unrelated cases.
 
 ```mermaid
 flowchart LR
-    A[Java returns tenant and bank/branch authorized saved cases] --> B[Match entered words against case ID, reference, UTR or reason]
-    B --> C{Any matching cases?}
-    C -->|No| D[No matching cases and clear-search option]
-    C -->|Yes| E[Select page of up to 10 matching records]
-    E --> F[Open an existing saved case]
+    A[Browser sends filters and requested page] --> B[Java validates query and restricts tenant and bank/branch scope]
+    B --> C[SQL matches metadata, counts and sorts]
+    C --> D[Clamp page and select at most 10 matching cases]
+    D --> E[Return page metadata and selected cases]
+    E --> F[Show results or a clear empty state]
+    F --> G[Open an existing saved case]
 ```
 
-The current local application filters and paginates in React after one authorized saved-list read. It performs no bank/API lookup on each keystroke and does not change saved data. This limits rows displayed per page, not the number fetched from Java; a high-volume deployment would require a separately implemented server-side paginated endpoint. See [validation](validation/saved-case-search-2026-09-14.md).
+The private `fcr_case_search` sidecar supports backend pagination, so the browser no longer downloads the entire registry to filter it. An Evidence Q&A case picker also requests bounded pages, and a wrong-case upload check uses an exact scoped payment-reference lookup. These operations read saved metadata and make no bank or model call. See [the current pagination contract and limits](CASE_SEARCH.md). The [earlier saved-case search validation](validation/saved-case-search-2026-09-14.md) describes the superseded client-side implementation, not validation of this backend pagination change.
 
 ## Exact lookup and list bank API contracts
 
@@ -79,7 +80,7 @@ Use `referenceType: "UTR"` to look up the supplied UTR. No date or record-count 
 }
 ```
 
-Bank code is an explicit request parameter: ESAF uses `760` as supplied by the user; other banks use their own configured code. The server validates the requested bank/branch pair against the signed-in tenant's configured scope. Identical branch numbers in different banks remain distinct. Credentials, endpoint and permitted scope stay backend configuration. Inquiry date currently means the selected calendar day; the application defaults to today's date in fixed Asia/Kolkata. This is not a bank business/BOD date and does not establish the timezone or current SYSDATE of the source Oracle database. Record count means payments, not flattened host rows. The UI/API limit is 1 to 200 payments.
+Bank code is an explicit request parameter; each bank uses its privately configured code. The server validates the requested bank/branch pair against the signed-in tenant's configured scope. Identical branch numbers in different banks remain distinct. Credentials, endpoint and permitted scope stay backend configuration. Inquiry date currently means the selected calendar day; the application defaults to today's date in fixed Asia/Kolkata. This is not a bank business/BOD date and does not establish the timezone or current SYSDATE of the source Oracle database. Record count means payments, not flattened host rows. The UI/API limit is 1 to 200 payments.
 
 Normalized/CANONICAL response example with original fictional values; raw PO01 instead returns camelCase `neftPaymentDiscoveryDetails` rows and wrapper metadata:
 
@@ -121,6 +122,8 @@ The original query's ROWNUM limit precedes final ORDER BY. Sort in an inner quer
 
 Download the template from the Find payment panel. Replace the original example rows with the authorized discovery export. The Payments sheet starts with the seven native headers in row 1 and optional currency/direction columns. Keep references/UTRs as Text. Use ISO `YYYY-MM-DDTHH:mm:ss` timestamps or actual Excel date values, not ambiguous locale date strings. Keep source decimal precision.
 
+After a case has saved evidence, its frontend amount may use an explicitly labeled currency observation from that evidence when discovery supplied no currency. This requires matching identity, amount and unanimous PAYMENT currency in the latest version; it does not overwrite the original observation or default every payment to INR. See [currency display rules](CASE_SEARCH.md#currency-supplied-by-saved-evidence).
+
 The backend rejects formulas, corrupted/oversized workbooks, damaged numeric references, inconsistent payment duplicates and records outside the selected authorized branch/bank. Host subsequences are grouped into one selectable payment. A supplied row-number column is presentation data; it must not become a payment key. The template includes instructions separately from the data sheet.
 
 ## Application endpoints
@@ -132,7 +135,7 @@ The backend rejects formulas, corrupted/oversized workbooks, damaged numeric ref
 | POST `/api/payment-discovery/search` | Dated list inquiry with bank, branch and record count |
 | POST `/api/payment-discovery/uploads` | Multipart XLSX plus authorized `orgBank` and `orgBranch` |
 | POST `/api/payment-cases` | Stored `candidateId` plus reason and idempotency key |
-| GET `/api/payment-cases` | Tenant-scoped saved payment cases |
+| GET `/api/payment-cases` | Scoped saved-case search, sorting and pagination; default ten items, maximum fifty |
 | GET `/api/payment-cases/dashboard` | Summary of saved payment cases only |
 | GET `/api/payment-cases/{id}` | Persistent discovery snapshot and case details |
 

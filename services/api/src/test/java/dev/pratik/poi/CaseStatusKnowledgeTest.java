@@ -155,7 +155,8 @@ class CaseStatusKnowledgeTest {
     assertThat(snapshot).isEqualTo(before);
     ((ObjectNode)root.path("entries").get(0).path("document")).put("content","large ".repeat(8000));
     CaseEvidenceProjection oversized=new CaseEvidenceProjection(MAPPER,"",selector(root));
-    invalid(()->oversized.project(analyst,fixture.item(),snapshot),"CASE_INVESTIGATION_EVIDENCE_LIMIT");
+    assertThat(oversized.project(analyst,fixture.item(),snapshot).path("documents").findValuesAsText("id")).contains("FIXTURE-CODSTATUS-991");
+    invalid(()->oversized.project(analyst,fixture.item(),snapshot,"Explain CODSTATUS=991"),"CASE_INVESTIGATION_EVIDENCE_LIMIT");
     verifyNoInteractions(worker);
   }
 }

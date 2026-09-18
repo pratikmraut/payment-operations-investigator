@@ -51,13 +51,14 @@ class CaseEvidenceProjectionTest {
     else if (Set.of("HOST", "HISTORY").contains(group)) row.put("REF_TXN_NO", item().path("reference").asText())
         .put("COD_ORG_BANK", "099").put("COD_ORG_BRN", "0100").put("DAT_TXN", timestamp).put("TXN_STAT", "991");
     ((ObjectNode) snapshot.path("coverage").path(group)).put("rowCount", rows.size());
+    snapshot.put("evidenceHash", CaseEvidenceService.fingerprint(snapshot));
     return row;
   }
   JsonNode document(ObjectNode result, String id) {
     for (JsonNode document : result.path("documents")) if (id.equals(document.path("id").asText())) return document;
     throw new AssertionError("Missing document " + id);
   }
-  ObjectNode project(ObjectNode snapshot) { return new CaseEvidenceProjection(mapper, "").project(analyst, item(), snapshot); }
+  ObjectNode project(ObjectNode snapshot) { ObjectNode sealed = snapshot.deepCopy(); sealed.put("evidenceHash", CaseEvidenceService.fingerprint(sealed)); return new CaseEvidenceProjection(mapper, "").project(analyst, item(), sealed); }
   ObjectNode guide(String tenant, String content) {
     ObjectNode value = mapper.createObjectNode().put("schemaVersion", "fcr-case-guidance-v1")
         .put("tenantId", tenant).put("evidenceSchema", "fcr-case-evidence-v1");
@@ -152,21 +153,25 @@ class CaseEvidenceProjectionTest {
     Files.writeString(file, duplicate, StandardCharsets.UTF_8);
     rejected(() -> projection.project(analyst, item(), snapshot()), 503);
   }
-  @Test void knowledgeCannotReuseEvidenceCitationIdsAndDocumentBoundRejectsWithoutTruncation() throws Exception {
+  @Test void knowledgeCannotReuseEvidenceCitationIdsAndSourceBrowserRetainsLargeSnapshots() throws Exception {
     ObjectNode guide = guide("northstar", "Original fixture guidance."); ((ObjectNode) guide.path("documents").get(0)).put("id", "PAYMENT-ROW-1");
     Path file = writeGuide(guide);
     rejected(() -> new CaseEvidenceProjection(mapper, file.toString()).project(analyst, item(), snapshot()), 503);
     ObjectNode input = snapshot();
     for (int index = 0; index < 90; index++) addRow(input, "STATUS", "");
     ObjectNode before = input.deepCopy();
-    assertThatThrownBy(() -> project(input)).isInstanceOfSatisfying(ApiException.class, e -> {
-      assertThat(e.status).isEqualTo(422); assertThat(e.getMessage()).contains("100 source documents", "Narrow", "no source rows were truncated");
-    });
+    ObjectNode context = project(input);
+    assertThat(context.path("documents")).hasSize(101);
+    assertThat(context.path("documents").findValuesAsText("id")).contains("STATUS-ROW-90");
+    ObjectNode selected = new CaseEvidenceProjection(mapper, "").project(analyst, item(), input, "Explain STATUS-ROW-90");
+    assertThat(selected.path("selection").path("mode").asText()).isEqualTo("SELECTED");
+    assertThat(selected.path("documents").findValuesAsText("id")).contains("STATUS-ROW-90", "CASE-EVIDENCE-SELECTION");
     assertThat(input).isEqualTo(before);
   }
   @Test void totalSourceCharactersAndPrivateFileSizeAreBounded() throws Exception {
     Path file = writeGuide(guide("northstar", "x".repeat(49000)));
-    rejected(() -> new CaseEvidenceProjection(mapper, file.toString()).project(analyst, item(), snapshot()), 422);
+    assertThat(new CaseEvidenceProjection(mapper, file.toString()).project(analyst, item(), snapshot()).path("documents")).hasSize(12);
+    rejected(() -> new CaseEvidenceProjection(mapper, file.toString()).project(analyst, item(), snapshot(), "Explain this payment"), 422);
     Files.writeString(file, "x".repeat(256 * 1024 + 1), StandardCharsets.UTF_8);
     rejected(() -> new CaseEvidenceProjection(mapper, file.toString()).project(analyst, item(), snapshot()), 503);
   }
@@ -175,4 +180,26 @@ class CaseEvidenceProjectionTest {
     ObjectNode mismatch = snapshot(); ((ObjectNode) mismatch.path("payload").path("payment")).put("orgBank", "999");
     rejected(() -> project(mismatch), 422);
   }
+  @Test void everySourceKindRequiresAValidFingerprintBeforeQuestionPreparation() {
+    var projection = new CaseEvidenceProjection(mapper, "");
+    for (String kind : List.of("EXCEL", "MANUAL", "JSON", "BANK_API")) {
+      ObjectNode source = snapshot().put("sourceKind", kind);
+      source.put("evidenceHash", CaseEvidenceService.fingerprint(source));
+      source.remove("evidenceHash");
+      rejected(() -> projection.readiness(analyst, item(), source, "Explain the payment"), 503);
+      source.put("evidenceHash", "0".repeat(64));
+      rejected(() -> projection.project(analyst, item(), source, "Explain the payment"), 503);
+    }
+  }
+
+  @Test void readinessIsLocalOnlyAndPinsCompleteKnowledgeVersion() {
+    var projection = new CaseEvidenceProjection(mapper, "");
+    ObjectNode ready = projection.readiness(analyst, item(), snapshot(), "Explain the payment");
+    assertThat(ready.path("ready").asBoolean()).isTrue();
+    assertThat(ready.path("modelAvailabilityChecked").asBoolean()).isFalse();
+    assertThat(ready.path("modelContextChecked").asBoolean()).isFalse();
+    assertThat(ready.path("knowledgeVersion").asText()).matches("[a-f0-9]{64}");
+    assertThat(ready.path("selection").path("selectedRows").asInt()).isEqualTo(3);
+  }
+
 }

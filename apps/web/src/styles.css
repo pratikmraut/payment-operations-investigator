@@ -543,13 +543,6 @@ code,
 .sidebar nav a.active > svg {
   color: #92b8ef;
 }
-.nav-current {
-  margin-left: auto;
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  background: #80aef3;
-}
 .sidebar-bottom {
   margin-top: auto;
 }
@@ -2587,8 +2580,7 @@ code,
   .nav-label,
   .environment-card,
   .profile > div:nth-child(2),
-  .profile .avatar,
-  .nav-current {
+  .profile .avatar {
     display: none;
   }
   .sidebar nav {
@@ -4467,6 +4459,16 @@ small,
   gap: 14px 24px;
   margin: 20px 0;
 }
+
+.evidence-followups { margin-top: 24px; padding: 22px 26px; }
+.evidence-followups > summary { cursor: pointer; font-weight: 650; color: var(--text); }
+.evidence-followups > summary small { display: inline-block; margin-left: 12px; font-weight: 400; }
+.evidence-followups-body { padding-top: 20px; }
+.evidence-followups-body > label { display: grid; gap: 8px; max-width: 360px; margin: 18px 0; }
+.evidence-followups-body select { min-height: 44px; }
+.evidence-followups-body td small { display: block; margin-top: 6px; }
+.evidence-followups-body .warning { display: flex; align-items: center; gap: 8px; padding: 12px; border: 1px solid #e5c98f; border-radius: 8px; background: #fffbeb; color: #785314; }
+@media (max-width: 600px) { .evidence-followups { padding: 18px; } .evidence-followups > summary small { display: block; margin: 6px 0 0; } }
 .payment-saved-search {
   flex: 1 1 320px;
   max-width: 620px;

@@ -9,6 +9,7 @@ import {
 } from "@testing-library/react";
 import { CaseInvestigation } from "./CaseInvestigation";
 import { setCsrfToken } from "./api";
+import { confirmUnsavedChanges } from "./unsavedChanges";
 
 const caseId = "CASE-INVESTIGATION-FIXTURE-A";
 const evidenceId = (version: number) =>
@@ -189,6 +190,7 @@ function ragDetail(value: ReturnType<typeof detail>) {
   };
 }
 type Options = {
+  caseStatus?: string;
   lifecycleState?: "ACTIVE" | "ARCHIVED";
   jobs?: ReturnType<typeof job>[];
   versions?: number[];
@@ -223,6 +225,7 @@ function mockApi(options: Options = {}) {
       return reply({
         caseId: owner,
         lifecycleState: options.lifecycleState,
+        status: options.caseStatus,
         evidence: versions.map((version) => evidence(version, owner)),
         latestEvidenceId: versions.length ? evidenceId(versions[0]) : null,
         investigations: owner === caseId ? jobs : [],
@@ -351,6 +354,68 @@ afterEach(() => {
 });
 
 describe("case investigation workbench", () => {
+  it("keeps a failed question dirty, then clears the warning once the request is saved", async () => {
+    mockApi({ postFailures: 1 });
+    setCsrfToken("fixture-csrf");
+    await openPage();
+    const confirm = vi.spyOn(window, "confirm").mockReturnValue(false);
+    fireEvent.change(screen.getByLabelText("Your case question"), {
+      target: { value: "Review the supplied source records." },
+    });
+    expect(confirmUnsavedChanges()).toBe(false);
+    fireEvent.click(screen.getByRole("button", { name: "Run investigation" }));
+    await waitFor(() =>
+      expect(
+        screen.getByRole("button", { name: "Run investigation" }),
+      ).toBeEnabled(),
+    );
+    expect(confirmUnsavedChanges()).toBe(false);
+    fireEvent.click(screen.getByRole("button", { name: "Run investigation" }));
+    await screen.findByRole("region", { name: "Selected investigation" });
+    expect(confirmUnsavedChanges()).toBe(true);
+    expect(confirm).toHaveBeenCalledTimes(2);
+  });
+  it("restores a case-bound question draft without submitting it and marks it unsaved", async () => {
+    const { fetcher } = mockApi();
+    await openPage();
+    fireEvent.change(screen.getByLabelText("Restore text draft"), {
+      target: {
+        files: [
+          new File(
+            [
+              JSON.stringify({
+                draftVersion: "case-text-draft-v1",
+                scope: `${caseId}:investigation-question`,
+                value: "Which evidence is still needed?",
+              }),
+            ],
+            "question-draft.json",
+            { type: "application/json" },
+          ),
+        ],
+      },
+    });
+    await waitFor(() =>
+      expect(screen.getByLabelText("Your case question")).toHaveValue(
+        "Which evidence is still needed?",
+      ),
+    );
+    expect(posts(fetcher)).toHaveLength(0);
+    vi.spyOn(window, "confirm").mockReturnValue(false);
+    expect(confirmUnsavedChanges()).toBe(false);
+  });
+  it("disables new questions for a resolved case returned by the workbench", async () => {
+    const { fetcher } = mockApi({ caseStatus: "RESOLVED" });
+    await openPage();
+    expect(screen.getByText(/This case is resolved. Reopen it/)).toBeVisible();
+    expect(
+      screen.queryByRole("button", { name: "Run investigation" }),
+    ).not.toBeInTheDocument();
+    expect(screen.getByLabelText("Your case question")).toHaveAttribute(
+      "readonly",
+    );
+    expect(posts(fetcher)).toHaveLength(0);
+  });
   it("honors archived state returned by a refreshed workbench and keeps saved answers readable", async () => {
     mockApi({ lifecycleState: "ARCHIVED", jobs: [job()] });
     render(<CaseInvestigation caseId={caseId} canWrite />);

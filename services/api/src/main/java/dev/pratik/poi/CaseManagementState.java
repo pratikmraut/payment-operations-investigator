@@ -12,12 +12,16 @@ final class CaseManagementState {
 
   static ObjectNode load(ObjectMapper mapper, JdbcTemplate db, String tenant, ObjectNode item) {
     var rows = db.queryForList("SELECT version,owner_id,priority,updated_at FROM fcr_case_management WHERE tenant_id=? AND case_id=?", tenant, item.path("id").asText());
-    return rows.isEmpty() ? initial(mapper, item) : from(mapper, rows.get(0));
+    ObjectNode state=rows.isEmpty() ? initial(mapper, item) : from(mapper, rows.get(0));
+    state.put("status",item.path("status").asText("OPEN"));
+    for(String body:db.queryForList("SELECT body FROM fcr_case_management_event WHERE tenant_id=? AND case_id=? AND action='WORKFLOW_CHANGED' ORDER BY version DESC LIMIT 1",String.class,tenant,item.path("id").asText()))
+      state.put("status",workflowStatus(mapper,body));
+    return state;
   }
 
   static ObjectNode initial(ObjectMapper mapper, ObjectNode item) {
     return mapper.createObjectNode().put("version", 0).putNull("ownerId")
-        .put("priority", item.path("priority").asText("MEDIUM")).putNull("updatedAt");
+        .put("priority", item.path("priority").asText("MEDIUM")).put("status",item.path("status").asText("OPEN")).putNull("updatedAt");
   }
 
   static ObjectNode from(ObjectMapper mapper, Map<String,Object> row) {
@@ -37,6 +41,7 @@ final class CaseManagementState {
   static ObjectNode overlay(ObjectMapper mapper, String tenant, ObjectNode item, ObjectNode state) {
     ObjectNode result = item.deepCopy();
     result.put("priority", state.path("priority").asText()).put("managementVersion", state.path("version").asLong());
+    result.put("status",state.path("status").asText(item.path("status").asText("OPEN")));
     result.set("owner", owner(mapper, tenant, state.path("ownerId").isNull() ? null : state.path("ownerId").asText()));
     if(state.hasNonNull("updatedAt") && Instant.parse(state.path("updatedAt").asText()).isAfter(Instant.parse(item.path("updatedAt").asText())))
       result.set("updatedAt", state.get("updatedAt"));
@@ -47,6 +52,19 @@ final class CaseManagementState {
     Map<String,ObjectNode> states = new HashMap<>();
     for(var row : db.queryForList("SELECT case_id,version,owner_id,priority,updated_at FROM fcr_case_management WHERE tenant_id=?", tenant))
       states.put((String)row.get("case_id"), from(mapper,row));
+    for(var row:db.queryForList("SELECT case_id,body FROM fcr_case_management_event WHERE tenant_id=? AND action='WORKFLOW_CHANGED' ORDER BY version",tenant)) {
+      ObjectNode state=states.get((String)row.get("case_id"));
+      if(state==null)throw new ApiException(503,"CASE_MANAGEMENT_STORAGE","The saved case workflow state could not be verified.");
+      state.put("status",workflowStatus(mapper,(String)row.get("body")));
+    }
     items.replaceAll(item -> overlay(mapper,tenant,item,states.getOrDefault(item.path("id").asText(),initial(mapper,item))));
+  }
+
+  private static String workflowStatus(ObjectMapper mapper,String body) {
+    try {
+      String status=mapper.readTree(body).path("data").path("status").asText();
+      if(!Set.of("OPEN","INVESTIGATING","AWAITING_EVIDENCE","AWAITING_REVIEW","RESOLVED").contains(status))throw new IllegalArgumentException();
+      return status;
+    } catch(Exception failure) {throw new ApiException(503,"CASE_MANAGEMENT_STORAGE","The saved case workflow state could not be verified.");}
   }
 }

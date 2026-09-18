@@ -2,6 +2,16 @@ import { useEffect, useRef, useState, type FormEvent } from "react";
 import { api, ApiError, human } from "./api";
 import type { User } from "./types";
 import { CaseLifecycle, type CaseLifecycleState } from "./CaseLifecycle";
+import { useUnsavedChanges } from "./unsavedChanges";
+import { DraftTextControls } from "./DraftTextControls";
+import {
+  HistoryMore,
+  historyMeta,
+  mergeHistory,
+  validateHistoryPage,
+  type HistoryPage,
+  type HistoryPageMeta,
+} from "./caseHistory";
 import "./CaseManagement.css";
 
 type Actor = { id: string; name: string };
@@ -39,6 +49,7 @@ type EvidenceRequest = {
   evidenceVersion: number | null;
   evidenceHash: string | null;
   updates: RequestUpdate[];
+  assignee?: Actor | null;
 };
 type Conclusion = {
   id: string;
@@ -55,6 +66,9 @@ type Conclusion = {
 export type Management = {
   caseId: string;
   version: number;
+  status?: string;
+  allowedTransitions?: string[];
+  activeInvestigationCount?: number;
   owner: Actor | null;
   priority: string;
   assignees: (Actor & { role: string })[];
@@ -76,6 +90,7 @@ type Evidence = {
   evidenceHash: string;
   version: number;
   caseId: string;
+  createdBy?: string;
 };
 type Job = {
   id: string;
@@ -92,6 +107,19 @@ type Workbench = {
   latestEvidenceId: string | null;
   evidence: Evidence[];
   investigations: Job[];
+  evidencePage?: HistoryPageMeta;
+  investigationPage?: HistoryPageMeta;
+  activityPage?: HistoryPageMeta;
+  audit?: Activity[];
+};
+type Activity = {
+  id: string;
+  action: string;
+  occurredAt: string;
+  actor: string;
+  actorName?: string;
+  detail: string;
+  version?: number;
 };
 type Props = {
   caseId: string;
@@ -116,6 +144,13 @@ type Attempt = {
   kind: string;
 };
 const priorities = ["LOW", "MEDIUM", "HIGH", "CRITICAL"];
+const workflowStatuses = [
+  "OPEN",
+  "INVESTIGATING",
+  "AWAITING_EVIDENCE",
+  "AWAITING_REVIEW",
+  "RESOLVED",
+];
 const text = (v: unknown): v is string => typeof v === "string";
 const list = (v: unknown): v is unknown[] => Array.isArray(v);
 const object = (v: unknown): v is Record<string, unknown> =>
@@ -138,6 +173,12 @@ function validate(value: Management, caseId: string) {
     value.caseId !== caseId ||
     !Number.isSafeInteger(value.version) ||
     value.version < 0 ||
+    (value.status !== undefined && !workflowStatuses.includes(value.status)) ||
+    (value.allowedTransitions !== undefined &&
+      (!list(value.allowedTransitions) ||
+        !value.allowedTransitions.every(
+          (v) => text(v) && workflowStatuses.includes(v),
+        ))) ||
     !priorities.includes(value.priority) ||
     !(value.owner === null || actor(value.owner)) ||
     !list(value.assignees) ||
@@ -155,6 +196,9 @@ function validate(value: Management, caseId: string) {
         ["OPEN", "FULFILLED", "CANCELLED"].includes(String(v.status)) &&
         (v.dueDate === null || text(v.dueDate)) &&
         evidenceLink(v) &&
+        (v.assignee === undefined ||
+          v.assignee === null ||
+          actor(v.assignee)) &&
         list(v.updates) &&
         v.updates.every(
           (u) =>
@@ -221,6 +265,53 @@ function validateWorkbench(value: Workbench, caseId: string) {
     throw new Error(
       "The saved evidence and investigation list could not be read for this case.",
     );
+  historyMeta(value.evidencePage, value.evidence.length);
+  historyMeta(value.investigationPage, value.investigations.length);
+  if (value.audit !== undefined) {
+    if (!Array.isArray(value.audit))
+      throw new Error("Case activity could not be read.");
+    value.audit.forEach(validateActivity);
+    historyMeta(value.activityPage, value.audit.length);
+  }
+}
+function validateActivity(item: Activity) {
+  if (
+    !item ||
+    ![item.id, item.action, item.occurredAt, item.actor, item.detail].every(
+      text,
+    )
+  )
+    throw new Error("Case activity could not be read.");
+}
+function validateEvidence(item: Evidence, caseId: string) {
+  if (
+    !item ||
+    item.caseId !== caseId ||
+    ![item.id, item.evidenceHash].every(text) ||
+    !Number.isSafeInteger(item.version) ||
+    item.version < 1
+  )
+    throw new Error(
+      "The selected evidence summary is unreadable or belongs to another case.",
+    );
+}
+function validateJob(item: Job, caseId: string) {
+  if (
+    !item ||
+    item.caseId !== caseId ||
+    ![
+      item.id,
+      item.evidenceId,
+      item.evidenceHash,
+      item.question,
+      item.status,
+      item.createdBy,
+    ].every(text) ||
+    !Number.isSafeInteger(item.evidenceVersion)
+  )
+    throw new Error(
+      "The investigation summary is unreadable or belongs to another case.",
+    );
 }
 async function bounded<T>(
   path: string,
@@ -252,7 +343,7 @@ function ManagementView({
   onLifecycleChanged,
 }: Props) {
   const base = `/payment-cases/${encodeURIComponent(caseId)}`;
-  const canWrite =
+  const roleCanWrite =
     lifecycleState === "ACTIVE" &&
     !!user &&
     ["ANALYST", "REVIEWER"].includes(user.role.toUpperCase());
@@ -261,6 +352,12 @@ function ManagementView({
   const [tab, setTab] = useState<Tab>("Overview"),
     [data, setData] = useState<Management | null>(null),
     [workbench, setWorkbench] = useState<Workbench | null>(null);
+  const canWrite = roleCanWrite && data?.status !== "RESOLVED";
+  const [workflow, setWorkflow] = useState({
+    status: "",
+    reason: "",
+    reviewerConclusionId: "",
+  });
   const [lifecycleVisited, setLifecycleVisited] = useState(false);
   const [revision, setRevision] = useState(0),
     [loading, setLoading] = useState(true),
@@ -275,18 +372,53 @@ function ManagementView({
     }),
     dirty = useRef(false);
   const [note, setNote] = useState(""),
-    [request, setRequest] = useState({ title: "", detail: "", dueDate: "" });
+    [request, setRequest] = useState({
+      title: "",
+      detail: "",
+      dueDate: "",
+      assigneeId: "",
+    });
   const [requestId, setRequestId] = useState(""),
     [update, setUpdate] = useState({
       status: "FULFILLED",
       note: "",
       evidenceId: "",
+      assigneeId: "",
     });
   const [evidenceId, setEvidenceId] = useState(""),
     [jobIds, setJobIds] = useState<string[]>([]),
     [conclusion, setConclusion] = useState("");
+  const [reviewQuestions, setReviewQuestions] = useState<Job[]>([]),
+    [reviewPage, setReviewPage] = useState<HistoryPageMeta>(),
+    [reviewSource, setReviewSource] = useState(""),
+    [reviewError, setReviewError] = useState<Error | null>(null),
+    [reviewRevision, setReviewRevision] = useState(0),
+    [resolutionChecking, setResolutionChecking] = useState(false),
+    [resolutionError, setResolutionError] = useState<Error | null>(null);
+  const selectionRef = useRef({
+    evidenceId,
+    requestEvidenceId: update.evidenceId,
+  });
+  selectionRef.current = { evidenceId, requestEvidenceId: update.evidenceId };
   const [uncertain, setUncertain] = useState<Attempt | null>(null),
     operation = useRef<AbortController | null>(null);
+  useUnsavedChanges(
+    dirty.current || !!overview.reason,
+    "owner or priority changes",
+  );
+  useUnsavedChanges(!!note, "case note");
+  useUnsavedChanges(
+    !!(
+      request.title ||
+      request.detail ||
+      request.dueDate ||
+      request.assigneeId ||
+      update.note
+    ),
+    "evidence request",
+  );
+  useUnsavedChanges(!!conclusion, "reviewer conclusion");
+  useUnsavedChanges(!!workflow.reason || !!uncertain, "case workflow change");
   useEffect(() => () => operation.current?.abort(), []);
   useEffect(() => {
     const controller = new AbortController();
@@ -301,7 +433,18 @@ function ManagementView({
         validate(management, caseId);
         validateWorkbench(work, caseId);
         setData(management);
-        setWorkbench(work);
+        setWorkbench((current) => ({
+          ...work,
+          evidence: mergeHistory(
+            work.evidence,
+            current?.evidence.filter((item) =>
+              [
+                selectionRef.current.evidenceId,
+                selectionRef.current.requestEvidenceId,
+              ].includes(item.id),
+            ) ?? [],
+          ),
+        }));
         setConflict(false);
         if (!dirty.current)
           setOverview({
@@ -319,10 +462,159 @@ function ManagementView({
       });
     return () => controller.abort();
   }, [base, caseId, revision, evidenceRevision]);
+  const pagedQuestions = !!workbench?.investigationPage;
+  const questionsPath = `${base}/investigations?status=COMPLETED&evidenceId=${encodeURIComponent(evidenceId)}`;
+  function validateReviewJob(item: Job) {
+    validateJob(item, caseId);
+    if (item.status !== "COMPLETED" || item.evidenceId !== evidenceId)
+      throw new Error(
+        "The completed question does not match the selected evidence version.",
+      );
+  }
+  useEffect(() => {
+    if (!pagedQuestions || !isReviewer || tab !== "Reviewer conclusion") return;
+    const controller = new AbortController();
+    setReviewError(null);
+    if (!evidenceId) {
+      setReviewQuestions([]);
+      setReviewPage(undefined);
+      setReviewSource("");
+      return () => controller.abort();
+    }
+    bounded<HistoryPage<Job>>(questionsPath, controller.signal)
+      .then((page) => {
+        validateHistoryPage(page, caseId, validateReviewJob);
+        if (!controller.signal.aborted) {
+          setReviewQuestions((current) =>
+            mergeHistory(
+              page.items,
+              current.filter(
+                (item) =>
+                  item.evidenceId === evidenceId && jobIds.includes(item.id),
+              ),
+            ),
+          );
+          setReviewPage(page);
+          setReviewSource(evidenceId);
+        }
+      })
+      .catch((failure: Error) => {
+        if (!controller.signal.aborted) setReviewError(failure);
+      });
+    return () => controller.abort();
+  }, [questionsPath, caseId, pagedQuestions, isReviewer, tab, reviewRevision]);
+  useEffect(() => {
+    const controller = new AbortController();
+    setResolutionError(null);
+    setResolutionChecking(false);
+    if (!pagedQuestions || !workflow.reviewerConclusionId)
+      return () => controller.abort();
+    const selected = data?.reviewerConclusions.find(
+      (item) => item.id === workflow.reviewerConclusionId,
+    );
+    if (!selected) return () => controller.abort();
+    const missing = selected.investigationIds.filter(
+      (id) => !workbench?.investigations.some((item) => item.id === id),
+    );
+    if (!missing.length) return () => controller.abort();
+    if (missing.length > 20) {
+      setResolutionError(
+        new Error(
+          "The reviewer conclusion has too many investigation references.",
+        ),
+      );
+      return () => controller.abort();
+    }
+    setResolutionChecking(true);
+    Promise.all(
+      missing.map(async (id) => {
+        const item = await bounded<Job>(
+          `${base}/investigations/${encodeURIComponent(id)}/summary`,
+          controller.signal,
+        );
+        validateJob(item, caseId);
+        if (
+          item.id !== id ||
+          item.status !== "COMPLETED" ||
+          item.evidenceId !== selected.evidenceId ||
+          item.evidenceHash !== selected.evidenceHash
+        )
+          throw new Error(
+            "A reviewer conclusion's preserved question does not match its evidence.",
+          );
+        return item;
+      }),
+    )
+      .then((items) => {
+        if (!controller.signal.aborted)
+          setWorkbench((current) =>
+            current
+              ? {
+                  ...current,
+                  investigations: mergeHistory(current.investigations, items),
+                }
+              : current,
+          );
+      })
+      .catch((failure: Error) => {
+        if (!controller.signal.aborted) setResolutionError(failure);
+      })
+      .finally(() => {
+        if (!controller.signal.aborted) setResolutionChecking(false);
+      });
+    return () => controller.abort();
+  }, [
+    base,
+    caseId,
+    pagedQuestions,
+    workflow.reviewerConclusionId,
+    data?.version,
+  ]);
   const disabled = busy || loading || conflict || !!uncertain;
   const selectedEvidence = workbench?.evidence.find((e) => e.id === evidenceId);
+  const latestEvidence = workbench?.evidence.find(
+    (e) => e.id === workbench.latestEvidenceId,
+  );
+  const openEvidenceRequests =
+    data?.evidenceRequests.filter((r) => r.status === "OPEN").length ?? 0;
+  const needsReviewEvidence = ["AWAITING_REVIEW", "RESOLVED"].includes(
+    workflow.status,
+  );
+  const unresolvedReviewReferences =
+    data?.reviewerConclusions
+      .find((item) => item.id === workflow.reviewerConclusionId)
+      ?.investigationIds.some(
+        (id) => !workbench?.investigations.some((item) => item.id === id),
+      ) ?? false;
+  const workflowPrerequisiteMissing =
+    needsReviewEvidence &&
+    (!latestEvidence ||
+      openEvidenceRequests > 0 ||
+      resolutionChecking ||
+      !!resolutionError ||
+      unresolvedReviewReferences);
+  const resolutionConclusions =
+    data?.reviewerConclusions.filter(
+      (c) =>
+        c.evidenceId === latestEvidence?.id &&
+        c.evidenceHash === latestEvidence.evidenceHash &&
+        c.createdBy !== createdBy &&
+        c.createdBy !== latestEvidence.createdBy &&
+        latestEvidence.createdBy !== user?.id &&
+        c.investigationIds.every(
+          (id) =>
+            !workbench?.investigations.some(
+              (j) => j.id === id && j.createdBy === user?.id,
+            ),
+        ),
+    ) ?? [];
   const eligibleJobs =
-    workbench?.investigations.filter(
+    (pagedQuestions
+      ? reviewSource === evidenceId
+        ? reviewQuestions
+        : []
+      : workbench?.investigations
+    )?.filter(
       (j) =>
         j.status === "COMPLETED" &&
         j.evidenceId === evidenceId &&
@@ -331,7 +623,8 @@ function ManagementView({
   const independent =
     isReviewer &&
     createdBy !== user?.id &&
-    jobIds.length > 0 &&
+    !!selectedEvidence &&
+    selectedEvidence.createdBy !== user?.id &&
     jobIds.every((id) =>
       eligibleJobs.some((j) => j.id === id && j.createdBy !== user?.id),
     );
@@ -364,15 +657,22 @@ function ManagementView({
       }
       if (attempt.kind === "note") setNote("");
       if (attempt.kind === "request")
-        setRequest({ title: "", detail: "", dueDate: "" });
+        setRequest({ title: "", detail: "", dueDate: "", assigneeId: "" });
       if (attempt.kind === "update") {
         setRequestId("");
-        setUpdate({ status: "FULFILLED", note: "", evidenceId: "" });
+        setUpdate({
+          status: "FULFILLED",
+          note: "",
+          evidenceId: "",
+          assigneeId: "",
+        });
       }
       if (attempt.kind === "conclusion") {
         setConclusion("");
         setJobIds([]);
       }
+      if (attempt.kind === "workflow")
+        setWorkflow({ status: "", reason: "", reviewerConclusionId: "" });
       onChanged?.();
     } catch (failure) {
       if (controller.signal.aborted) return;
@@ -395,7 +695,8 @@ function ManagementView({
     kind: string,
   ) {
     event.preventDefault();
-    if (!data || disabled || !canWrite) return;
+    if (!data || disabled || !(kind === "workflow" ? roleCanWrite : canWrite))
+      return;
     void perform({
       path: `${base}${suffix}`,
       body: { expectedVersion: data.version, ...body },
@@ -495,12 +796,18 @@ function ManagementView({
           Restore it from Case lifecycle to make changes.
         </p>
       ) : (
-        !canWrite && (
+        !roleCanWrite && (
           <p className="muted">
             Your role can read case management. An analyst or reviewer can make
             changes.
           </p>
         )
+      )}
+      {data?.status === "RESOLVED" && lifecycleState === "ACTIVE" && (
+        <p className="notice neutral">
+          This investigation is resolved. Reopen it from Overview with a reason
+          before adding evidence, questions or management changes.
+        </p>
       )}
       {data && (
         <div role="tabpanel" aria-label={tab}>
@@ -518,6 +825,10 @@ function ManagementView({
             <>
               <dl className="case-management-facts">
                 <div>
+                  <dt>Investigation status</dt>
+                  <dd>{human(data.status ?? "OPEN")}</dd>
+                </div>
+                <div>
                   <dt>Owner</dt>
                   <dd>{data.owner?.name ?? "Unassigned"}</dd>
                 </div>
@@ -530,6 +841,168 @@ function ManagementView({
                   <dd>{data.version}</dd>
                 </div>
               </dl>
+              {roleCanWrite && data.allowedTransitions && (
+                <form
+                  onSubmit={(e) =>
+                    save(
+                      e,
+                      "/workflow",
+                      {
+                        status: workflow.status,
+                        reason: workflow.reason,
+                        ...(workflow.status === "RESOLVED"
+                          ? {
+                              reviewerConclusionId:
+                                workflow.reviewerConclusionId,
+                            }
+                          : {}),
+                      },
+                      "workflow",
+                    )
+                  }
+                >
+                  <h3>
+                    {data.status === "RESOLVED"
+                      ? "Reopen investigation"
+                      : "Update investigation status"}
+                  </h3>
+                  <p className="muted">
+                    Tracks investigation work. Resolution records an independent
+                    review and does not establish a payment outcome.
+                  </p>
+                  {!!data.activeInvestigationCount && (
+                    <p role="status">
+                      Wait for active investigations to finish before changing
+                      status.
+                    </p>
+                  )}
+                  <label>
+                    Next investigation status
+                    <select
+                      required
+                      value={workflow.status}
+                      disabled={disabled || !data.allowedTransitions.length}
+                      onChange={(e) =>
+                        setWorkflow({
+                          ...workflow,
+                          status: e.target.value,
+                          reviewerConclusionId: "",
+                        })
+                      }
+                    >
+                      <option value="">Choose next status</option>
+                      {data.allowedTransitions.map((status) => (
+                        <option key={status} value={status}>
+                          {status === "INVESTIGATING" &&
+                          data.status === "RESOLVED"
+                            ? "Reopen — Investigating"
+                            : human(status)}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                  {needsReviewEvidence && !latestEvidence && (
+                    <p className="notice neutral">
+                      Save a source evidence version before submitting for
+                      review.
+                    </p>
+                  )}
+                  {needsReviewEvidence && openEvidenceRequests > 0 && (
+                    <p className="notice neutral">
+                      {openEvidenceRequests} open evidence request
+                      {openEvidenceRequests === 1 ? " needs" : "s need"}{" "}
+                      attention. Fulfil or explicitly cancel each request in
+                      Evidence requests first.
+                    </p>
+                  )}
+                  {workflow.status === "RESOLVED" && (
+                    <>
+                      <label>
+                        Reviewer conclusion for latest evidence
+                        <select
+                          required
+                          value={workflow.reviewerConclusionId}
+                          disabled={disabled}
+                          onChange={(e) =>
+                            setWorkflow({
+                              ...workflow,
+                              reviewerConclusionId: e.target.value,
+                            })
+                          }
+                        >
+                          <option value="">
+                            Select independent reviewer conclusion
+                          </option>
+                          {resolutionConclusions.map((c) => (
+                            <option value={c.id} key={c.id}>
+                              Version {c.evidenceVersion} · {c.createdByName} ·{" "}
+                              {c.createdAt}
+                            </option>
+                          ))}
+                        </select>
+                      </label>
+                      <small>
+                        Fulfil or cancel open evidence requests first. A
+                        conclusion must match the latest saved evidence.
+                      </small>
+                    </>
+                  )}
+                  {workflow.status === "RESOLVED" &&
+                    !resolutionConclusions.length && (
+                      <p className="notice neutral">
+                        An independent reviewer must record a conclusion for the
+                        latest evidence in Reviewer conclusion before
+                        resolution.
+                      </p>
+                    )}
+                  {resolutionChecking && (
+                    <p role="status">
+                      Checking the conclusion's saved investigation authors…
+                    </p>
+                  )}
+                  {resolutionError && (
+                    <p className="notice danger" role="alert">
+                      {resolutionError.message}
+                    </p>
+                  )}
+                  <label>
+                    Reason for status change
+                    <textarea
+                      required
+                      maxLength={4000}
+                      value={workflow.reason}
+                      disabled={disabled || !data.allowedTransitions.length}
+                      onChange={(e) =>
+                        setWorkflow({ ...workflow, reason: e.target.value })
+                      }
+                    />
+                  </label>
+                  <DraftTextControls
+                    scope={`${caseId}:workflow-reason`}
+                    value={workflow.reason}
+                    onRestore={(reason) => setWorkflow({ ...workflow, reason })}
+                    maxLength={4000}
+                    disabled={disabled}
+                  />
+                  <button
+                    className="primary"
+                    disabled={
+                      disabled ||
+                      workflowPrerequisiteMissing ||
+                      !workflow.reason.trim() ||
+                      !data.allowedTransitions.includes(workflow.status) ||
+                      (workflow.status === "RESOLVED" &&
+                        !resolutionConclusions.some(
+                          (c) => c.id === workflow.reviewerConclusionId,
+                        ))
+                    }
+                  >
+                    {data.status === "RESOLVED"
+                      ? "Reopen investigation"
+                      : "Save investigation status"}
+                  </button>
+                </form>
+              )}
               {canWrite && (
                 <form
                   onSubmit={(e) =>
@@ -624,6 +1097,13 @@ function ManagementView({
                       onChange={(e) => setNote(e.target.value)}
                     />
                   </label>
+                  <DraftTextControls
+                    scope={`${caseId}:note`}
+                    value={note}
+                    onRestore={setNote}
+                    maxLength={4000}
+                    disabled={disabled}
+                  />
                   <button
                     className="primary"
                     disabled={disabled || !note.trim()}
@@ -652,7 +1132,11 @@ function ManagementView({
                     save(
                       e,
                       "/evidence-requests",
-                      { ...request, dueDate: request.dueDate || null },
+                      {
+                        ...request,
+                        dueDate: request.dueDate || null,
+                        assigneeId: request.assigneeId || null,
+                      },
                       "request",
                     )
                   }
@@ -692,6 +1176,23 @@ function ManagementView({
                       }
                     />
                   </label>
+                  <label>
+                    Evidence request assignee
+                    <select
+                      value={request.assigneeId}
+                      disabled={disabled}
+                      onChange={(e) =>
+                        setRequest({ ...request, assigneeId: e.target.value })
+                      }
+                    >
+                      <option value="">Unassigned</option>
+                      {data.assignees.map((a) => (
+                        <option key={a.id} value={a.id}>
+                          {a.name}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
                   <button
                     className="primary"
                     disabled={
@@ -717,6 +1218,7 @@ function ManagementView({
                     <p>{r.detail}</p>
                     {meta(r)}
                     {r.dueDate && <p>Due: {r.dueDate}</p>}
+                    <p>Assigned to: {r.assignee?.name ?? "Unassigned"}</p>
                     {r.evidenceId && (
                       <p>
                         Linked evidence version {r.evidenceVersion}:{" "}
@@ -745,6 +1247,7 @@ function ManagementView({
                             status: r.status === "OPEN" ? "FULFILLED" : "OPEN",
                             note: "",
                             evidenceId: "",
+                            assigneeId: r.assignee?.id ?? "",
                           });
                         }}
                       >
@@ -760,6 +1263,7 @@ function ManagementView({
                             {
                               status: update.status,
                               note: update.note,
+                              assigneeId: update.assigneeId || null,
                               ...(update.status === "FULFILLED"
                                 ? { evidenceId: update.evidenceId }
                                 : {}),
@@ -768,6 +1272,26 @@ function ManagementView({
                           )
                         }
                       >
+                        <label>
+                          Request assignee
+                          <select
+                            value={update.assigneeId}
+                            disabled={disabled}
+                            onChange={(e) =>
+                              setUpdate({
+                                ...update,
+                                assigneeId: e.target.value,
+                              })
+                            }
+                          >
+                            <option value="">Unassigned</option>
+                            {data.assignees.map((a) => (
+                              <option key={a.id} value={a.id}>
+                                {a.name}
+                              </option>
+                            ))}
+                          </select>
+                        </label>
                         <label>
                           Request status
                           <select
@@ -783,27 +1307,57 @@ function ManagementView({
                           </select>
                         </label>
                         {update.status === "FULFILLED" && (
-                          <label>
-                            Evidence that fulfils this request
-                            <select
-                              required
-                              value={update.evidenceId}
+                          <>
+                            <label>
+                              Evidence that fulfils this request
+                              <select
+                                required
+                                value={update.evidenceId}
+                                disabled={disabled}
+                                onChange={(e) =>
+                                  setUpdate({
+                                    ...update,
+                                    evidenceId: e.target.value,
+                                  })
+                                }
+                              >
+                                <option value="">Select saved evidence</option>
+                                {workbench?.evidence.map((v) => (
+                                  <option key={v.id} value={v.id}>
+                                    Version {v.version} · {v.id}
+                                  </option>
+                                ))}
+                              </select>
+                            </label>
+                            <HistoryMore<Evidence>
+                              caseId={caseId}
+                              path={`${base}/evidence`}
+                              page={workbench?.evidencePage}
+                              loaded={workbench?.evidence.length ?? 0}
+                              label="request evidence versions"
                               disabled={disabled}
-                              onChange={(e) =>
-                                setUpdate({
-                                  ...update,
-                                  evidenceId: e.target.value,
-                                })
+                              validate={(item) =>
+                                validateEvidence(item, caseId)
                               }
-                            >
-                              <option value="">Select saved evidence</option>
-                              {workbench?.evidence.map((v) => (
-                                <option key={v.id} value={v.id}>
-                                  Version {v.version} · {v.id}
-                                </option>
-                              ))}
-                            </select>
-                          </label>
+                              onPage={(page) =>
+                                setWorkbench((current) =>
+                                  current
+                                    ? {
+                                        ...current,
+                                        evidence: mergeHistory(
+                                          current.evidence,
+                                          page.items,
+                                        ),
+                                        evidencePage: page,
+                                      }
+                                    : current,
+                                )
+                              }
+                              onRefresh={() =>
+                                setRevision((current) => current + 1)
+                              }
+                            />
+                          </>
                         )}
                         <label>
                           Request update note
@@ -841,10 +1395,12 @@ function ManagementView({
             <>
               <p className="muted">
                 A reviewer records a conclusion for selected evidence and
-                completed investigations. This is a case review record, not
-                payment approval or closure.
+                optional completed investigations. Review source evidence
+                directly when no AI answer is needed. Recording a conclusion
+                does not change the investigation status; resolution is a
+                separate action in Overview.
               </p>
-              {isReviewer && (
+              {isReviewer && canWrite && (
                 <form
                   onSubmit={(e) => {
                     if (selectedEvidence && independent)
@@ -880,8 +1436,60 @@ function ManagementView({
                       ))}
                     </select>
                   </label>
+                  <HistoryMore<Evidence>
+                    caseId={caseId}
+                    path={`${base}/evidence`}
+                    page={workbench?.evidencePage}
+                    loaded={workbench?.evidence.length ?? 0}
+                    label="review evidence versions"
+                    disabled={disabled}
+                    validate={(item) => validateEvidence(item, caseId)}
+                    onPage={(page) =>
+                      setWorkbench((current) =>
+                        current
+                          ? {
+                              ...current,
+                              evidence: mergeHistory(
+                                current.evidence,
+                                page.items,
+                              ),
+                              evidencePage: page,
+                            }
+                          : current,
+                      )
+                    }
+                    onRefresh={() => setRevision((current) => current + 1)}
+                  />
                   <fieldset disabled={disabled}>
-                    <legend>Completed investigations to review</legend>
+                    <legend>
+                      Completed investigations to review (optional)
+                    </legend>
+                    <p className="muted">
+                      Leave all questions unselected for an evidence-only
+                      reviewer conclusion.
+                    </p>
+                    {pagedQuestions &&
+                      evidenceId &&
+                      reviewSource !== evidenceId &&
+                      !reviewError && (
+                        <p role="status">
+                          Loading completed questions for this evidence version…
+                        </p>
+                      )}
+                    {reviewError && (
+                      <div className="notice danger" role="alert">
+                        {reviewError.message}
+                        <button
+                          type="button"
+                          className="secondary"
+                          onClick={() =>
+                            setReviewRevision((current) => current + 1)
+                          }
+                        >
+                          Retry review questions
+                        </button>
+                      </div>
+                    )}
                     {eligibleJobs.length ? (
                       eligibleJobs.map((j) => (
                         <label className="case-management-choice" key={j.id}>
@@ -914,9 +1522,32 @@ function ManagementView({
                     ) : (
                       <p>No completed investigations for this version.</p>
                     )}
+                    <HistoryMore<Job>
+                      caseId={caseId}
+                      path={questionsPath}
+                      page={
+                        reviewSource === evidenceId ? reviewPage : undefined
+                      }
+                      loaded={reviewQuestions.length}
+                      label="review questions"
+                      disabled={disabled}
+                      validate={validateReviewJob}
+                      onPage={(page) => {
+                        setReviewQuestions((current) =>
+                          mergeHistory(current, page.items),
+                        );
+                        setReviewPage(page);
+                      }}
+                      onRefresh={() =>
+                        setReviewRevision((current) => current + 1)
+                      }
+                    />
                   </fieldset>
                   {createdBy === user?.id && (
                     <p>A different reviewer must review a case you created.</p>
+                  )}
+                  {selectedEvidence?.createdBy === user?.id && (
+                    <p>A different reviewer must review evidence you saved.</p>
                   )}
                   <label>
                     Reviewer conclusion
@@ -928,6 +1559,13 @@ function ManagementView({
                       onChange={(e) => setConclusion(e.target.value)}
                     />
                   </label>
+                  <DraftTextControls
+                    scope={`${caseId}:reviewer-conclusion:${evidenceId}`}
+                    value={conclusion}
+                    onRestore={setConclusion}
+                    maxLength={4000}
+                    disabled={disabled}
+                  />
                   <button
                     className="primary"
                     disabled={disabled || !independent || !conclusion.trim()}
@@ -947,7 +1585,11 @@ function ManagementView({
                     <h3>Recorded · Evidence version {c.evidenceVersion}</h3>
                     <p>{c.conclusion}</p>
                     {meta(c)}
-                    <small>{c.investigationIds.join(", ")}</small>
+                    <small>
+                      {c.investigationIds.length
+                        ? c.investigationIds.join(", ")
+                        : "Evidence-only review · No model answer selected"}
+                    </small>
                   </article>
                 ))
               ) : (
@@ -956,14 +1598,15 @@ function ManagementView({
             </>
           )}
           {tab === "Activity" &&
-            (data.audit.length ? (
+            ((workbench?.audit ?? data.audit).length ? (
               <ol>
-                {data.audit.map((a) => (
+                {(workbench?.audit ?? data.audit).map((a) => (
                   <li key={a.id}>
                     <strong>{human(a.action)}</strong>
                     <p>{a.detail}</p>
                     <small>
-                      {a.actorName} · {a.occurredAt} · Version {a.version}
+                      {a.actorName ?? a.actor} · {a.occurredAt}
+                      {a.version !== undefined ? ` · Version ${a.version}` : ""}
                     </small>
                   </li>
                 ))}
@@ -971,6 +1614,29 @@ function ManagementView({
             ) : (
               <p>No management activity recorded.</p>
             ))}
+          {tab === "Activity" && (
+            <HistoryMore<Activity>
+              caseId={caseId}
+              path={`${base}/activity`}
+              page={workbench?.activityPage}
+              loaded={workbench?.audit?.length ?? 0}
+              label="activity records"
+              disabled={disabled}
+              validate={validateActivity}
+              onPage={(page) =>
+                setWorkbench((current) =>
+                  current
+                    ? {
+                        ...current,
+                        audit: mergeHistory(current.audit ?? [], page.items),
+                        activityPage: page,
+                      }
+                    : current,
+                )
+              }
+              onRefresh={() => setRevision((current) => current + 1)}
+            />
+          )}
         </div>
       )}
     </section>

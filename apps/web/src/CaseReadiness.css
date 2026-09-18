@@ -1,0 +1,41 @@
+.case-readiness {
+  margin-block: 16px;
+  padding-block: 14px;
+  border-block: 1px solid var(--border, #e0e8f4);
+}
+.case-readiness > button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.case-readiness > .payment-help {
+  margin-block: 8px 0;
+}
+.case-readiness > div,
+.case-readiness > .notice {
+  margin-top: 12px;
+}
+.case-source-selection {
+  display: block;
+  margin-block: 12px;
+  line-height: 1.6;
+}
+.case-source-selection p {
+  margin-block: 6px 10px;
+}
+.case-source-selection summary {
+  cursor: pointer;
+  padding-block: 5px;
+}
+.case-source-selection table {
+  width: 100%;
+  margin-block: 8px;
+  table-layout: fixed;
+  font-size: 12px;
+}
+.case-source-selection th,
+.case-source-selection td {
+  padding: 8px 5px;
+  overflow-wrap: anywhere;
+  text-align: left;
+}

@@ -8,7 +8,7 @@ The two visible tabs are **Case evidence** at `/evidences` and **Evidence Q&A** 
 
 1. Find a payment under **Case queue** using reference/UTR, a discovery Excel file, or Inquiry API. Open or resume its case with an investigation reason.
 2. Open that case and collect its four detailed outputs using **Inquiry API**, **Four Excel files**, or **Manual + JSON**. Saving creates an immutable evidence version.
-3. Open **Evidence library** to find cases by case ID, payment reference, UTR or reason. Bank, branch, latest source and latest row coverage narrow the list. Matching cases use pages of ten.
+3. Open **Evidence library** to find cases by case number, internal case ID, payment reference, UTR or reason. Bank, branch, latest source and latest row coverage narrow the list. Matching cases use pages of ten, selected by the backend.
 4. Inspect a case's evidence. Select a version, a result group and a row to read the exact native field names and saved values. Review source timezone, group counts and warnings with those values.
 5. Choose **Ask about this version** in the inspector to open **Evidence Q&A** with that case and exact evidence version. A viewer can use **View questions for this version**. Review the selected version, choose or write a question and explicitly run it. The same saved investigation is available in the payment case workbench. Use **Open case / collect evidence** to acquire further records. Empty versions direct writers to evidence collection instead of offering an investigation over no rows.
 
@@ -52,7 +52,7 @@ The latest version determines the source filter. A case whose latest version is 
 
 | Parameter | Default / allowed values |
 | --- | --- |
-| `search` | Empty; at most 200 characters; case-insensitive words across case ID, reference, UTR and reason |
+| `search` | Empty; at most 200 characters; literal case-insensitive words across case number, internal case ID, reference, UTR and reason; every word must match |
 | `coverage` | `ALL`, `NO_EVIDENCE`, `EMPTY`, `PARTIAL`, `ALL_GROUPS` |
 | `source` | `ALL`, `BANK_API`, `EXCEL`, `JSON`, `MANUAL` |
 | `bank` | Omit to include all authorized banks; exact configured numeric code |
@@ -60,6 +60,8 @@ The latest version determines the source filter. A case whose latest version is 
 | `page` | Positive integer, default 1; ten results per page; out-of-range page clamps to the last page |
 
 Response contains `generatedAt`, `page`, `pageSize`, `total`, `totalPages`, global `summary`, authorized `scopes` and `items`. Each item contains the saved case identity/reason/source amount, `versionCount`, `coverageState` and `latestEvidence` summary or null. A summary contains the immutable version ID/number, source, timestamp, creator, four group counts/completion values, warnings and evidence hash. The list contains no raw evidence payload.
+
+The query uses the private relational `fcr_case_search` sidecar shared with saved-case search. SQL applies authorization, text/coverage/source/scope filters, matching count, stable order and the ten-row page limit. Global summary cards are aggregated across all authorized cases before the display filters; they do not describe only the visible page. The API loads the latest evidence summary only for each selected page item, rather than reading every tenant evidence summary into memory. `%` and `_` in search are literal characters, not wildcard operators. See [search index maintenance and saved-case pagination](CASE_SEARCH.md).
 
 Inspection reuses the authorized case APIs:
 
@@ -74,4 +76,6 @@ The frontend debounces search, resets pagination when filters change, cancels su
 
 No new bank or database integration is introduced by this page. It reads local saved case evidence; the existing bank inquiry adapter still needs its deployed request/response and authentication verified. Library browsing makes no model call or evidence mutation. The adjacent Evidence Q&A tab permits explicit questions over the same saved case/version using the existing case-investigation API. Evidence intake remains in the case workflow; the existing GPU default and preserved CPU/model baseline are unchanged.
 
-The endpoint currently loads authorized case metadata and batches tenant evidence summaries, then filters and paginates in memory. This avoids per-case evidence queries, but it is not a measured solution for a bank-wide archive. Larger deployments need indexed search and database pagination, tested at their expected volume. Reads across cases/versions are not an atomic Oracle snapshot. Validation and actual deployed observations belong in the dated validation record.
+The search sidecar is rebuilt after case-number startup in batches of 100 cases and refreshed inside relevant case transactions. Original case/evidence records and stored answers are preserved. Library GETs do not rebuild the index, fetch bank data or refresh evidence. Database pagination bounds response hydration; substring search, counts and large page offsets still need measurement at the deployment's expected volume. This document makes no latency or bank-wide capacity claim.
+
+Counts and page items describe the local query, and subsequent requests can change as cases or evidence are saved. `generatedAt` describes the response, not the bank's source observation time. Reads are not an atomic Oracle snapshot. The inspector's evidence-version list and the case's investigation/management histories retain their existing contracts; they are a separate pagination increment. Validation and actual deployed observations belong in the dated validation record.

@@ -17,6 +17,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 @Service
 public class CaseReportService {
   static final int REQUEST_LIMIT = 8192, MAX_JOBS = 20, MAX_REPORT_BYTES = 8 * 1024 * 1024;
+  static final int MAX_HISTORY_PAGE = 25;
   private final ObjectMapper mapper;
   private final JdbcTemplate db;
   private final TransactionTemplate tx;
@@ -185,6 +186,67 @@ public class CaseReportService {
     return verified(rows.get(0), caseId);
   }
 
+  /** Metadata from frozen reports only: never substitute current evidence, answers or management. */
+  public ObjectNode history(Actor actor, String caseId, int limit, String cursor) {
+    cases.caseDetail(actor, caseId);
+    if (limit < 1 || limit > MAX_HISTORY_PAGE)
+      throw invalid("Choose between 1 and 25 saved reports per page.");
+    List<Object> parameters = new ArrayList<>(List.of(actor.tenantId(), caseId));
+    String after = "";
+    if (cursor != null) {
+      if (!cursor.matches("[A-Za-z0-9._:-]{1,100}")) throw invalid("Choose a valid saved-report cursor.");
+      List<String> positions = db.queryForList(
+          "SELECT created_at FROM fcr_case_report WHERE tenant_id=? AND case_id=? AND id=?",
+          String.class, actor.tenantId(), caseId, cursor);
+      if (positions.isEmpty()) throw ApiException.notFound();
+      after = " AND (CAST(created_at AS TIMESTAMP WITH TIME ZONE)<CAST(? AS TIMESTAMP WITH TIME ZONE)"
+          + " OR (CAST(created_at AS TIMESTAMP WITH TIME ZONE)=CAST(? AS TIMESTAMP WITH TIME ZONE) AND id<?))";
+      parameters.add(positions.get(0)); parameters.add(positions.get(0)); parameters.add(cursor);
+    }
+    parameters.add(limit + 1);
+    // Bound before loading the JSON: historical reports may contain large source appendices.
+    List<String> ids = db.queryForList("SELECT id FROM fcr_case_report WHERE tenant_id=? AND case_id=?"
+        + after + " ORDER BY CAST(created_at AS TIMESTAMP WITH TIME ZONE) DESC,id DESC LIMIT ?", String.class, parameters.toArray());
+    ObjectNode result = mapper.createObjectNode().put("schemaVersion", "payment-case-report-history-v1")
+        .put("caseId", caseId);
+    ArrayNode items = result.putArray("items");
+    for (String id : ids.subList(0, Math.min(limit, ids.size()))) {
+      // Read and verify one bounded bundle at a time; never return raw frozen bodies in the list.
+      List<Map<String,Object>> stored = db.queryForList(
+          "SELECT report_hash,body FROM fcr_case_report WHERE tenant_id=? AND case_id=? AND id=?",
+          actor.tenantId(), caseId, id);
+      if (stored.isEmpty()) throw ApiException.notFound();
+      ObjectNode report = verified(stored.get(0), caseId);
+      if (!id.equals(report.path("reportId").asText()))
+        throw new ApiException(503, "CASE_REPORT_INVALID", "The saved report could not be verified.");
+      ObjectNode item = items.addObject();
+      for (String field : List.of("reportId", "reportHash", "generatedAt", "generatedBy"))
+        item.set(field, report.path(field).deepCopy());
+      item.set("caseNumber", report.path("case").path("caseNumber").isMissingNode()
+          ? mapper.nullNode() : report.path("case").path("caseNumber").deepCopy());
+      item.put("reportMode", report.path("scope").path("reportMode").asText("DETAILED"));
+      item.put("includeEvidenceRows", report.path("scope").path("includeEvidenceRows").asBoolean());
+      item.put("reviewStatus", report.path("review").path("status").asText());
+      JsonNode snapshot = report.path("evidence");
+      if (snapshot.isNull()) item.putNull("evidence");
+      else {
+        ObjectNode selected = item.putObject("evidence");
+        for (String field : List.of("id", "version", "sourceKind")) selected.set(field, snapshot.path(field).deepCopy());
+      }
+      ArrayNode questions = item.putArray("investigations");
+      for (JsonNode job : report.path("investigations")) {
+        ObjectNode question = questions.addObject();
+        for (String field : List.of("id", "question", "status", "evidenceVersion"))
+          question.set(field, job.path(field).deepCopy());
+      }
+    }
+    if (ids.size() > limit) result.put("nextCursor", ids.get(limit - 1));
+    else result.putNull("nextCursor");
+    // Recheck access after reading; a removal or changed authorization cannot expose a list.
+    cases.caseDetail(actor, caseId);
+    return result;
+  }
+
   public byte[] render(ObjectNode frozen) {
     if (!renderSlots.tryAcquire())
       throw new ApiException(429, "CASE_REPORT_BUSY", "Two reports are being prepared. Wait briefly and retry the same download.");
@@ -209,7 +271,6 @@ public class CaseReportService {
   }
 
   static JsonNode matchingConclusion(JsonNode conclusions, ObjectNode snapshot, List<String> ids, ArrayNode jobs) {
-    if (ids.isEmpty()) return null;
     Set<String> selected = new HashSet<>(ids);
     for (JsonNode job : jobs) if (!job.path("status").asText().equals("COMPLETED")) return null;
     List<JsonNode> matches = new ArrayList<>();

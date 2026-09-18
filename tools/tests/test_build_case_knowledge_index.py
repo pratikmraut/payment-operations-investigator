@@ -190,15 +190,16 @@ def test_unacknowledged_unload_prevents_candidate_result():
         build(provider=FailingProvider())
 
 
-def test_completed_index_byte_limit_prevents_oversized_candidate():
+def test_completed_index_byte_limit_prevents_oversized_candidate(monkeypatch):
+    monkeypatch.setattr(builder, "MAX_BYTES", 100_000)
     sources = []
-    for tenant_index in range(10):
+    for tenant_index in range(2):
         docs = [{"id": f"GUIDE-{index}", "kind": "knowledge", "title": "Original rule",
                  "content": f"Tenant {tenant_index} rule {index}", "source": {"file": "original-test"}}
-                for index in range(100)]
+                for index in range(25)]
         sources.append(library(f"tenant-{tenant_index}", docs))
     provider = FakeProvider()
-    with pytest.raises(builder.IndexError, match="4 MiB"):
+    with pytest.raises(builder.IndexError, match="64 MiB"):
         build(sources, provider=provider)
     assert provider.unloaded
 
@@ -274,7 +275,7 @@ def test_source_read_duplicate_keys_and_size_bounds(tmp_path):
     with pytest.raises(builder.IndexError, match="Duplicate"):
         builder.read_object(source)
     source.write_bytes(b"x" * (builder.MAX_BYTES + 1))
-    with pytest.raises(builder.IndexError, match="4 MiB"):
+    with pytest.raises(builder.IndexError, match="64 MiB"):
         builder.read_object(source)
 
 
@@ -298,3 +299,30 @@ def test_atomic_publication_never_overwrites_a_concurrently_created_file(tmp_pat
         builder.atomic_create(output, b"replacement")
     assert output.read_bytes() == b"first"
     assert list(tmp_path.iterdir()) == [output]
+
+
+def test_inventory_above_one_hundred_keeps_v1_recipe_and_reuses_current_vectors():
+    docs = [{"id": f"GUIDE-{i}", "kind": "knowledge", "title": "Original guidance",
+             "content": f"Synthetic scope rule {i}", "source": {"file": "original-scale-test"}} for i in range(125)]
+    source = library(docs=docs)
+    initial, _, first = build([source])
+    assert first["documents"] == 125
+    provider = FakeProvider()
+    rebuilt, _, second = build([source], json.loads(initial), provider)
+    assert second["reusedDocuments"] == 125 and second["embeddedDocuments"] == 0
+    assert provider.text_batches == []
+    assert json.loads(rebuilt)["schemaVersion"] == "case-knowledge-index-v1"
+    assert json.loads(rebuilt)["tenants"] == json.loads(initial)["tenants"]
+
+
+def test_inventory_and_aggregate_bounds_fail_before_provider_access(monkeypatch):
+    docs = [{"id": f"GUIDE-{i}", "kind": "knowledge", "title": "Original guidance",
+             "content": "Synthetic scope rule", "source": {"file": "original-scale-test"}} for i in range(1001)]
+    class ForbiddenProvider(FakeProvider):
+        def installed_digest(self):
+            pytest.fail("Invalid source counts must be rejected before provider use")
+    with pytest.raises(builder.IndexError):
+        build([library(docs=docs)], provider=ForbiddenProvider())
+    monkeypatch.setattr(builder, "MAX_TOTAL_DOCUMENTS", 1)
+    with pytest.raises(builder.IndexError, match="aggregate document"):
+        build([library(), library("silverline")], provider=ForbiddenProvider())

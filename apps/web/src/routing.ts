@@ -1,4 +1,5 @@
 import type { MouseEvent } from "react";
+import { confirmNavigation, writeNavigationHistory } from "./unsavedChanges";
 
 export type Route = {
   page: "cases" | "payment-cases" | "knowledge" | "system" | "evidences";
@@ -100,7 +101,7 @@ export function canonicalizeWorkspace() {
     `${window.location.pathname}${window.location.search}${window.location.hash}` !==
     destination
   ) {
-    window.history.replaceState(null, "", destination);
+    writeNavigationHistory("replace", destination);
   }
 }
 
@@ -112,9 +113,10 @@ export function navigateTo(path: string, state: NavigationState | null = null) {
     `${window.location.pathname}${window.location.search}${window.location.hash}` !==
     destination
   ) {
-    window.history.pushState(state, "", destination);
+    if (!confirmNavigation(destination)) return;
+    writeNavigationHistory("push", destination, state);
   } else if (state) {
-    window.history.replaceState(state, "", destination);
+    writeNavigationHistory("replace", destination, state);
   }
   window.dispatchEvent(new PopStateEvent("popstate"));
 }
@@ -122,7 +124,8 @@ export function navigateTo(path: string, state: NavigationState | null = null) {
 export function replaceDestination(path: string) {
   const destination = canonicalDestination(path);
   if (`${window.location.pathname}${window.location.search}` !== destination) {
-    window.history.replaceState(window.history.state, "", destination);
+    if (!confirmNavigation(destination)) return;
+    writeNavigationHistory("replace", destination);
     window.dispatchEvent(new PopStateEvent("popstate"));
   }
 }

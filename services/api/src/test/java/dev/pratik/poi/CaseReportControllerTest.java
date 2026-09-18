@@ -107,4 +107,22 @@ class CaseReportControllerTest {
         .andExpect(status().isConflict()).andExpect(content().contentTypeCompatibleWith("application/json"))
         .andExpect(jsonPath("$.code").value("CASE_REPORT_CHANGED"));
   }
+  @Test void reportHistoryIsAnAuthorizedReadWithDefaultBoundsAndAliasResolution() throws Exception {
+    ObjectNode history = mapper.createObjectNode().put("caseId", "FCR-TEST"); history.putArray("items"); history.putNull("nextCursor");
+    when(service.history(any(), eq("FCR-TEST"), anyInt(), nullable(String.class))).thenReturn(history);
+    mvc.perform(get(base+"/reports")).andExpect(status().isUnauthorized());
+    mvc.perform(get(base+"/reports").with(user("other"))).andExpect(status().isNotFound());
+    verifyNoInteractions(service);
+    mvc.perform(get(base+"/reports").with(user("viewer")))
+        .andExpect(status().isOk()).andExpect(jsonPath("$.items").isArray())
+        .andExpect(header().string("Cache-Control", "no-store"));
+    verify(service).history(argThat(actor -> actor.role().equals("VIEWER")), eq("FCR-TEST"), eq(10), isNull());
+    String number = "2026091600001";
+    when(cases.caseDetail(any(), eq(number))).thenReturn(mapper.createObjectNode().put("id", "FCR-TEST").put("caseNumber", number));
+    mvc.perform(get("/api/payment-cases/"+number+"/reports?limit=5&cursor=RPT-LAST").with(user("viewer")))
+        .andExpect(status().isOk());
+    verify(service).history(any(), eq("FCR-TEST"), eq(5), eq("RPT-LAST"));
+    verify(service, never()).preview(any(), anyString(), any(), any());
+    verify(service, never()).render(any());
+  }
 }

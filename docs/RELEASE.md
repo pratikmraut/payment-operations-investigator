@@ -30,7 +30,7 @@ The prior final ZIP passed 25 independent integrity checks covering 238 source f
 
 [Source-folder delivery](validation/source-folder-delivery.json) and [cleanup evidence](validation/package-cleanup.json) identify the retained source and new editor files. Historical archive evidence does not validate additions made afterward. Application source, live databases, downloaded models and existing service configuration were preserved.
 
-The optional [packaging tool](../tools/package_release.py) remains available for an explicitly requested source snapshot; no replacement ZIP is required for this delivery. Its historical allowlist predates the VS Code additions, so review it before using it to distribute editor configuration.
+The [packaging tool](../tools/package_release.py) now requires reviewed, clean Git-tracked source, applies Git ignores and private-file exclusions, and scans bounded source/workbook contents before creating a ZIP. Run `python tools/package_release.py --check` for a read-only audit. It blocks changed tracked source and untracked eligible additions rather than silently omitting feature files. See [Release privacy](RELEASE_PRIVACY.md) for the current policy, independent archive verification and detection limits. The dated archive receipts above retain their original historical scope.
 
 ## Limits and preserved history
 

@@ -54,7 +54,7 @@ class KnowledgeSearchRequest(StrictModel):
     question: Annotated[str, StringConstraints(min_length=1, max_length=2000, pattern=r"\S")]
     model: Literal["qwen3-embedding:0.6b"]
     digest: Digest
-    entries: Annotated[list[KnowledgeEntry], Field(min_length=1, max_length=100)]
+    entries: Annotated[list[KnowledgeEntry], Field(min_length=1, max_length=1000)]
     limit: Literal[3]
 
     @model_validator(mode="after")

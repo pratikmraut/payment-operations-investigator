@@ -17,7 +17,8 @@ public class CaseEvidenceController {
   private final PaymentDiscoveryService cases;
   public CaseEvidenceController(CaseEvidenceService service,PaymentDiscoveryService cases){this.service=service;this.cases=cases;}
   @GetMapping("/config") public ObjectNode config(Authentication auth,@PathVariable String caseId){Actor actor=Actor.from(auth);return service.config(actor,CaseRouteIdentity.canonical(cases,actor,caseId));}
-  @GetMapping public ObjectNode list(Authentication auth,@PathVariable String caseId){Actor actor=Actor.from(auth);return service.list(actor,CaseRouteIdentity.canonical(cases,actor,caseId));}
+  @GetMapping public ObjectNode list(Authentication auth,@PathVariable String caseId,HttpServletRequest request){Actor actor=Actor.from(auth);return service.history(actor,CaseRouteIdentity.canonical(cases,actor,caseId),request.getParameterMap());}
+  @GetMapping("/{snapshotId}/summary") public ObjectNode summary(Authentication auth,@PathVariable String caseId,@PathVariable String snapshotId){Actor actor=Actor.from(auth);return service.summary(actor,CaseRouteIdentity.canonical(cases,actor,caseId),snapshotId);}
   @GetMapping("/{snapshotId}") public ObjectNode detail(Authentication auth,@PathVariable String caseId,@PathVariable String snapshotId){Actor actor=Actor.from(auth);return service.detail(actor,CaseRouteIdentity.canonical(cases,actor,caseId),snapshotId);}
   @GetMapping("/template/{group}.xlsx")
   public ResponseEntity<byte[]> template(Authentication auth,@PathVariable String caseId,@PathVariable String group){

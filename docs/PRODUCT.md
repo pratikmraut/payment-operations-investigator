@@ -3,6 +3,21 @@
 ## Objective
 Deliver a resume-ready enterprise-style portfolio application within seven days: from a payment case to an evidence-linked investigation and independently reviewed case decision. Enterprise-style refers to tested architecture, user workflows and engineering controls; production readiness requires separate operational evidence.
 
+## Current saved-payment workflow
+
+The primary product now follows payment discovery, saved case creation, immutable evidence acquisition, local-model investigation and independent human review. [Case workflow](CASE_WORKFLOW.md) adds explicit investigation states and reviewer-controlled resolution/reopening, separate from archival and payment outcome. [Assigned work and evidence follow-ups](CASE_WORK_QUEUE.md), [draft protection](DRAFT_PROTECTION.md) and [saved report history](REPORT_HISTORY.md) support completing and retaining that work. The original simulated scenarios and replay modes below remain legacy regression fixtures; they are not the normal saved-payment interface.
+
+```mermaid
+flowchart LR
+  Find[Find payment] --> Case[Open saved case]
+  Case --> Evidence[Save evidence version]
+  Evidence --> Investigate[Investigate or record human finding]
+  Investigate --> Review[Independent review]
+  Review --> Resolve[Resolve investigation case]
+  Resolve --> Report[Download saved report]
+  Resolve --> Reopen[Explicitly reopen if needed]
+```
+
 ## Users
 - Analyst: searches cases, examines records, initiates investigations and reviews evidence.
 - Reviewer: approves or rejects another analyst's case proposal.

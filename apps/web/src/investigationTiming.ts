@@ -9,7 +9,7 @@ export type InvestigationTiming = {
 export type TimedJob = {
   id: string;
   question: string;
-  status: "QUEUED" | "RUNNING" | "COMPLETED" | "FAILED";
+  status: "QUEUED" | "RUNNING" | "COMPLETED" | "FAILED" | "CANCELLED";
   createdAt: string;
   requestedAt?: string | null;
   startedAt?: string;
@@ -28,12 +28,15 @@ export type BrowserRun = {
     | "running"
     | "completed"
     | "failed"
+    | "cancelled"
     | "rejected"
     | "unknown";
 };
 
 export const terminalJob = (job: TimedJob) =>
-  job.status === "COMPLETED" || job.status === "FAILED";
+  job.status === "COMPLETED" ||
+  job.status === "FAILED" ||
+  job.status === "CANCELLED";
 
 export function observeBrowserRun(
   run: BrowserRun,

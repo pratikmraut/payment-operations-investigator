@@ -28,7 +28,10 @@ MODEL = "qwen3-embedding:0.6b"
 DIMENSIONS = 1024
 SCHEMA = "case-knowledge-index-v1"
 EVIDENCE_SCHEMA = "fcr-case-evidence-v1"
-MAX_BYTES = 4 * 1024 * 1024
+MAX_BYTES = 64 * 1024 * 1024
+MAX_DOCUMENTS = 1000
+MAX_TOTAL_DOCUMENTS = 3000
+MAX_SOURCE_CHARACTERS = 4 * 1024 * 1024
 BATCH_SIZE = 8
 DOC_KEYS = {"id", "kind", "title", "content", "source"}
 HASH = re.compile(r"[a-f0-9]{64}\Z")
@@ -67,7 +70,7 @@ def read_object(path):
         with path.open("rb") as source:
             content = source.read(MAX_BYTES + 1)
         if len(content) > MAX_BYTES:
-            raise IndexError("An input exceeds the 4 MiB source bound.")
+            raise IndexError("An input exceeds the 64 MiB source bound.")
         value = json.loads(content.decode("utf-8-sig"), object_pairs_hook=_unique,
                            parse_constant=_invalid_constant)
     except (OSError, UnicodeError, json.JSONDecodeError, RecursionError) as exc:
@@ -118,7 +121,7 @@ def library(value):
             or value["schemaVersion"] != "case-knowledge-library-v1"
             or not isinstance(value["tenantId"], str) or not TENANT.fullmatch(value["tenantId"])
             or value["evidenceSchema"] != EVIDENCE_SCHEMA or not _hash(value["version"])
-            or not isinstance(value["items"], list) or not 1 <= len(value["items"]) <= 100
+            or not isinstance(value["items"], list) or not 1 <= len(value["items"]) <= MAX_DOCUMENTS
             or not isinstance(value["warnings"], list) or any(not isinstance(x, str) for x in value["warnings"])):
         raise IndexError("The authorized library export does not match its versioned contract.")
     embedding = value["embedding"]
@@ -131,6 +134,7 @@ def library(value):
     # Source inventory is authoritative for rebuilding. Embedding metadata may
     # refer to missing/stale weights; it never selects the model used here.
     docs, identifiers = [], set()
+    source_characters = 0
     for item in value["items"]:
         if (not _keys(item, DOC_KEYS | {"version", "category", "selection", "embeddingStatus"})
                 or item["category"] not in {"SCOPE", "GUIDANCE", "STATUS"}
@@ -138,6 +142,9 @@ def library(value):
                 or item["embeddingStatus"] not in {"CURRENT", "STALE", "MISSING", "DISABLED"}):
             raise IndexError("A current library item has invalid metadata.")
         doc = document({key: item[key] for key in DOC_KEYS})
+        source_characters += len(canonical(doc))
+        if source_characters > MAX_SOURCE_CHARACTERS:
+            raise IndexError("The source inventory exceeds its bounded character allowance.")
         if doc["id"] in identifiers or fingerprint(doc) != item["version"]:
             raise IndexError("A library document is duplicated or its source fingerprint changed.")
         identifiers.add(doc["id"])
@@ -163,12 +170,16 @@ def existing_index(value):
             or not 1 <= len(value["tenants"]) <= 10):
         raise IndexError("The existing index does not match the canonical-document embedding contract.")
     hashes, tenant_ids = {}, set()
+    total_documents = 0
     for tenant in value["tenants"]:
         if (not _keys(tenant, {"tenantId", "evidenceSchema", "documents"})
                 or not isinstance(tenant["tenantId"], str) or not TENANT.fullmatch(tenant["tenantId"])
                 or tenant["tenantId"] in tenant_ids or tenant["evidenceSchema"] != EVIDENCE_SCHEMA
-                or not isinstance(tenant["documents"], list) or not 1 <= len(tenant["documents"]) <= 100):
+                or not isinstance(tenant["documents"], list) or not 1 <= len(tenant["documents"]) <= MAX_DOCUMENTS):
             raise IndexError("The existing index has an invalid or duplicate tenant scope.")
+        total_documents += len(tenant["documents"])
+        if total_documents > MAX_TOTAL_DOCUMENTS:
+            raise IndexError("The index exceeds its aggregate document allowance.")
         tenant_ids.add(tenant["tenantId"])
         identifiers = set()
         for doc in tenant["documents"]:
@@ -264,6 +275,8 @@ def build(libraries, previous, provider, *, now=None):
     inventories = [library(value) for value in libraries]
     if not 1 <= len(inventories) <= 10 or len({x["tenantId"] for x in inventories}) != len(inventories):
         raise IndexError("Provide one current export per tenant, up to ten unique tenants.")
+    if sum(len(scope["documents"]) for scope in inventories) > MAX_TOTAL_DOCUMENTS:
+        raise IndexError("The index exceeds its aggregate document allowance.")
     previous_digest, reusable = existing_index(previous) if previous is not None else (None, {})
     digest = provider.installed_digest()
     if not _hash(digest):
@@ -302,7 +315,7 @@ def build(libraries, previous, provider, *, now=None):
                               for doc in scope["documents"]]} for scope in inventories]}
     serialized = canonical(result).encode("utf-8")
     if len(serialized) > MAX_BYTES:
-        raise IndexError("The completed index exceeds 4 MiB; no output was written.")
+        raise IndexError("The completed index exceeds 64 MiB; no output was written.")
     total = sum(len(scope["documents"]) for scope in inventories)
     receipt = {"schemaVersion": "case-knowledge-index-build-v1", "model": MODEL, "digest": digest,
                "dimensions": DIMENSIONS, "indexedAt": indexed_at, "tenantCount": len(inventories),

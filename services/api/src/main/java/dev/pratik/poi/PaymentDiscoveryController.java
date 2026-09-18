@@ -29,8 +29,8 @@ public class PaymentDiscoveryController {
   }
   @PostMapping(value="/api/payment-cases",consumes="application/json")
   public ObjectNode create(Authentication auth,HttpServletRequest request,@RequestHeader(value="Idempotency-Key",required=false)String key)throws IOException{return service.createCase(Actor.from(auth),body(request),key);}
-  @GetMapping("/api/payment-cases") public ObjectNode cases(Authentication auth,@RequestParam(value="lifecycle",defaultValue="ACTIVE")String lifecycle){return service.cases(Actor.from(auth),lifecycle);}
+  @GetMapping("/api/payment-cases") public ObjectNode cases(Authentication auth,HttpServletRequest request){return service.searchCases(Actor.from(auth),request.getParameterMap());}
   @GetMapping("/api/payment-cases/dashboard") public ObjectNode dashboard(Authentication auth){return service.dashboard(Actor.from(auth));}
-  @GetMapping("/api/payment-cases/{id}") public ObjectNode detail(Authentication auth,@PathVariable String id){return service.caseDetail(Actor.from(auth),id);}
+  @GetMapping("/api/payment-cases/{id}") public ObjectNode detail(Authentication auth,@PathVariable String id){return service.caseDisplayDetail(Actor.from(auth),id);}
   private byte[] body(HttpServletRequest request)throws IOException{byte[] bytes=request.getInputStream().readNBytes(8193);if(bytes.length>8192)throw new ApiException(413,"DISCOVERY_REQUEST_TOO_LARGE","Discovery request limit is 8 KiB.");return bytes;}
 }

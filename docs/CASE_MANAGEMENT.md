@@ -1,8 +1,8 @@
 # Saved payment case management
 
-Case management also provides [Archive, Restore and administrator removal](CASE_LIFECYCLE.md). Archived cases retain their evidence and management history and are read-only until restored. Lifecycle state is separate from the payment outcome and management version.
+Case management now provides [operational status transitions, independent resolution and explicit reopening](CASE_WORKFLOW.md), as well as [Archive, Restore and administrator removal](CASE_LIFECYCLE.md). Archived cases retain their evidence and management history and are read-only until restored. Resolved investigations are read-only until explicitly reopened. Lifecycle state, investigation status and the payment outcome are distinct.
 
-The private Payment case now supports human coordination alongside its saved evidence and local-model questions: an owner, priority, case notes, evidence requests and a reviewer conclusion. These commands do not call a bank API, run a model, alter payment records or close a case. Existing case status is preserved; a case opened as `OPEN` stays `OPEN` after a reviewer conclusion is recorded.
+The private Payment case supports an owner, priority, case notes, assigned evidence requests and reviewer conclusions. These commands do not call a bank API, run a model or alter payment records. Recording a conclusion preserves the current investigation status; the explicit `/workflow` command performs status transitions. A case opened as `OPEN` stays `OPEN` after a reviewer conclusion alone.
 
 The original discovery record and its investigation reason remain intact. Management uses separate versioned state and append-only events. The normal case list, case detail and dashboard project the current owner and priority over the original record. Evidence versions, model jobs, original export answers and GPU configuration are unaffected.
 
@@ -40,9 +40,10 @@ All paths below are relative to `/api/payment-cases/{caseId}`. A signed-in user 
 | --- | --- |
 | `GET /management` | None |
 | `POST /management` | `{expectedVersion,ownerId,priority,reason}` |
+| `POST /workflow` | `{expectedVersion,status,reason,reviewerConclusionId?}`; see [workflow rules](CASE_WORKFLOW.md) |
 | `POST /notes` | `{expectedVersion,text}` |
-| `POST /evidence-requests` | `{expectedVersion,title,detail,dueDate?}` |
-| `POST /evidence-requests/{requestId}` | `{expectedVersion,status,note,evidenceId?}` |
+| `POST /evidence-requests` | `{expectedVersion,title,detail,dueDate?,assigneeId?}` |
+| `POST /evidence-requests/{requestId}` | `{expectedVersion,status,note,evidenceId?,assigneeId?}` |
 | `POST /reviewer-conclusions` | `{expectedVersion,evidenceId,evidenceHash,investigationIds,conclusion}` |
 
 Successful writes return the full management representation, in the same shape as GET:
@@ -51,6 +52,10 @@ Successful writes return the full management representation, in the same shape a
 {
   "caseId": "FCR-example",
   "version": 0,
+  "status": "OPEN",
+  "lifecycleState": "ACTIVE",
+  "allowedTransitions": ["INVESTIGATING", "AWAITING_EVIDENCE"],
+  "activeInvestigationCount": 0,
   "owner": null,
   "priority": "MEDIUM",
   "assignees": [
@@ -74,10 +79,11 @@ This example uses the existing Northstar demonstration identities. The server de
 | `reason`, case note `text`, transition `note`, request `detail`, reviewer `conclusion` | Nonblank text, at most 4,000 characters; original text is preserved |
 | Request `title` | Nonblank text, at most 200 characters |
 | `dueDate` | Omitted, null or a valid `YYYY-MM-DD` date; an overdue date can be recorded |
-| Request transition `status` | `OPEN`, `FULFILLED` or `CANCELLED`, different from the current request status |
+| `assigneeId` | Optional eligible server-provided writer ID; null unassigns; omitted on update preserves the assignee |
+| Request transition `status` | `OPEN`, `FULFILLED` or `CANCELLED`; change status or assignee, with a required note |
 | Transition `evidenceId` | Required for `FULFILLED`, omitted for `OPEN` or `CANCELLED`; at most 100 characters |
 | Reviewer `evidenceHash` | Exact selected saved version's lowercase SHA-256 fingerprint |
-| `investigationIds` | 1–20 distinct IDs, each at most 100 characters; completed jobs for the exact selected evidence ID/hash |
+| `investigationIds` | 0–20 distinct IDs, each at most 100 characters; completed jobs for the exact selected evidence ID/hash; an empty list records direct evidence-only review |
 | `Idempotency-Key` | 8–200 letters, numbers, dots, underscores, colons or hyphens |
 
 Bodies are limited to 32 KiB and reject unknown or duplicate JSON keys and trailing values. Text rejects unsupported control characters while permitting ordinary line breaks and tabs. The API cannot edit or delete earlier notes, request transitions, audit events or reviewer conclusions.
@@ -93,9 +99,9 @@ Notes, requests, conclusions and audit entries are listed newest first; an indiv
 
 ## Reviewer conclusion is not case approval
 
-The recording reviewer must differ from both the original case creator and every selected investigation creator. A reviewer who created the case cannot independently record its conclusion with the current identity; the application does not invent another reviewer account to bypass this rule.
+The recording reviewer must differ from the original case creator, selected evidence creator and every selected investigation creator. A reviewer who created the case or evidence cannot independently record its conclusion with the current identity; the application does not invent another reviewer account to bypass this rule.
 
-Recording the conclusion is a human statement about a selected evidence version and selected completed questions. It is not approval to close the case, proof that the model was correct, proof of beneficiary credit, or authorization to execute a payment action. No `APPROVED`, `CLOSED` or `RESOLVED` transition is performed. A later report can show `RECORDED` only for the matching evidence ID/hash and selected investigation set; another selection has no implied reviewer conclusion.
+Recording the conclusion is a human statement about a selected evidence version and optional completed questions. It is not proof that the model was correct, proof of beneficiary credit, or authorization to execute a payment action. This command performs no status transition. A separate reviewer-only workflow command may resolve the investigation after checking its current evidence, conclusion, open requests and active jobs. A report can show `RECORDED` only for the matching evidence ID/hash and selected investigation set, including an empty set; another selection has no implied reviewer conclusion.
 
 ## Concurrency and retries
 

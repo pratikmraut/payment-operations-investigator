@@ -1,7 +1,15 @@
 import { useEffect, useRef, useState } from "react";
-import { Download, Eye, FileText, X } from "lucide-react";
+import { Download, Eye, FileText, RefreshCw, X } from "lucide-react";
 import { api, apiBlob, ApiError, human } from "./api";
 import { paymentCaseNumber } from "./paymentCaseIdentity";
+import {
+  HistoryMore,
+  historyMeta,
+  mergeHistory,
+  validateHistoryPage,
+  type HistoryPage,
+  type HistoryPageMeta,
+} from "./caseHistory";
 import "./CaseManagement.css";
 
 type Evidence = {
@@ -24,6 +32,8 @@ type Workbench = {
   latestEvidenceId: string | null;
   evidence: Evidence[];
   investigations: Job[];
+  evidencePage?: HistoryPageMeta;
+  investigationPage?: HistoryPageMeta;
 };
 type Scope = {
   evidenceId: string | null;
@@ -51,8 +61,83 @@ type Preview = {
   };
   warnings: string[];
 };
+type SavedReport = {
+  reportId: string;
+  reportHash: string;
+  generatedAt: string;
+  generatedBy: Preview["generatedBy"];
+  caseNumber: string | null;
+  reportMode: "SUMMARY" | "DETAILED";
+  includeEvidenceRows: boolean;
+  reviewStatus: "RECORDED" | "PENDING";
+  evidence: Pick<Evidence, "id" | "version" | "sourceKind"> | null;
+  investigations: Pick<Job, "id" | "question" | "status" | "evidenceVersion">[];
+};
+type ReportHistory = {
+  schemaVersion: string;
+  caseId: string;
+  items: SavedReport[];
+  nextCursor: string | null;
+};
+type DownloadSelection = Pick<
+  SavedReport,
+  "reportId" | "reportHash" | "caseNumber"
+>;
 const text = (v: unknown): v is string => typeof v === "string";
 const unique = (ids: string[]) => new Set(ids).size === ids.length;
+function validateHistory(value: ReportHistory, caseId: string) {
+  if (
+    !value ||
+    value.schemaVersion !== "payment-case-report-history-v1" ||
+    value.caseId !== caseId ||
+    !Array.isArray(value.items) ||
+    value.items.length > 25 ||
+    !unique(value.items.map((item) => item?.reportId)) ||
+    !(
+      value.nextCursor === null ||
+      (text(value.nextCursor) &&
+        value.nextCursor.length > 0 &&
+        value.items.at(-1)?.reportId === value.nextCursor)
+    ) ||
+    !value.items.every(
+      (item) =>
+        item &&
+        text(item.reportId) &&
+        item.reportId.length > 0 &&
+        text(item.reportHash) &&
+        /^[a-f0-9]{64}$/.test(item.reportHash) &&
+        text(item.generatedAt) &&
+        Number.isFinite(Date.parse(item.generatedAt)) &&
+        [
+          item.generatedBy?.id,
+          item.generatedBy?.name,
+          item.generatedBy?.role,
+        ].every(text) &&
+        (item.caseNumber === null || text(item.caseNumber)) &&
+        ["SUMMARY", "DETAILED"].includes(item.reportMode) &&
+        typeof item.includeEvidenceRows === "boolean" &&
+        ["RECORDED", "PENDING"].includes(item.reviewStatus) &&
+        (item.evidence === null ||
+          (text(item.evidence?.id) &&
+            text(item.evidence?.sourceKind) &&
+            Number.isSafeInteger(item.evidence?.version) &&
+            item.evidence.version > 0)) &&
+        Array.isArray(item.investigations) &&
+        item.investigations.length <= 20 &&
+        unique(item.investigations.map((job) => job?.id)) &&
+        item.investigations.every(
+          (job) =>
+            job &&
+            [job.id, job.question, job.status].every(text) &&
+            Number.isSafeInteger(job.evidenceVersion) &&
+            job.evidenceVersion > 0,
+        ),
+    )
+  )
+    throw new Error(
+      "Saved report history could not be read for this case. Refresh the saved reports to try again.",
+    );
+}
 const validEvidence = (e: Evidence, caseId: string) =>
   !!e &&
   e.caseId === caseId &&
@@ -83,6 +168,8 @@ function validWorkbench(v: Workbench, caseId: string) {
     !unique(v.investigations.map((j) => j.id))
   )
     throw new Error("Report options could not be read for this case.");
+  historyMeta(v.evidencePage, v.evidence.length);
+  historyMeta(v.investigationPage, v.investigations.length);
 }
 function validate(v: Preview, caseId: string, scope: Scope) {
   if (
@@ -158,6 +245,63 @@ function ReportView({
       null,
     ),
     controller = useRef<AbortController | null>(null);
+  const [savedReports, setSavedReports] = useState<SavedReport[]>([]),
+    [historyRequest, setHistoryRequest] = useState<{
+      cursor: string | null;
+      revision: number;
+    }>({ cursor: null, revision: 0 }),
+    [nextCursor, setNextCursor] = useState<string | null>(null),
+    [historyBusy, setHistoryBusy] = useState(true),
+    [historyError, setHistoryError] = useState<Error | null>(null);
+  useEffect(() => {
+    const c = new AbortController();
+    let timedOut = false;
+    const timer = window.setTimeout(() => {
+      timedOut = true;
+      c.abort();
+    }, 30000);
+    setHistoryBusy(true);
+    setHistoryError(null);
+    const query = historyRequest.cursor
+      ? `&cursor=${encodeURIComponent(historyRequest.cursor)}`
+      : "";
+    api<ReportHistory>(`${base}/reports?limit=10${query}`, { signal: c.signal })
+      .then((result) => {
+        if (c.signal.aborted) return;
+        validateHistory(result, caseId);
+        setSavedReports((current) =>
+          historyRequest.cursor
+            ? [
+                ...current,
+                ...result.items.filter(
+                  (item) =>
+                    !current.some(
+                      (existing) => existing.reportId === item.reportId,
+                    ),
+                ),
+              ]
+            : result.items,
+        );
+        setNextCursor(result.nextCursor);
+      })
+      .catch((e) => {
+        if (timedOut)
+          setHistoryError(
+            new Error(
+              "Saved reports timed out. Refresh the saved reports to try again.",
+            ),
+          );
+        else if (!c.signal.aborted) setHistoryError(e as Error);
+      })
+      .finally(() => {
+        window.clearTimeout(timer);
+        if (!c.signal.aborted || timedOut) setHistoryBusy(false);
+      });
+    return () => {
+      window.clearTimeout(timer);
+      c.abort();
+    };
+  }, [base, caseId, historyRequest]);
   useEffect(
     () => () => {
       controller.current?.abort();
@@ -165,6 +309,13 @@ function ReportView({
     },
     [],
   );
+  const [questionOptions, setQuestionOptions] = useState<Job[]>([]),
+    [questionPage, setQuestionPage] = useState<HistoryPageMeta>(),
+    [questionSource, setQuestionSource] = useState(""),
+    [questionError, setQuestionError] = useState<Error | null>(null),
+    [questionRevision, setQuestionRevision] = useState(0);
+  const selectedEvidenceRef = useRef(evidenceId);
+  selectedEvidenceRef.current = evidenceId;
   useEffect(() => {
     const c = new AbortController();
     let timedOut = false;
@@ -177,16 +328,28 @@ function ReportView({
       .then((w) => {
         if (c.signal.aborted) return;
         validWorkbench(w, caseId);
-        setWorkbench(w);
-        setEvidenceId(w.latestEvidenceId ?? "");
-        setJobs(
-          w.investigations
-            .filter(
-              (j) =>
-                j.status === "COMPLETED" && j.evidenceId === w.latestEvidenceId,
-            )
-            .slice(0, 1)
-            .map((j) => j.id),
+        setWorkbench((current) => ({
+          ...w,
+          evidence: mergeHistory(
+            w.evidence,
+            current?.evidence.filter(
+              (item) => item.id === selectedEvidenceRef.current,
+            ) ?? [],
+          ),
+        }));
+        setEvidenceId((current) => current || w.latestEvidenceId || "");
+        setJobs((current) =>
+          current.length
+            ? current
+            : w.investigations
+                .filter(
+                  (j) =>
+                    j.status === "COMPLETED" &&
+                    j.evidenceId ===
+                      (selectedEvidenceRef.current || w.latestEvidenceId),
+                )
+                .slice(0, 1)
+                .map((j) => j.id),
         );
         setPreview(null);
       })
@@ -205,14 +368,93 @@ function ReportView({
       c.abort();
     };
   }, [base, caseId, revision]);
+  const questionsPath = `${base}/investigations?status=COMPLETED&evidenceId=${encodeURIComponent(evidenceId)}`;
+  const pagedQuestions = !!workbench?.investigationPage;
+  const choices = pagedQuestions
+    ? questionSource === evidenceId
+      ? questionOptions
+      : []
+    : (workbench?.investigations ?? []);
+  const questionsPending =
+    pagedQuestions && !!evidenceId && questionSource !== evidenceId;
+  function validateQuestion(item: Job) {
+    if (
+      !validJob(item, caseId) ||
+      item.evidenceId !== evidenceId ||
+      item.status !== "COMPLETED"
+    )
+      throw new Error(
+        "The completed question belongs to another evidence version or case.",
+      );
+  }
+  useEffect(() => {
+    if (!pagedQuestions) return;
+    const c = new AbortController();
+    setQuestionError(null);
+    setQuestionSource("");
+    setQuestionPage(undefined);
+    if (!evidenceId) {
+      setQuestionOptions([]);
+      setJobs([]);
+      return () => c.abort();
+    }
+    let timedOut = false;
+    const timer = window.setTimeout(() => {
+      timedOut = true;
+      c.abort();
+    }, 30000);
+    api<HistoryPage<Job>>(questionsPath, { signal: c.signal })
+      .then((page) => {
+        validateHistoryPage(page, caseId, validateQuestion);
+        if (!c.signal.aborted) {
+          setQuestionOptions((current) =>
+            mergeHistory(
+              page.items,
+              current.filter(
+                (item) =>
+                  item.evidenceId === evidenceId && jobs.includes(item.id),
+              ),
+            ),
+          );
+          setQuestionPage(page);
+          setQuestionSource(evidenceId);
+          setJobs((current) =>
+            current.length
+              ? current.filter((id) =>
+                  [...page.items, ...questionOptions].some(
+                    (item) => item.id === id && item.evidenceId === evidenceId,
+                  ),
+                )
+              : page.items.slice(0, 1).map((item) => item.id),
+          );
+        }
+      })
+      .catch((failure: Error) => {
+        if (!c.signal.aborted || timedOut)
+          setQuestionError(
+            timedOut
+              ? new Error(
+                  "Loading report questions timed out. Retry the question list.",
+                )
+              : failure,
+          );
+      })
+      .finally(() => window.clearTimeout(timer));
+    return () => {
+      c.abort();
+      window.clearTimeout(timer);
+    };
+  }, [questionsPath, caseId, pagedQuestions, questionRevision]);
   function selectVersion(id: string) {
     setEvidenceId(id);
     if (!id) setRows(false);
     setJobs(
-      workbench?.investigations
-        .filter((j) => j.status === "COMPLETED" && j.evidenceId === id)
-        .slice(0, mode === "SUMMARY" ? 1 : 20)
-        .map((j) => j.id) ?? [],
+      pagedQuestions
+        ? []
+        : (workbench?.investigations
+            .filter((j) => j.status === "COMPLETED" && j.evidenceId === id)
+            .slice(0, mode === "SUMMARY" ? 1 : 20)
+            .map((j) => j.id) ?? []),
     );
     setPreview(null);
   }
@@ -222,7 +464,7 @@ function ReportView({
     setPreview(null);
     if (next === "SUMMARY")
       setJobs(
-        workbench?.investigations
+        choices
           .filter(
             (j) => j.status === "COMPLETED" && j.evidenceId === evidenceId,
           )
@@ -261,6 +503,10 @@ function ReportView({
       validate(result, caseId, selected.scope);
       setPreview(result);
       setAttempt(null);
+      setHistoryRequest((current) => ({
+        cursor: null,
+        revision: current.revision + 1,
+      }));
     } catch (e) {
       if (!c.signal.aborted) {
         setError(e as Error);
@@ -277,8 +523,8 @@ function ReportView({
       if (controller.current === c) setBusy(false);
     }
   }
-  async function download() {
-    if (!preview || busy) return;
+  async function download(selected: DownloadSelection) {
+    if (busy) return;
     const c = new AbortController();
     controller.current = c;
     setBusy(true);
@@ -288,8 +534,8 @@ function ReportView({
       const file = await apiBlob(`${base}/report.pdf`, {
         method: "POST",
         body: JSON.stringify({
-          reportId: preview.reportId,
-          reportHash: preview.reportHash,
+          reportId: selected.reportId,
+          reportHash: selected.reportHash,
         }),
         signal: c.signal,
       });
@@ -297,7 +543,7 @@ function ReportView({
       const url = URL.createObjectURL(file),
         link = document.createElement("a");
       link.href = url;
-      link.download = `payment-case-${(preview.case.caseNumber || preview.reportId).replace(/[^a-zA-Z0-9-]/g, "")}.pdf`;
+      link.download = `payment-case-${(selected.caseNumber || selected.reportId).replace(/[^a-zA-Z0-9-]/g, "")}.pdf`;
       document.body.appendChild(link);
       link.click();
       link.remove();
@@ -329,6 +575,123 @@ function ReportView({
         a saved report snapshot; the PDF uses that same snapshot. No model or
         bank request is run.
       </p>
+      <section
+        className="case-report-history"
+        aria-labelledby="saved-reports-title"
+        aria-busy={historyBusy}
+      >
+        <div className="section-title">
+          <h3 id="saved-reports-title">Saved reports</h3>
+          <button
+            className="secondary"
+            disabled={historyBusy || busy}
+            onClick={() =>
+              setHistoryRequest((current) => ({
+                cursor: null,
+                revision: current.revision + 1,
+              }))
+            }
+          >
+            <RefreshCw size={16} aria-hidden="true" /> Refresh saved reports
+          </button>
+        </div>
+        <p className="payment-help">
+          Download a previous snapshot with its original evidence, questions and
+          review status. New case changes appear only in a new preview.
+        </p>
+        {historyError && (
+          <div className="notice danger" role="alert">
+            {historyError.message}
+          </div>
+        )}
+        {historyBusy && <p role="status">Loading saved reports…</p>}
+        {!historyBusy && !historyError && !savedReports.length && (
+          <p>
+            No saved reports yet. Preview a report below to save the first
+            snapshot.
+          </p>
+        )}
+        <div className="case-report-history-list">
+          {savedReports.map((report) => (
+            <article
+              key={report.reportId}
+              aria-label={`Saved report ${report.reportId}`}
+            >
+              <div className="section-title">
+                <h4>
+                  {report.reportMode === "SUMMARY"
+                    ? "Case summary"
+                    : "Detailed report"}
+                </h4>
+                <button
+                  className="secondary"
+                  disabled={busy}
+                  onClick={() => void download(report)}
+                  aria-label={`Download saved report ${report.reportId}`}
+                >
+                  <Download size={16} aria-hidden="true" /> Download PDF
+                </button>
+              </div>
+              <p>
+                Prepared by {report.generatedBy.name} ·{" "}
+                <time dateTime={report.generatedAt}>
+                  {new Date(report.generatedAt).toLocaleString()}
+                </time>
+              </p>
+              <p>
+                {report.evidence
+                  ? `Evidence version ${report.evidence.version} · ${human(report.evidence.sourceKind)}`
+                  : "Case summary without evidence"}
+                {report.includeEvidenceRows ? " · Raw evidence included" : ""}
+              </p>
+              <p>
+                Reviewer conclusion:{" "}
+                {report.reviewStatus === "RECORDED"
+                  ? "Recorded for this snapshot"
+                  : "Pending when saved"}
+              </p>
+              {report.investigations.length ? (
+                <details>
+                  <summary>
+                    {report.investigations.length} saved{" "}
+                    {report.investigations.length === 1
+                      ? "question"
+                      : "questions"}
+                  </summary>
+                  <ul>
+                    {report.investigations.map((job) => (
+                      <li key={job.id}>
+                        {job.question}
+                        <small>
+                          {human(job.status)} · Evidence version{" "}
+                          {job.evidenceVersion}
+                        </small>
+                      </li>
+                    ))}
+                  </ul>
+                </details>
+              ) : (
+                <p>No investigation questions selected.</p>
+              )}
+              <small>Report {report.reportId}</small>
+            </article>
+          ))}
+        </div>
+        {nextCursor && (
+          <button
+            className="secondary"
+            disabled={historyBusy || busy}
+            onClick={() =>
+              setHistoryRequest((current) => ({
+                cursor: nextCursor,
+                revision: current.revision + 1,
+              }))
+            }
+          >
+            Load more saved reports
+          </button>
+        )}
+      </section>
       {error && (
         <div className="notice danger" role="alert">
           <strong>{error.message}</strong>
@@ -392,6 +755,32 @@ function ReportView({
               ))}
             </select>
           </label>
+          <HistoryMore<Evidence>
+            caseId={caseId}
+            path={`${base}/evidence`}
+            page={workbench.evidencePage}
+            loaded={workbench.evidence.length}
+            label="report evidence versions"
+            disabled={disabled}
+            validate={(item) => {
+              if (!validEvidence(item, caseId))
+                throw new Error(
+                  "Report evidence belongs to another case or is unreadable.",
+                );
+            }}
+            onPage={(page) =>
+              setWorkbench((current) =>
+                current
+                  ? {
+                      ...current,
+                      evidence: mergeHistory(current.evidence, page.items),
+                      evidencePage: page,
+                    }
+                  : current,
+              )
+            }
+            onRefresh={() => setRevision((current) => current + 1)}
+          />
           <fieldset disabled={disabled} className="case-report-questions">
             <legend>
               Saved investigations to include (up to{" "}
@@ -402,8 +791,25 @@ function ReportView({
                 ? "One question is selected by default. You may add one more; additional questions increase the page count. Choose Detailed report for more questions."
                 : "Select up to 20 questions. More questions and source documents increase the page count."}
             </p>
-            {workbench.investigations.length ? (
-              workbench.investigations.map((j) => (
+            {questionsPending && !questionError && (
+              <p role="status">
+                Loading completed questions for this evidence version…
+              </p>
+            )}
+            {questionError && (
+              <div className="notice danger" role="alert">
+                {questionError.message}
+                <button
+                  type="button"
+                  className="secondary"
+                  onClick={() => setQuestionRevision((current) => current + 1)}
+                >
+                  Retry report questions
+                </button>
+              </div>
+            )}
+            {choices.length ? (
+              choices.map((j) => (
                 <label className="case-management-choice" key={j.id}>
                   <input
                     type="checkbox"
@@ -437,8 +843,28 @@ function ReportView({
                 </label>
               ))
             ) : (
-              <p>No saved investigations.</p>
+              <p>
+                {pagedQuestions
+                  ? "No completed questions loaded for the selected evidence version."
+                  : "No saved investigations."}
+              </p>
             )}
+            <HistoryMore<Job>
+              caseId={caseId}
+              path={questionsPath}
+              page={questionPage}
+              loaded={questionOptions.length}
+              label="report questions"
+              disabled={disabled || questionsPending}
+              validate={validateQuestion}
+              onPage={(page) => {
+                setQuestionOptions((current) =>
+                  mergeHistory(current, page.items),
+                );
+                setQuestionPage(page);
+              }}
+              onRefresh={() => setQuestionRevision((current) => current + 1)}
+            />
           </fieldset>
           {mode === "DETAILED" && (
             <label className="case-management-choice">
@@ -467,7 +893,7 @@ function ReportView({
           ) : (
             <button
               className="primary"
-              disabled={busy}
+              disabled={busy || questionsPending || !!questionError}
               onClick={() => void generate()}
             >
               <Eye size={16} aria-hidden="true" />
@@ -543,7 +969,13 @@ function ReportView({
               <button
                 className="primary"
                 disabled={busy}
-                onClick={() => void download()}
+                onClick={() =>
+                  void download({
+                    reportId: preview.reportId,
+                    reportHash: preview.reportHash,
+                    caseNumber: preview.case.caseNumber ?? null,
+                  })
+                }
               >
                 <Download size={16} aria-hidden="true" />
                 Download PDF

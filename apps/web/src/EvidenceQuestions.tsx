@@ -7,64 +7,31 @@ import {
   RefreshCw,
   TriangleAlert,
 } from "lucide-react";
-import { api, ApiError } from "./api";
+import { ApiError } from "./api";
 import { CaseInvestigation } from "./CaseInvestigation";
+import { PaymentAmount } from "./PaymentAmount";
 import { PaymentWorkflow } from "./PaymentWorkflow";
 import { navigateLink, navigateTo, replaceDestination } from "./routing";
 import { paymentCaseNumber, paymentCasePath } from "./paymentCaseIdentity";
-import type { User } from "./types";
 import {
-  CASE_LIFECYCLE_CHANGED,
-  type CaseLifecycleState,
-} from "./CaseLifecycle";
+  caseListPath,
+  isSavedPaymentCase,
+  validateCasePage,
+  useCaseRead,
+  useCaseSearch,
+  type SavedPaymentCase,
+} from "./paymentCaseList";
+import type { User } from "./types";
+import { CASE_LIFECYCLE_CHANGED } from "./CaseLifecycle";
 
-type SavedCase = {
-  id: string;
-  caseNumber?: string;
-  lifecycleState?: CaseLifecycleState;
-  reference: string;
-  utr: string | null;
-  orgBank: string;
-  orgBranch: string;
-  amount: string;
-  currency: string | null;
-  reason: string;
-  evidenceStatus: string;
-};
+type SavedCase = SavedPaymentCase;
 type Props = { user: User; caseId?: string; evidenceId?: string };
-const record = (value: unknown): value is Record<string, unknown> =>
-  !!value && typeof value === "object" && !Array.isArray(value);
-
-function validateCases(value: unknown): SavedCase[] {
-  if (
-    !record(value) ||
-    !Array.isArray(value.items) ||
-    !value.items.every(
-      (item) =>
-        record(item) &&
-        [
-          "id",
-          "reference",
-          "orgBank",
-          "orgBranch",
-          "amount",
-          "reason",
-          "evidenceStatus",
-        ].every((key) => typeof item[key] === "string") &&
-        !!item.id &&
-        (item.caseNumber === undefined ||
-          typeof item.caseNumber === "string") &&
-        [item.utr, item.currency].every(
-          (field) => field === null || typeof field === "string",
-        ),
-    ) ||
-    new Set(value.items.map((item) => item.id)).size !== value.items.length
-  ) {
-    throw new Error(
-      "The saved payment list could not be read. Refresh cases to try again.",
-    );
-  }
-  return value.items as SavedCase[];
+const validateCases = (value: unknown) =>
+  validateCasePage(value, isSavedPaymentCase);
+function validateSelected(value: unknown): SavedCase {
+  if (!isSavedPaymentCase(value))
+    throw new Error("This case could not be read. Refresh cases to try again.");
+  return value;
 }
 const qaPath = (caseId: string, evidenceId?: string) =>
   `/evidences/questions/${encodeURIComponent(caseId)}${evidenceId ? `/${encodeURIComponent(evidenceId)}` : ""}`;
@@ -78,52 +45,45 @@ export function EvidenceQuestions(props: Props) {
   );
 }
 function QuestionsView({ user, caseId, evidenceId }: Props) {
-  const [cases, setCases] = useState<SavedCase[] | null>(null);
   const [search, setSearch] = useState("");
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<Error | null>(null);
+  const [page, setPage] = useState(1);
   const [revision, setRevision] = useState(0);
+  const { debounced, pending } = useCaseSearch(search);
+  const records = useCaseRead(
+    caseListPath({ lifecycle: "ALL", search: debounced, page }),
+    validateCases,
+    revision,
+    !pending,
+  );
+  const validateRequested = useMemo(
+    () => (value: unknown) => {
+      const result = validateSelected(value);
+      if (result.id !== caseId && result.caseNumber !== caseId)
+        throw new Error(
+          "The selected case response did not match the requested case. Refresh cases to retry.",
+        );
+      return result;
+    },
+    [caseId],
+  );
+  const detail = useCaseRead(
+    caseId ? `/payment-cases/${encodeURIComponent(caseId)}` : null,
+    validateRequested,
+    revision,
+    true,
+    true,
+  );
+  const { loading, error } = records;
+  const matches = records.data?.items ?? [];
+  const selected = detail.data;
+  const currentPage = records.data?.page ?? page;
+  const totalPages = records.data?.totalPages ?? 1;
   const canWrite = ["ANALYST", "REVIEWER"].includes(user.role.toUpperCase());
   useEffect(() => {
     const changed = () => setRevision((value) => value + 1);
     window.addEventListener(CASE_LIFECYCLE_CHANGED, changed);
     return () => window.removeEventListener(CASE_LIFECYCLE_CHANGED, changed);
   }, []);
-  useEffect(() => {
-    const controller = new AbortController();
-    let timedOut = false;
-    const timer = window.setTimeout(() => {
-      timedOut = true;
-      controller.abort();
-    }, 30000);
-    setLoading(true);
-    setError(null);
-    api<unknown>("/payment-cases?lifecycle=ALL", { signal: controller.signal })
-      .then((value) => {
-        if (!controller.signal.aborted) setCases(validateCases(value));
-      })
-      .catch((failure) => {
-        if (!controller.signal.aborted || timedOut)
-          setError(
-            timedOut
-              ? new Error(
-                  "Loading payment cases took longer than 30 seconds. Refresh cases to retry.",
-                )
-              : (failure as Error),
-          );
-      })
-      .finally(() => {
-        window.clearTimeout(timer);
-        if (!controller.signal.aborted || timedOut) setLoading(false);
-      });
-    return () => {
-      window.clearTimeout(timer);
-      controller.abort();
-    };
-  }, [revision]);
-  const selected = caseId
-    ? cases?.find((item) => item.id === caseId || item.caseNumber === caseId)
-    : undefined;
   useEffect(() => {
     if (
       selected?.caseNumber &&
@@ -133,21 +93,6 @@ function QuestionsView({ user, caseId, evidenceId }: Props) {
       replaceDestination(qaPath(selected.caseNumber, evidenceId));
     }
   }, [selected?.caseNumber, caseId, evidenceId]);
-  const matches = useMemo(() => {
-    const words = search.trim().toLowerCase().split(/\s+/).filter(Boolean);
-    return (cases ?? []).filter((item) => {
-      const text = [
-        item.id,
-        item.caseNumber ?? "",
-        item.reference,
-        item.utr ?? "",
-        item.reason,
-      ]
-        .join(" ")
-        .toLowerCase();
-      return words.every((word) => text.includes(word));
-    });
-  }, [cases, search]);
   const label = (item: SavedCase) =>
     `${item.caseNumber ? `Case ${item.caseNumber} · ` : ""}${item.reference} · ${item.utr || "UTR not supplied"} · Bank ${item.orgBank} / Branch ${item.orgBranch}${item.lifecycleState === "ARCHIVED" ? " · Archived" : ""}`;
   return (
@@ -163,7 +108,7 @@ function QuestionsView({ user, caseId, evidenceId }: Props) {
         </div>
         <button
           className="secondary"
-          disabled={loading}
+          disabled={loading || detail.loading}
           onClick={() => setRevision((value) => value + 1)}
         >
           <RefreshCw size={15} /> Refresh cases
@@ -225,7 +170,7 @@ function QuestionsView({ user, caseId, evidenceId }: Props) {
             </div>
           </div>
         )}
-        {cases && !error && (
+        {
           <>
             <div
               className="evidence-questions-fields"
@@ -240,7 +185,10 @@ function QuestionsView({ user, caseId, evidenceId }: Props) {
                   id="evidence-questions-search"
                   value={search}
                   maxLength={200}
-                  onChange={(event) => setSearch(event.target.value)}
+                  onChange={(event) => {
+                    setSearch(event.target.value);
+                    setPage(1);
+                  }}
                   placeholder="Case number, payment reference, UTR or investigation reason"
                 />
               </div>
@@ -261,7 +209,7 @@ function QuestionsView({ user, caseId, evidenceId }: Props) {
                   {selected &&
                     !matches.some((item) => item.id === selected.id) && (
                       <option value={paymentCaseNumber(selected)}>
-                        {label(selected)} · Current selection outside search
+                        {label(selected)} · Current selection outside this page
                       </option>
                     )}
                   {matches.map((item) => (
@@ -271,23 +219,52 @@ function QuestionsView({ user, caseId, evidenceId }: Props) {
                   ))}
                 </select>
                 <small className="muted">
-                  {matches.length} matching{" "}
-                  {matches.length === 1 ? "case" : "cases"}. Searching does not
-                  change the selected payment.
+                  {records.data
+                    ? `${records.data.total} matching ${records.data.total === 1 ? "case" : "cases"}. `
+                    : ""}
+                  Searching and paging do not change the selected payment.
                 </small>
               </div>
             </div>
-            {cases.length > 0 && matches.length === 0 && (
+            {records.data && (
+              <nav
+                className="payment-saved-pagination"
+                aria-label="Payment case picker pagination"
+              >
+                <span>
+                  Page {currentPage} of {totalPages} · 10 per page
+                </span>
+                <div className="payment-page-buttons">
+                  <button
+                    className="secondary"
+                    disabled={loading || currentPage <= 1}
+                    onClick={() => setPage(currentPage - 1)}
+                  >
+                    Previous cases
+                  </button>
+                  <button
+                    className="secondary"
+                    disabled={loading || currentPage >= totalPages}
+                    onClick={() => setPage(currentPage + 1)}
+                  >
+                    Next cases
+                  </button>
+                </div>
+              </nav>
+            )}
+            {records.data?.total === 0 && search.trim() && (
               <p role="status">
                 No cases match this search. Try another reference or word.
               </p>
             )}
-            {caseId && !selected && (
+            {caseId && detail.error && (
               <div className="notice danger" role="alert">
                 <TriangleAlert size={17} />
                 <p>
-                  This case is unavailable in your authorized workspace. Choose
-                  an available case above.
+                  {detail.error instanceof ApiError &&
+                  [403, 404].includes(detail.error.status)
+                    ? "This case is unavailable in your authorized workspace. Choose an available case above."
+                    : detail.error.message}
                 </p>
               </div>
             )}
@@ -326,10 +303,7 @@ function QuestionsView({ user, caseId, evidenceId }: Props) {
                     <div>
                       <dt>Source amount</dt>
                       <dd>
-                        {selected.amount}
-                        {selected.currency
-                          ? ` ${selected.currency}`
-                          : " · Currency not supplied"}
+                        <PaymentAmount item={selected} />
                       </dd>
                     </div>
                   </dl>
@@ -357,18 +331,18 @@ function QuestionsView({ user, caseId, evidenceId }: Props) {
               </>
             )}
           </>
-        )}
+        }
       </section>
-      {!error && cases && !selected && (
+      {!error && records.data && !caseId && !search.trim() && (
         <section className="panel evidence-questions-empty">
           <MessageSquare size={28} />
           <h2>
-            {cases.length
+            {records.data.total
               ? "Choose a case to begin"
               : "Create a payment case first"}
           </h2>
           <p>
-            {cases.length
+            {records.data.total
               ? "Select a payment above to see its evidence versions, saved questions and answers."
               : "Find the payment, open a case and attach its inquiry results, Excel files or JSON evidence."}
           </p>
@@ -382,12 +356,19 @@ function QuestionsView({ user, caseId, evidenceId }: Props) {
           </a>
         </section>
       )}
-      {!error && selected && (
+      {caseId && detail.loading && !selected && (
+        <p role="status">Loading selected payment case…</p>
+      )}
+      {selected && (
         <CaseInvestigation
           caseId={selected.id}
+          user={user}
           caseNumber={selected.caseNumber}
           canWrite={
-            canWrite && !loading && selected.lifecycleState !== "ARCHIVED"
+            canWrite &&
+            !detail.loading &&
+            !detail.error &&
+            selected.lifecycleState !== "ARCHIVED"
           }
           archived={selected.lifecycleState === "ARCHIVED"}
           presentation="qa"

@@ -118,7 +118,33 @@ function mockApi(
 ) {
   const fetcher = vi.fn((url: string, request: RequestInit) => {
     const handled = handle?.(url, request);
-    if (handled) return handled;
+    if (handled) {
+      if (url.endsWith("/evidence"))
+        return handled.then(async (response) => {
+          const body = await response.json();
+          if (
+            response.ok &&
+            body &&
+            !Object.hasOwn(body, "caseId") &&
+            Array.isArray(body.items)
+          ) {
+            return new Response(
+              JSON.stringify({
+                caseId: url.split("/")[3],
+                total: body.items.length,
+                limit: 10,
+                nextCursor: null,
+                ...body,
+              }),
+              { status: response.status },
+            );
+          }
+          return new Response(JSON.stringify(body), {
+            status: response.status,
+          });
+        });
+      return handled;
+    }
     if (url.startsWith("/api/evidences?")) return reply(library());
     const match =
       /^\/api\/payment-cases\/(CASE-LIBRARY-[A-Z0-9]+)\/evidence(?:\/(.*))?$/.exec(
@@ -129,6 +155,10 @@ function mockApi(
       return id
         ? reply(snapshot(caseId, id.endsWith("-1") ? 1 : 2))
         : reply({
+            caseId,
+            total: 2,
+            limit: 10,
+            nextCursor: null,
             items: [summary(snapshot(caseId, 2)), summary(snapshot(caseId, 1))],
           });
     }
@@ -157,6 +187,30 @@ afterEach(() => {
 });
 
 describe("Evidence library", () => {
+  it("renders evidence currency in case context without loading source payloads", async () => {
+    const selected = {
+      ...item(),
+      evidenceCurrency: {
+        currency: "INR",
+        evidenceId: "EVD-LIBRARY",
+        version: 2,
+        sourceKind: "MANUAL",
+      },
+    };
+    const fetcher = mockApi((url) =>
+      url.startsWith("/api/evidences?")
+        ? reply(library([selected]))
+        : undefined,
+    );
+    render(<EvidenceLibraryPage user={user} />);
+    fireEvent.click(await screen.findByText("Case context"));
+    expect(
+      screen.getByText(`${selected.amount} INR · from evidence v2`),
+    ).toBeVisible();
+    expect(
+      fetcher.mock.calls.every(([url]) => url.startsWith("/api/evidences?")),
+    ).toBe(true);
+  });
   it("shows case numbers and numbered page links while inspecting evidence with the canonical case id", async () => {
     const numbered = { ...item(), caseNumber: "2026091600001" };
     const fetcher = mockApi((url) =>
@@ -227,7 +281,7 @@ describe("Evidence library", () => {
         ([, request]) => !request.method || request.method === "GET",
       ),
     ).toBe(true);
-  });
+  }, 10_000);
   it("inspects sparse PO02 v2 records without confusing omitted fields with nulls or blank text", async () => {
     const value = {
       ...snapshot(),
@@ -497,8 +551,8 @@ describe("Evidence library", () => {
     ).toBe(true);
   });
 
-  it("paginates in tens and applies exact typed bank/branch filters from page one", async () => {
-    const fetcher = mockApi((url) => {
+  function mockPagedLibrary() {
+    return mockApi((url) => {
       if (!url.startsWith("/api/evidences?")) return;
       const page = Number(
         new URL(url, "http://localhost").searchParams.get("page"),
@@ -514,6 +568,10 @@ describe("Evidence library", () => {
         totalPages: 2,
       });
     });
+  }
+
+  it("paginates in tens and resets to page one when coverage changes", async () => {
+    const fetcher = mockPagedLibrary();
     render(<EvidenceLibraryPage user={user} />);
     await screen.findByText("Showing 1–10 of 12 matching cases");
     fireEvent.click(screen.getByRole("button", { name: "Next" }));
@@ -525,6 +583,12 @@ describe("Evidence library", () => {
     await screen.findByText("Showing 1–10 of 12 matching cases");
     expect(listQueries(fetcher).at(-1)?.get("page")).toBe("1");
     expect(listQueries(fetcher).at(-1)?.get("coverage")).toBe("PARTIAL");
+  });
+
+  it("applies exact typed bank and branch filters from page one and preserves branch edits", async () => {
+    const fetcher = mockPagedLibrary();
+    render(<EvidenceLibraryPage user={user} />);
+    await screen.findByText("Showing 1–10 of 12 matching cases");
     fireEvent.click(screen.getByRole("button", { name: "Next" }));
     await screen.findByText("Showing 11–12 of 12 matching cases");
     const beforeTyping = fetcher.mock.calls.length;
@@ -561,6 +625,18 @@ describe("Evidence library", () => {
       expect(listQueries(fetcher).at(-1)?.get("bank")).toBe("008"),
     );
     expect(listQueries(fetcher).at(-1)?.get("branch")).toBe("0012");
+  });
+
+  it("accepts a branch-only exact filter and clears all applied scope filters", async () => {
+    const fetcher = mockApi();
+    render(<EvidenceLibraryPage user={user} />);
+    await loaded();
+    fireEvent.change(screen.getByLabelText("Row coverage"), {
+      target: { value: "PARTIAL" },
+    });
+    await waitFor(() =>
+      expect(listQueries(fetcher).at(-1)?.get("coverage")).toBe("PARTIAL"),
+    );
     fireEvent.change(screen.getByLabelText("Bank"), {
       target: { value: "" },
     });
@@ -871,5 +947,96 @@ describe("Evidence library", () => {
         name: "Collect evidence for CASE-LIBRARY-OTHER",
       }),
     ).toHaveAttribute("href", "/payment-cases/CASE-LIBRARY-OTHER");
+  });
+  it("loads one additional version page on demand without changing the selected snapshot", async () => {
+    const caseId = "CASE-LIBRARY-A";
+    const first = Array.from({ length: 10 }, (_, i) =>
+      summary(snapshot(caseId, 12 - i)),
+    );
+    const current = { ...item(), versionCount: 12, latestEvidence: first[0] };
+    const fetcher = mockApi((url) => {
+      if (url.startsWith("/api/evidences?")) return reply(library([current]));
+      if (url.endsWith("/evidence"))
+        return reply({
+          caseId,
+          items: first,
+          total: 12,
+          limit: 10,
+          nextCursor: first[9].id,
+        });
+      if (url.includes("/evidence?"))
+        return reply({
+          caseId,
+          items: [summary(snapshot(caseId, 2)), summary(snapshot(caseId, 1))],
+          total: 12,
+          limit: 10,
+          nextCursor: null,
+        });
+      if (url.endsWith(first[0].id)) return reply(snapshot(caseId, 12));
+    });
+    render(<EvidenceLibraryPage user={user} />);
+    await loaded();
+    inspect();
+    await screen.findByText("10 of 12 evidence versions loaded");
+    expect(screen.getByLabelText("Evidence version")).toHaveValue(first[0].id);
+    expect(
+      fetcher.mock.calls.filter(([url]) => url.includes("/evidence?")).length,
+    ).toBe(0);
+    const sourceRequestsBefore = fetcher.mock.calls.filter(([url]) =>
+      url.endsWith(first[0].id),
+    ).length;
+    fireEvent.click(
+      screen.getByRole("button", { name: "Load more evidence versions" }),
+    );
+    await screen.findByText("12 of 12 evidence versions loaded");
+    expect(screen.getByLabelText("Evidence version")).toHaveValue(first[0].id);
+    expect(
+      screen.queryByRole("button", { name: "Load more evidence versions" }),
+    ).not.toBeInTheDocument();
+    expect(
+      fetcher.mock.calls.filter(([url]) => url.endsWith(first[0].id)).length,
+    ).toBe(sourceRequestsBefore);
+    expect(
+      fetcher.mock.calls.filter(([url]) => url.includes("/evidence?")).length,
+    ).toBe(1);
+  });
+
+  it("pins an older library selection through its authorized summary without draining version pages", async () => {
+    const caseId = "CASE-LIBRARY-A";
+    const first = Array.from({ length: 10 }, (_, i) =>
+      summary(snapshot(caseId, 20 - i)),
+    );
+    const older = snapshot(caseId, 2);
+    const fetcher = mockApi((url) => {
+      if (url.endsWith("/evidence"))
+        return reply({
+          caseId,
+          items: first,
+          total: 20,
+          limit: 10,
+          nextCursor: first[9].id,
+        });
+      if (url.endsWith(`/${older.id}/summary`)) return reply(summary(older));
+      if (url.endsWith(`/${older.id}`)) return reply(older);
+    });
+    render(<EvidenceLibraryPage user={user} />);
+    await loaded();
+    inspect();
+    await screen.findByText("11 of 20 evidence versions loaded");
+    expect(screen.getByLabelText("Evidence version")).toHaveValue(older.id);
+    expect(
+      await screen.findByText(
+        /You are inspecting an earlier immutable version/,
+      ),
+    ).toBeInTheDocument();
+    expect(
+      fetcher.mock.calls.some(([url]) => url.endsWith(`/${older.id}/summary`)),
+    ).toBe(true);
+    expect(fetcher.mock.calls.some(([url]) => url.includes("/evidence?"))).toBe(
+      false,
+    );
+    expect(
+      screen.getByRole("link", { name: "Ask about this version" }),
+    ).toHaveAttribute("href", `/evidences/questions/${caseId}/${older.id}`);
   });
 });

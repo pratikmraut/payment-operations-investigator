@@ -16,6 +16,16 @@ public class CaseInvestigationController {
   @GetMapping("/workbench") public ObjectNode workbench(Authentication auth,@PathVariable String caseId){Actor actor=Actor.from(auth);return service.workbench(actor,CaseRouteIdentity.canonical(cases,actor,caseId));}
   @GetMapping("/evidence/{evidenceId}/context") public ObjectNode context(Authentication auth,@PathVariable String caseId,@PathVariable String evidenceId){Actor actor=Actor.from(auth);return service.context(actor,CaseRouteIdentity.canonical(cases,actor,caseId),evidenceId);}
   @GetMapping("/investigations/{id}") public ObjectNode detail(Authentication auth,@PathVariable String caseId,@PathVariable String id){Actor actor=Actor.from(auth);return service.detail(actor,CaseRouteIdentity.canonical(cases,actor,caseId),id);}
+  @PostMapping(value="/investigations/readiness",consumes="application/json")
+  public ObjectNode readiness(Authentication auth,@PathVariable String caseId,HttpServletRequest request)throws IOException {
+    Actor actor=Actor.from(auth);caseId=CaseRouteIdentity.canonical(cases,actor,caseId);cases.caseDetail(actor,caseId);
+    return service.readiness(actor,caseId,request.getInputStream().readNBytes(16385));
+  }
+  @PostMapping(value="/investigations/{id}/cancel",consumes="application/json")
+  public ObjectNode cancel(Authentication auth,@PathVariable String caseId,@PathVariable String id,HttpServletRequest request)throws IOException {
+    Actor actor=Actor.from(auth);actor.requireWriter();caseId=CaseRouteIdentity.canonical(cases,actor,caseId);cases.caseDetail(actor,caseId);
+    return service.cancel(actor,caseId,id,request.getInputStream().readNBytes(513));
+  }
   @PostMapping(value="/investigations",consumes="application/json")
   public ResponseEntity<ObjectNode> start(Authentication auth,@PathVariable String caseId,HttpServletRequest request,
       @RequestHeader(value="Idempotency-Key",required=false)String key)throws IOException {

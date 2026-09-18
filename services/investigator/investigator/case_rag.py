@@ -5,6 +5,7 @@ It is not the serving path: live evaluation showed unnecessary answer rejection.
 """
 from hashlib import sha256
 from dataclasses import replace
+from contextvars import ContextVar
 import json
 import re
 from typing import Annotated
@@ -14,6 +15,7 @@ from pydantic import Field, ValidationError
 from .case_answer import (CaseAnswerEngine, CaseAnswerResponse, ClaimSupport,
                           FieldSupport, RagReceipt, CHECKS, PIPELINE, ROW_ID, unique_json)
 from .errors import InvalidModelResult
+from .case_jobs import CaseJobCancelled
 from .uat_answer import (StrictModel, UatClaim, ShortText, UatAnswerEngine,
                          SYSTEM_PROMPT, synthesis_schema)
 
@@ -43,6 +45,7 @@ Do not generate proof metadata, field lists or any extra JSON keys. The applicat
 checks explicit field quotations separately; you write all explanation prose.
 """
 CASE_RAG_PROMPT_HASH = sha256(CASE_RAG_PROMPT.encode()).hexdigest()
+_cancel_check = ContextVar("case_job_cancellation", default=None)
 
 
 def checked_quotations(claim, documents):
@@ -102,6 +105,47 @@ class CaseRagEngine(CaseAnswerEngine):
 
     def _system_prompt(self):
         return CASE_RAG_PROMPT
+
+    def run_cancellable(self, request, cancelled):
+        token = _cancel_check.set(cancelled)
+        try:
+            if cancelled():
+                raise CaseJobCancelled()
+            result = self.run(request)
+            if cancelled():
+                raise CaseJobCancelled()
+            return result
+        finally:
+            _cancel_check.reset(token)
+
+    def _generate(self, state):
+        check = _cancel_check.get()
+        if check and check():
+            raise CaseJobCancelled()
+        result = super()._generate(state)
+        if check and check():
+            raise CaseJobCancelled()
+        return result
+
+    def preflight(self, request):
+        """Check the actual serving serializer without acquiring inference or embedding."""
+        state = {"request": request}
+        state.update(self._plan(state))
+        state.update(self._retrieve(state))
+        _, _, _, input_bytes = self._generation_request(state)
+        reserve = self.settings.uat_output_tokens + 512
+        return {
+            "schemaVersion": "case-context-readiness-v1",
+            "ready": input_bytes + reserve <= self.settings.uat_context_tokens,
+            "documentCount": len(request.documents),
+            "serializedBytes": input_bytes,
+            "requiredBudget": input_bytes + reserve,
+            "contextLimit": self.settings.uat_context_tokens,
+            "outputAndFramingReserve": reserve,
+            "method": "utf8-byte-upper-bound",
+            "modelChecked": False,
+            "promptHash": CASE_RAG_PROMPT_HASH,
+        }
 
     def _schema(self, documents):
         schema = synthesis_schema([d.id for d in documents])

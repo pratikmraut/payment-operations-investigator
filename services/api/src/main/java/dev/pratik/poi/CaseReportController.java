@@ -16,6 +16,14 @@ public class CaseReportController {
   private final PaymentDiscoveryService cases;
   public CaseReportController(CaseReportService service, PaymentDiscoveryService cases) { this.service = service; this.cases = cases; }
 
+  @GetMapping("/reports")
+  public ObjectNode history(Authentication authentication, @PathVariable String caseId,
+      @RequestParam(defaultValue="10") int limit, @RequestParam(required=false) String cursor) {
+    Actor actor = Actor.from(authentication); caseId = CaseRouteIdentity.canonical(cases, actor, caseId);
+    cases.caseDetail(actor, caseId);
+    return service.history(actor, caseId, limit, cursor);
+  }
+
   @PostMapping(value="/report-preview", consumes="application/json")
   public ObjectNode preview(Authentication authentication, @PathVariable String caseId, HttpServletRequest request,
       @RequestHeader(value="Idempotency-Key", required=false) String key) throws IOException {

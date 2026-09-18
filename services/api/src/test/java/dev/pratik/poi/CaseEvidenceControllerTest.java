@@ -125,4 +125,32 @@ class CaseEvidenceControllerTest {
     assertThat(db.queryForObject("SELECT COUNT(*) FROM fcr_case_evidence",Integer.class)).isZero();
     assertThat(db.queryForObject("SELECT COUNT(*) FROM fcr_case_evidence_command",Integer.class)).isZero();
   }
+  @Test void historyPagesAndPinnedSummariesUseAuthorizedCanonicalRoutes() throws Exception {
+    String oldest=null;
+    for(int n=0;n<12;n++) {
+      String saved=service.submit(actor,caseId,payload.getBytes(java.nio.charset.StandardCharsets.UTF_8),"JSON","history-http-"+n).path("id").asText();
+      if(oldest==null)oldest=saved;
+    }
+    String alias="/api/payment-cases/"+cases.caseDetail(actor,caseId).path("caseNumber").asText();
+    var first=mvc.perform(get(alias+"/evidence").with(user("viewer"))).andExpect(status().isOk())
+        .andExpect(jsonPath("$.caseId").value(caseId)).andExpect(jsonPath("$.items.length()").value(10))
+        .andExpect(jsonPath("$.limit").value(10)).andExpect(jsonPath("$.total").value(12)).andReturn();
+    String cursor=mapper.readTree(first.getResponse().getContentAsString()).path("nextCursor").asText();
+    mvc.perform(get(alias+"/evidence").param("cursor",cursor).with(user("viewer"))).andExpect(status().isOk())
+        .andExpect(jsonPath("$.items.length()").value(2)).andExpect(jsonPath("$.nextCursor").isEmpty());
+    mvc.perform(get(alias+"/evidence/"+oldest+"/summary").with(user("viewer"))).andExpect(status().isOk())
+        .andExpect(jsonPath("$.version").value(1)).andExpect(jsonPath("$.payload").doesNotExist());
+    mvc.perform(get(alias+"/activity").param("limit","3").with(user("viewer"))).andExpect(status().isOk())
+        .andExpect(jsonPath("$.items.length()").value(3)).andExpect(jsonPath("$.total").value(13));
+    mvc.perform(get(alias+"/investigations").param("status","COMPLETED").with(user("viewer"))).andExpect(status().isOk())
+        .andExpect(jsonPath("$.items.length()").value(0)).andExpect(jsonPath("$.total").value(0));
+    for(String path:List.of("/evidence","/investigations","/activity")) {
+      mvc.perform(get(alias+path).param("limit","0").with(user("viewer"))).andExpect(status().isBadRequest());
+      mvc.perform(get(alias+path).param("limit","1","2").with(user("viewer"))).andExpect(status().isBadRequest());
+      mvc.perform(get(alias+path).with(user("other"))).andExpect(status().isNotFound());
+      mvc.perform(get(alias+path)).andExpect(status().isUnauthorized());
+    }
+    mvc.perform(get(alias+"/evidence/"+oldest+"/summary").with(user("other"))).andExpect(status().isNotFound());
+  }
+
 }

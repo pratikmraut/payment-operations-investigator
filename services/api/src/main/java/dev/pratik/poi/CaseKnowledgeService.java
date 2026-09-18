@@ -18,8 +18,8 @@ import org.springframework.stereotype.Component;
 public final class CaseKnowledgeService {
   private static final String SCHEMA = "fcr-case-evidence-v1";
   private static final String MODEL = "qwen3-embedding:0.6b";
-  private static final int MAX_BYTES = 4 * 1024 * 1024;
-  private static final Set<String> PINNED = Set.of("GUIDE-SOURCE-COVERAGE", "GUIDE-SOURCE-TIME", "GUIDE-RAW-STATUS",
+  private static final int MAX_BYTES = CaseKnowledgeLimits.INDEX_BYTES;
+  static final Set<String> PINNED = Set.of("GUIDE-SOURCE-COVERAGE", "GUIDE-SOURCE-TIME", "GUIDE-RAW-STATUS",
       "NEFT-FIELD-DEFINITIONS", "EXPORT-INTERPRETATION", "N10-AND-OUTCOME-LIMITS");
   private static final Pattern TABLE_QUESTION = Pattern.compile("(?i)(?<![A-Z0-9_])(?:table|tables|schema|column|columns|PM_NEFT_TXN_LOG|PM_TXN_LOG|PM_TXN_LOG_HIST|NEFTTXNCODSTATUS)(?![A-Z0-9_])");
   private final ObjectMapper mapper;
@@ -34,6 +34,40 @@ public final class CaseKnowledgeService {
     this.indexFile = indexFile == null ? "" : indexFile;
   }
   boolean enabled() { return !indexFile.isBlank(); }
+
+  /** Local-only preparation: never embeds, searches, or writes an index. */
+  record Preview(ArrayNode documents, ArrayNode reservation, String version, String embeddingStatus, int totalDocuments) { }
+
+  Preview preview(Actor actor, ObjectNode payload, String question, Set<String> warnings) {
+    if (!SCHEMA.equals(payload.path("schemaVersion").asText())) throw unavailable();
+    Inventory inventory = inventory(actor, warnings);
+    LinkedHashMap<String, ObjectNode> selected = new LinkedHashMap<>();
+    inventory.byId.forEach((id, document) -> { if (always(id, inventory)) selected.put(id, document); });
+    for (JsonNode source : statuses.selectExact(actor, payload, question, warnings)) {
+      String id = source.path("id").asText();
+      if (!source.equals(inventory.byId.get(id))) throw unavailable();
+      selected.put(id, (ObjectNode)source);
+    }
+    if (question != null && tableQuestion(question) && inventory.byId.containsKey("FCR-TABLE-REFERENCE-20260915"))
+      selected.put("FCR-TABLE-REFERENCE-20260915", inventory.byId.get("FCR-TABLE-REFERENCE-20260915"));
+    ArrayNode documents = mapper.createArrayNode(); selected.values().forEach(document -> documents.add(document.deepCopy()));
+    ArrayNode reservation = documents.deepCopy();
+    IndexState state = state(actor, inventory);
+    if (question != null) {
+      inventory.byId.entrySet().stream().filter(entry -> !selected.containsKey(entry.getKey()))
+          .sorted(Comparator.comparingInt((Map.Entry<String,ObjectNode> entry) -> serializedLength(entry.getValue())).reversed())
+          .limit(3).forEach(entry -> reservation.add(entry.getValue().deepCopy()));
+      ArrayNode matches = mapper.createArrayNode();
+      for (int i = 0; i < 3; i++) matches.addObject().put("id", "x".repeat(200)).put("score", -.9999999999999999);
+      reservation.add(receipt(inventory.hash, state.index == null ? "0".repeat(64) : state.index.digest,
+          mapper.valueToTree(selected.keySet()), matches));
+    }
+    return new Preview(documents, reservation, inventory.hash, state.status, inventory.documents.size());
+  }
+
+  private static int serializedLength(JsonNode source) {
+    return source.toString().getBytes(java.nio.charset.StandardCharsets.UTF_8).length;
+  }
 
   public ObjectNode library(Actor actor) {
     LinkedHashSet<String> warnings = new LinkedHashSet<>();
@@ -128,7 +162,7 @@ public final class CaseKnowledgeService {
     String scopeId = status.isEmpty() ? "" : status.get(0).path("id").asText();
     Set<String> statusIds = new HashSet<>(); status.forEach(doc -> statusIds.add(doc.path("id").asText()));
     docs.addAll(status);
-    UatService.documentMap(docs, unavailable(), false);
+    CaseKnowledgeLimits.inventory(docs, unavailable());
     LinkedHashMap<String, ObjectNode> byId = new LinkedHashMap<>();
     for (JsonNode doc : docs) {
       if (doc.path("id").asText().equals("CASE-KNOWLEDGE-RETRIEVAL")) throw unavailable();
@@ -137,7 +171,7 @@ public final class CaseKnowledgeService {
     return new Inventory(docs, byId, UatService.canonicalHash(docs), scopeId, statusIds);
   }
   private boolean always(String id, Inventory inventory) { return PINNED.contains(id) || id.equals(inventory.scopeId); }
-  private boolean tableQuestion(String question) {
+  static boolean tableQuestion(String question) {
     if (TABLE_QUESTION.matcher(question).find()) return true;
     for (var columns : CaseEvidenceSchema.COLUMNS.values()) for (String column : columns)
       if (Pattern.compile("(?i)(?<![A-Z0-9_])" + Pattern.quote(column) + "(?![A-Z0-9_])").matcher(question).find()) return true;
@@ -174,10 +208,13 @@ public final class CaseKnowledgeService {
         || !root.path("indexedAt").isTextual() || !root.path("tenants").isArray() || root.path("tenants").isEmpty() || root.path("tenants").size() > 10) throw unavailable();
     try { OffsetDateTime.parse(root.path("indexedAt").asText()); } catch (RuntimeException failure) { throw unavailable(); }
     Map<String, Map<String, Embedded>> tenants = new LinkedHashMap<>();
+    int totalDocuments = 0;
     for (JsonNode tenant : root.path("tenants")) {
       if (!names(tenant).equals(Set.of("tenantId", "evidenceSchema", "documents")) || !tenant.path("tenantId").isTextual()
           || !tenant.path("tenantId").asText().matches("[A-Za-z0-9_-]{1,100}") || !SCHEMA.equals(tenant.path("evidenceSchema").asText())
-          || !tenant.path("documents").isArray() || tenant.path("documents").isEmpty() || tenant.path("documents").size() > 100) throw unavailable();
+          || !tenant.path("documents").isArray() || tenant.path("documents").isEmpty() || tenant.path("documents").size() > CaseKnowledgeLimits.DOCUMENTS) throw unavailable();
+      totalDocuments += tenant.path("documents").size();
+      if (totalDocuments > CaseKnowledgeLimits.TOTAL_INDEX_DOCUMENTS) throw unavailable();
       Map<String, Embedded> entries = new LinkedHashMap<>();
       for (JsonNode doc : tenant.path("documents")) {
         if (!names(doc).equals(Set.of("id", "documentHash", "vector")) || !doc.path("id").isTextual()

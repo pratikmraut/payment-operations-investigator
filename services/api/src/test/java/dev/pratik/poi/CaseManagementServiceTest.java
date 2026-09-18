@@ -63,9 +63,139 @@ class CaseManagementServiceTest {
         .put("conclusion","Reviewed the selected evidence. Beneficiary credit remains unconfirmed.");
     input.set("investigationIds",mapper.valueToTree(ids));return input;
   }
+  ObjectNode workflow(long version,String status) {
+    return mapper.createObjectNode().put("expectedVersion",version).put("status",status).put("reason","Operator recorded the next investigation step.");
+  }
+  ObjectNode move(Actor actor,long version,String status,String key) {
+    return service.transition(actor,caseId,bytes(workflow(version,status)),key);
+  }
+
+  @Test void evidenceOnlyReviewResolvesExplicitlyAndReopeningPreservesOriginalRecords() {
+    ObjectNode snapshot=savedEvidence("workflow-evidence");
+    ObjectNode original=cases.caseRecord(analyst,caseId);
+    assertThat(move(analyst,0,"INVESTIGATING","workflow-start").path("status").asText()).isEqualTo("INVESTIGATING");
+    move(analyst,1,"AWAITING_REVIEW","workflow-review");
+    ObjectNode reviewed=service.conclude(reviewer,caseId,bytes(conclusion(snapshot,2)),"evidence-only-review");
+    JsonNode record=reviewed.path("reviewerConclusions").get(0);
+    assertThat(record.path("reviewBasis").asText()).isEqualTo("EVIDENCE_ONLY");
+    assertThat(record.path("investigationIds").isEmpty()).isTrue();
+    assertThat(reviewed.path("status").asText()).isEqualTo("AWAITING_REVIEW");
+    ObjectNode resolve=workflow(3,"RESOLVED").put("reviewerConclusionId",record.path("id").asText());
+    ObjectNode resolved=service.transition(reviewer,caseId,bytes(resolve),"workflow-resolve");
+    assertThat(resolved.path("status").asText()).isEqualTo("RESOLVED");
+    assertThat(resolved.path("allowedTransitions").toString()).isEqualTo("[\"INVESTIGATING\"]");
+    assertThat(cases.caseDetail(analyst,caseId).path("status").asText()).isEqualTo("RESOLVED");
+    assertThat(cases.caseDetail(analyst,caseId).path("lifecycleState").asText()).isEqualTo("ACTIVE");
+    assertThat(cases.dashboard(analyst).path("resolvedCases").asInt()).isEqualTo(1);
+    assertThat(cases.dashboard(analyst).path("openCases").asInt()).isZero();
+    status(()->service.addNote(analyst,caseId,bytes(note(4,"Change after resolution")),"resolved-note"),409);
+    status(()->savedEvidence("resolved-new-evidence"),409);
+    assertThat(cases.caseRecord(analyst,caseId)).isEqualTo(original);
+    assertThat(evidence.detail(viewer,caseId,snapshot.path("id").asText())).isEqualTo(snapshot);
+    assertThat(service.transition(reviewer,caseId,bytes(resolve),"workflow-resolve")).isEqualTo(resolved);
+    assertThat(service.conclude(reviewer,caseId,bytes(conclusion(snapshot,2)),"evidence-only-review").path("version").asInt()).isEqualTo(4);
+    assertThat(move(analyst,4,"INVESTIGATING","workflow-reopen").path("status").asText()).isEqualTo("INVESTIGATING");
+    assertThat(service.transition(reviewer,caseId,bytes(resolve),"workflow-resolve").path("status").asText()).isEqualTo("INVESTIGATING");
+    assertThat(count("fcr_case_management_event")).isEqualTo(5);
+    assertThat(service.detail(viewer,caseId).path("reviewerConclusions").get(0)).isEqualTo(record);
+    verifyNoInteractions(investigations);
+  }
+
+  @Test void workflowRejectsInvalidTransitionsRolesStaleVersionsAndOpenRequests() {
+    status(()->move(viewer,0,"INVESTIGATING","viewer-transition"),403);
+    status(()->service.transition(other,caseId,bytes(workflow(0,"INVESTIGATING")),"other-transition"),404);
+    status(()->move(Actor.knownActors().stream().filter(a->a.role().equals("ADMIN")).findFirst().orElseThrow(),0,"INVESTIGATING","admin-transition"),403);
+    status(()->move(analyst,0,"RESOLVED","skip-review"),422);
+    status(()->move(analyst,0,"PAYMENT_SUCCESS","outcome-transition"),422);
+    status(()->service.transition(analyst,caseId,bytes(workflow(0,"INVESTIGATING").put("reason"," ")),"empty-reason"),422);
+    move(analyst,0,"INVESTIGATING","start-review-check");
+    status(()->move(analyst,1,"AWAITING_REVIEW","review-without-evidence"),422);
+    savedEvidence("review-check-evidence");
+    String requestId=service.requestEvidence(analyst,caseId,bytes(request(1)),"workflow-request").path("evidenceRequests").get(0).path("id").asText();
+    move(analyst,2,"AWAITING_EVIDENCE","await-evidence");
+    status(()->move(analyst,3,"AWAITING_REVIEW","unfulfilled-review"),409);
+    service.updateEvidenceRequest(analyst,caseId,requestId,bytes(mapper.createObjectNode().put("expectedVersion",3).put("status","CANCELLED").put("note","Source unavailable; record this limitation explicitly.")),"cancel-unavailable");
+    assertThat(move(analyst,4,"AWAITING_REVIEW","ready-review").path("status").asText()).isEqualTo("AWAITING_REVIEW");
+    status(()->move(analyst,4,"INVESTIGATING","stale-transition"),409);
+    status(()->service.transition(analyst,caseId,bytes(workflow(5,"RESOLVED").put("reviewerConclusionId","CON-X")),"analyst-resolve"),403);
+    assertThat(service.detail(viewer,caseId).path("allowedTransitions").isEmpty()).isTrue();
+  }
+
+  @Test void resolutionRequiresCurrentEvidenceAndIndependentEvidenceAuthor() {
+    ObjectNode first=savedEvidence("first-reviewed-version");
+    move(analyst,0,"INVESTIGATING","start-freshness");move(analyst,1,"AWAITING_REVIEW","submit-freshness");
+    String conclusionId=service.conclude(reviewer,caseId,bytes(conclusion(first,2)),"first-conclusion").path("reviewerConclusions").get(0).path("id").asText();
+    savedEvidence("newer-unreviewed-version");
+    status(()->service.transition(reviewer,caseId,bytes(workflow(3,"RESOLVED").put("reviewerConclusionId",conclusionId)),"stale-resolution"),409);
+    ObjectNode own=evidence.submit(reviewer,caseId,bytes(first.path("payload")),"JSON","reviewer-authored-evidence");
+    status(()->service.conclude(reviewer,caseId,bytes(conclusion(own,3)),"review-own-evidence"),403);
+    assertThat(service.detail(analyst,caseId).path("status").asText()).isEqualTo("AWAITING_REVIEW");
+    assertThat(count("fcr_case_management_event")).isEqualTo(3);
+    verifyNoInteractions(investigations);
+  }
+
+  @Test void activeInvestigationsAndArchivedCasesBlockWorkflowChanges() {
+    db.update("INSERT INTO fcr_case_investigation(id,tenant_id,case_id,evidence_id,created_at,actor_id,idempotency_key,request_hash,status,summary,body) VALUES(?,?,?,?,?,?,?,?,?,?,?)",
+        "CIN-active","northstar",caseId,"EVD-unused","2026-09-16T12:00:00Z","analyst","active-job-key","0".repeat(64),"QUEUED","{}","{}");
+    assertThat(service.detail(analyst,caseId).path("activeInvestigationCount").asInt()).isEqualTo(1);
+    assertThat(service.detail(analyst,caseId).path("allowedTransitions").isEmpty()).isTrue();
+    status(()->move(analyst,0,"INVESTIGATING","while-active"),409);
+    db.update("UPDATE fcr_case_investigation SET status='FAILED' WHERE id='CIN-active'");
+    var lifecycle=new CaseLifecycleService(mapper,db,tx,cases,new CaseNumberService(db,tx));
+    lifecycle.command(analyst,caseId,"ARCHIVED",bytes(mapper.createObjectNode().put("expectedVersion",0).put("reason","Archive controlled test")),"workflow-archive");
+    assertThat(service.detail(viewer,caseId).path("lifecycleState").asText()).isEqualTo("ARCHIVED");
+    status(()->move(analyst,0,"INVESTIGATING","while-archived"),409);
+    assertThat(count("fcr_case_management_event")).isZero();
+  }
+
+  @Test void evidenceRequestsCanBeAssignedAndReassignedWithoutInventingUsers() {
+    for(String id:List.of("other","viewer","admin","invented"))status(()->service.requestEvidence(analyst,caseId,bytes(request(0).put("assigneeId",id)),"invalid-assignee-"+id),422);
+    ObjectNode state=service.requestEvidence(analyst,caseId,bytes(request(0).put("assigneeId","reviewer")),"assigned-request");
+    JsonNode record=state.path("evidenceRequests").get(0);String id=record.path("id").asText();
+    assertThat(record.path("assignee").path("id").asText()).isEqualTo("reviewer");
+    ObjectNode update=mapper.createObjectNode().put("expectedVersion",1).put("status","OPEN").put("note","Assign follow-up to analyst").put("assigneeId","analyst");
+    state=service.updateEvidenceRequest(analyst,caseId,id,bytes(update),"reassigned-request");
+    assertThat(state.path("evidenceRequests").get(0).path("assignee").path("id").asText()).isEqualTo("analyst");
+    update.remove("assigneeId");update.put("expectedVersion",2).put("status","CANCELLED");
+    state=service.updateEvidenceRequest(analyst,caseId,id,bytes(update),"preserved-assignment");
+    assertThat(state.path("evidenceRequests").get(0).path("assignee").path("id").asText()).isEqualTo("analyst");
+    update.put("expectedVersion",3).putNull("assigneeId");
+    state=service.updateEvidenceRequest(analyst,caseId,id,bytes(update),"unassigned-request");
+    assertThat(state.path("evidenceRequests").get(0).path("assignee").isNull()).isTrue();
+    assertThat(state.path("evidenceRequests").get(0).path("updates").size()).isEqualTo(3);
+  }
+
+  @Test void concurrentWorkflowAndManagementUseOneOptimisticVersion()throws Exception {
+    var pool=Executors.newFixedThreadPool(2);var barrier=new CyclicBarrier(2);
+    try {
+      Future<Integer> first=pool.submit(()->{barrier.await();try{move(analyst,0,"INVESTIGATING","concurrent-workflow");return 200;}catch(ApiException ex){return ex.status;}});
+      Future<Integer> second=pool.submit(()->{barrier.await();try{service.addNote(analyst,caseId,bytes(note(0,"Concurrent note")),"concurrent-workflow-note");return 200;}catch(ApiException ex){return ex.status;}});
+      assertThat(List.of(first.get(10,TimeUnit.SECONDS),second.get(10,TimeUnit.SECONDS))).containsExactlyInAnyOrder(200,409);
+      assertThat(count("fcr_case_management_event")).isEqualTo(1);
+    } finally {pool.shutdownNow();}
+  }
+
+  @Test void concurrentNewEvidenceAndResolutionCannotBothCommit()throws Exception {
+    ObjectNode snapshot=savedEvidence("resolution-race-original");
+    move(analyst,0,"INVESTIGATING","resolution-race-start");move(analyst,1,"AWAITING_REVIEW","resolution-race-review");
+    String conclusionId=service.conclude(reviewer,caseId,bytes(conclusion(snapshot,2)),"resolution-race-conclusion").path("reviewerConclusions").get(0).path("id").asText();
+    ObjectNode resolve=workflow(3,"RESOLVED").put("reviewerConclusionId",conclusionId);
+    var pool=Executors.newFixedThreadPool(2);var barrier=new CyclicBarrier(2);
+    try {
+      Future<Integer> resolving=pool.submit(()->{barrier.await();try{service.transition(reviewer,caseId,bytes(resolve),"resolution-race-command");return 200;}catch(ApiException ex){return ex.status;}});
+      Future<Integer> attaching=pool.submit(()->{barrier.await();try{savedEvidence("resolution-race-new-evidence");return 200;}catch(ApiException ex){return ex.status;}});
+      int resolved=resolving.get(10,TimeUnit.SECONDS),saved=attaching.get(10,TimeUnit.SECONDS);
+      assertThat(List.of(resolved,saved)).containsExactlyInAnyOrder(200,409);
+      assertThat(cases.caseDetail(analyst,caseId).path("status").asText()).isEqualTo(resolved==200?"RESOLVED":"AWAITING_REVIEW");
+      assertThat(count("fcr_case_evidence")).isEqualTo(saved==200?2:1);
+      assertThat(evidence.detail(viewer,caseId,snapshot.path("id").asText())).isEqualTo(snapshot);
+      assertThat(cases.caseRecord(analyst,caseId).path("status").asText()).isEqualTo("OPEN");
+    } finally {pool.shutdownNow();}
+  }
 
   @Test void initialReadIsScopedReadOnlyAndShowsEligibleExistingWriters() {
     ObjectNode result=service.detail(viewer,caseId);
+    assertThat(result.path("lifecycleState").asText()).isEqualTo("ACTIVE");
     assertThat(result.path("version").asInt()).isZero();assertThat(result.path("owner").isNull()).isTrue();assertThat(result.path("priority").asText()).isEqualTo("MEDIUM");
     assertThat(result.path("assignees").findValuesAsText("id")).containsExactly("analyst","reviewer");
     for(String key:List.of("notes","evidenceRequests","reviewerConclusions","audit"))assertThat(result.path(key).isEmpty()).isTrue();

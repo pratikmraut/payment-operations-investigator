@@ -1,5 +1,7 @@
 # Payment Operations Investigator
 
+Source ZIPs use the [release privacy checks](docs/RELEASE_PRIVACY.md): reviewed Git files only, private runtime exclusions and independent archive verification.
+
 A local workbench for finding payment records, collecting supporting evidence, asking cited investigation questions, and recording a human review. Built with Java/Spring Boot, React/TypeScript, and a Python investigation worker using local Ollama models.
 
 The current workflow is **Find payment → Open case → Collect evidence → Investigate → Review and export**. The application supports configurable read-only inquiry APIs and file imports. It never initiates payments or changes bank transaction records.
@@ -98,6 +100,8 @@ Run `mvn -B -ntp verify` from `services/api` with Java 17 and Maven. With a Pyth
 Tests use isolated data and controlled transports where appropriate. Historical validation receipts identify the revision, environment and limits of each run; they are not a claim that a fresh checkout has already been validated on your machine. Do not run mutation-oriented acceptance scripts against private working cases.
 
 ## Documentation
+
+The current workflow improvements are documented in [Case resolution and reopening](docs/CASE_WORKFLOW.md), [Draft protection](docs/DRAFT_PROTECTION.md), [Evidence follow-ups](docs/CASE_WORK_QUEUE.md), [Saved report history](docs/REPORT_HISTORY.md), and [Payment-case browser tests](docs/PAYMENT_BROWSER_TESTS.md).
 
 | Guide | Covers |
 | --- | --- |

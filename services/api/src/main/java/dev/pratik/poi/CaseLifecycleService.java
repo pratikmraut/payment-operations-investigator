@@ -64,6 +64,8 @@ public class CaseLifecycleService {
           .put("reason",reason).put("occurredAt",now).put("actor",actor.id()).put("actorName",actor.name());
       db.update("INSERT INTO fcr_case_lifecycle_event(id,tenant_id,case_id,version,occurred_at,body) VALUES(?,?,?,?,?,?)",event.path("id").asText(),actor.tenantId(),id,next,now,event.toString());
       if(action.equals("DELETED"))purge(actor,id,original);
+      else CaseHistoryIndex.recordLifecycle(mapper,db,actor.tenantId(),event);
+      cases.refreshSearch(actor.tenantId(),id);
       ObjectNode result=action.equals("DELETED")?mapper.createObjectNode().put("caseId",id).put("caseNumber",number).put("state","DELETED").put("version",next):view(actor,id);
       db.update("INSERT INTO fcr_case_lifecycle_command(tenant_id,case_id,actor_id,idempotency_key,request_hash,body) VALUES(?,?,?,?,?,?)",actor.tenantId(),id,actor.id(),key,hash,result.toString());
       return result;
@@ -80,10 +82,17 @@ public class CaseLifecycleService {
     ObjectNode result=mapper.createObjectNode().put("caseId",id).put("caseNumber",numbers.find(actor.tenantId(),id)).put("state",state.state()).put("version",state.version())
         .put("canArchive",manager&&active==0&&state.state().equals("ACTIVE")).put("canRestore",manager&&active==0&&state.state().equals("ARCHIVED"))
         .put("canDelete",actor.role().equals("ADMIN")&&active==0&&state.state().equals("ARCHIVED")).put("activeInvestigationCount",active);
-    result.set("audit",mapper.valueToTree(db.query("SELECT body FROM fcr_case_lifecycle_event WHERE tenant_id=? AND case_id=? ORDER BY version DESC",(rs,n)->stored(rs.getString(1)),actor.tenantId(),id)));return result;
+    var audit=db.query("SELECT body FROM fcr_case_lifecycle_event WHERE tenant_id=? AND case_id=? ORDER BY version DESC LIMIT ?",(rs,n)->stored(rs.getString(1)),actor.tenantId(),id,CaseHistoryService.DEFAULT_LIMIT);
+    result.set("audit",mapper.valueToTree(audit));
+    long total=db.queryForObject("SELECT COUNT(*) FROM fcr_case_lifecycle_event WHERE tenant_id=? AND case_id=?",Long.class,actor.tenantId(),id);
+    ObjectNode page=result.putObject("auditPage").put("total",total).put("limit",CaseHistoryService.DEFAULT_LIMIT);
+    if(total>audit.size())page.put("nextCursor",audit.get(audit.size()-1).path("id").asText());else page.putNull("nextCursor");
+    return result;
   }
   private void purge(Actor actor,String id,ObjectNode original) {
-    for(String table:List.of("fcr_case_evidence_command","fcr_case_investigation","fcr_case_report","fcr_case_management_command","fcr_case_management_event","fcr_case_management","fcr_case_evidence"))
+    // The API originals are removed transactionally; a durable outbox retires terminal worker copies after commit.
+    db.update("INSERT INTO fcr_case_worker_cleanup(tenant_id,case_id,requested_at,attempts,eligible_at) VALUES(?,?,?,0,0)",actor.tenantId(),id,Instant.now().toString());
+    for(String table:List.of("fcr_case_history_item","fcr_case_evidence_command","fcr_case_investigation","fcr_case_report","fcr_case_management_command","fcr_case_management_event","fcr_case_management","fcr_case_evidence"))
       db.update("DELETE FROM "+table+" WHERE tenant_id=? AND case_id=?",actor.tenantId(),id);
     // Keep idempotency reservations, but remove the original case payload from old receipts.
     for(var row:db.queryForList("SELECT actor_id,idempotency_key,body FROM fcr_case_command WHERE tenant_id=?",actor.tenantId())) {

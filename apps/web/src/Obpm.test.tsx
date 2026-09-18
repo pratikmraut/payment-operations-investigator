@@ -1,3 +1,4 @@
+import { casePageFixture } from "./testCasePage";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -178,7 +179,8 @@ describe("synthetic NEFT imports", () => {
           });
         if (url === "/api/auth/me")
           return reply({ user: analyst, csrfToken: "csrf-neft" });
-        if (url === "/api/payment-cases") return reply({ items: [], total: 0 });
+        if (url.startsWith("/api/payment-cases?"))
+          return reply(casePageFixture(url, []));
         if (url === "/api/payment-cases/dashboard")
           return reply({
             openCases: 0,

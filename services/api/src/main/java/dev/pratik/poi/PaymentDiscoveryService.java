@@ -23,10 +23,11 @@ public class PaymentDiscoveryService {
   private final ObjectMapper mapper; private final JdbcTemplate db; private final TransactionTemplate transactions;
   private final PaymentDiscoveryClient client; private final Map<String,List<Scope>> scopes=new LinkedHashMap<>();
   private final CaseNumberService caseNumbers;
+  private final CaseSearchIndex searchIndex;
   @Autowired
   public PaymentDiscoveryService(ObjectMapper mapper,JdbcTemplate db,TransactionTemplate transactions,PaymentDiscoveryClient client,
-      @Value("${poi.payment-discovery.scopes:northstar:1352:760,silverline:2468:760}") String configuredScopes,CaseNumberService caseNumbers) {
-    this.mapper=mapper;this.db=db;this.transactions=transactions;this.client=client;this.caseNumbers=caseNumbers;
+      @Value("${poi.payment-discovery.scopes:northstar:1352:760,silverline:2468:760}") String configuredScopes,CaseNumberService caseNumbers,CaseSearchIndex searchIndex) {
+    this.mapper=mapper;this.db=db;this.transactions=transactions;this.client=client;this.caseNumbers=caseNumbers;this.searchIndex=searchIndex;
     for(String entry:configuredScopes.split(",")) {
       String[] parts=entry.trim().split(":",-1);
       if(parts.length!=3 || !parts[0].matches("[A-Za-z0-9_-]{1,100}") || !parts[1].matches("[0-9]{1,10}") || !parts[2].matches("[0-9]{1,10}")) throw new IllegalArgumentException("Invalid server discovery scopes.");
@@ -38,6 +39,13 @@ public class PaymentDiscoveryService {
   public PaymentDiscoveryService(ObjectMapper mapper,JdbcTemplate db,TransactionTemplate transactions,PaymentDiscoveryClient client,String configuredScopes) {
     this(mapper,db,transactions,client,configuredScopes,new CaseNumberService(db,transactions));
   }
+  public PaymentDiscoveryService(ObjectMapper mapper,JdbcTemplate db,TransactionTemplate transactions,PaymentDiscoveryClient client,String configuredScopes,CaseNumberService numbers) {
+    this(mapper,db,transactions,client,configuredScopes,numbers,new CaseSearchIndex(mapper,db,transactions,numbers));
+  }
+  CaseSearchIndex searchIndex() { return searchIndex; }
+  List<Scope> authorizedScopes(Actor actor) { return List.copyOf(scopes.getOrDefault(actor.tenantId(),List.of())); }
+  void refreshSearch(String tenant,String caseId) { searchIndex.refresh(tenant,caseId); }
+  void rebuildSearch() { searchIndex.rebuild(); }
   ObjectNode config(Actor actor) {
     ObjectNode result=mapper.createObjectNode().put("mode",client.mode()).put("wireFormat",client.wireFormat()).put("today",LocalDate.now(ZoneId.of("Asia/Kolkata")).toString())
         .put("timezone","Asia/Kolkata").put("maxRecords",200)
@@ -213,9 +221,10 @@ public class PaymentDiscoveryService {
         if(db.queryForObject("SELECT COUNT(*) FROM fcr_payment_case WHERE id=?",Integer.class,id)>0)id="FCR-"+UUID.randomUUID();
         String now=Instant.now().toString();item=candidate.deepCopy();item.put("id",id).put("reason",reason).put("status","OPEN").put("priority","MEDIUM")
             .put("createdAt",now).put("updatedAt",now).put("createdBy",actor.id()).put("evidenceStatus","DISCOVERY_ONLY");
-        db.update("INSERT INTO fcr_payment_case(id,tenant_id,identity_hash,created_at,body) VALUES(?,?,?,?,?)",item.path("id").asText(),actor.tenantId(),identity,now,item.toString());status="CREATED";
+        db.update("INSERT INTO fcr_payment_case(id,tenant_id,identity_hash,created_at,body) VALUES(?,?,?,?,?)",item.path("id").asText(),actor.tenantId(),identity,now,item.toString());CaseHistoryIndex.recordCase(mapper,db,actor.tenantId(),item);status="CREATED";
       }
       caseNumbers.assign(actor.tenantId(),item.path("id").asText());
+      refreshSearch(actor.tenantId(),item.path("id").asText());
       ObjectNode result=mapper.createObjectNode().put("caseId",item.path("id").asText()).put("status",status);result.set("item",item);
       db.update("INSERT INTO fcr_case_command(tenant_id,actor_id,idempotency_key,request_hash,body) VALUES(?,?,?,?,?)",actor.tenantId(),actor.id(),idempotencyKey,requestHash,result.toString());return decorateCaseResult(actor,result);
     }));
@@ -226,6 +235,20 @@ public class PaymentDiscoveryService {
   }
   ObjectNode cases(Actor actor) {
     return cases(actor,"ACTIVE");
+  }
+  ObjectNode searchCases(Actor actor,Map<String,String[]> parameters) {
+    CaseSearchQuery query=CaseSearchQuery.parse(parameters);
+    CaseSearchIndex.SqlWhere where=query.where(actor,authorizedScopes(actor));
+    return searchIndex.readSnapshot(()->{
+      Long total=db.queryForObject("SELECT COUNT(*) FROM fcr_case_search s WHERE "+where.sql(),Long.class,where.args().toArray());
+      long pages=total==0?1:1+(total-1)/query.pageSize(),page=Math.min(query.page(),pages),offset=(page-1)*query.pageSize();
+      List<Object> args=new ArrayList<>(where.args());args.add(query.pageSize());args.add(offset);
+      List<ObjectNode> items=db.query("SELECT c.body,s.* FROM fcr_case_search s JOIN fcr_payment_case c ON c.id=s.case_id AND c.tenant_id=s.tenant_id WHERE "
+          +where.sql()+" ORDER BY "+query.orderBy()+" LIMIT ? OFFSET ?",(row,n)->searchIndex.caseItem(row),args.toArray());
+      ObjectNode result=mapper.createObjectNode().put("total",total).put("page",page).put("pageSize",query.pageSize()).put("totalPages",pages)
+          .put("sort",query.sort()).put("search",query.search()).put("work",query.work()).put("lifecycle",query.lifecycle());
+      result.set("items",mapper.valueToTree(items));return result;
+    });
   }
   ObjectNode cases(Actor actor,String lifecycle) {
     if(!Set.of("ACTIVE","ARCHIVED","ALL").contains(lifecycle))throw invalid("Choose ACTIVE, ARCHIVED or ALL for the case lifecycle filter.");
@@ -240,6 +263,8 @@ public class PaymentDiscoveryService {
     ObjectNode item=caseRecord(actor,caseNumbers.resolve(actor.tenantId(),id));
     return CaseLifecycleState.decorate(db,actor.tenantId(),caseNumbers.decorate(actor.tenantId(),CaseManagementState.overlay(mapper,actor.tenantId(),item,CaseManagementState.load(mapper,db,actor.tenantId(),item))));
   }
+  /** Latest-evidence display metadata is deliberately excluded from internal report/investigation snapshots. */
+  ObjectNode caseDisplayDetail(Actor actor,String id) { return searchIndex.decorateEvidenceCurrency(actor.tenantId(),caseDetail(actor,id)); }
   ObjectNode caseRecord(Actor actor,String id) {
     ObjectNode item=lifecycleRecord(actor,id);CaseLifecycleState.requireReadable(db,actor.tenantId(),id);return item;
   }
@@ -249,6 +274,11 @@ public class PaymentDiscoveryService {
     if(rows.isEmpty() || !authorizedScope(actor,rows.get(0)))throw ApiException.notFound();return rows.get(0);
   }
   ObjectNode requireActive(Actor actor,String id) {
+    ObjectNode item=requireUnarchived(actor,id);
+    if(item.path("status").asText().equals("RESOLVED"))throw new ApiException(409,"CASE_RESOLVED","Reopen the resolved case with a reason before adding evidence, questions or management changes.");
+    return item;
+  }
+  ObjectNode requireUnarchived(Actor actor,String id) {
     ObjectNode item=caseDetail(actor,id);CaseLifecycleState.requireActive(db,actor.tenantId(),item.path("id").asText());return item;
   }
   void lockCase(Actor actor,String id) {
@@ -256,15 +286,13 @@ public class PaymentDiscoveryService {
     caseRecord(actor,id);
   }
   ObjectNode dashboard(Actor actor) {
-    long open=0,high=0,review=0,resolved=0;
-    for(JsonNode item:cases(actor).path("items")) {
-      String status=item.path("status").asText();
-      if(!status.equals("RESOLVED"))open++;
-      if(Set.of("HIGH","CRITICAL").contains(item.path("priority").asText()) && !Set.of("RESOLVED","CLOSED").contains(status))high++;
-      if(status.equals("AWAITING_REVIEW"))review++;
-      if(Set.of("RESOLVED","CLOSED").contains(status))resolved++;
-    }
-    return mapper.createObjectNode().put("openCases",open).put("highPriorityCases",high).put("awaitingReview",review).put("resolvedCases",resolved);
+    CaseSearchIndex.SqlWhere where=CaseSearchIndex.scope(actor,authorizedScopes(actor),null,null).and("s.lifecycle_state='ACTIVE'");
+    return db.queryForObject("SELECT COALESCE(SUM(CASE WHEN s.workflow_status NOT IN ('RESOLVED','CLOSED') THEN 1 ELSE 0 END),0) AS open_count,"
+        +"COALESCE(SUM(CASE WHEN s.priority IN ('HIGH','CRITICAL') AND s.workflow_status NOT IN ('RESOLVED','CLOSED') THEN 1 ELSE 0 END),0) AS high_count,"
+        +"COALESCE(SUM(CASE WHEN s.workflow_status='AWAITING_REVIEW' THEN 1 ELSE 0 END),0) AS review_count,"
+        +"COALESCE(SUM(CASE WHEN s.workflow_status IN ('RESOLVED','CLOSED') THEN 1 ELSE 0 END),0) AS resolved_count FROM fcr_case_search s WHERE "+where.sql(),
+        (row,n)->mapper.createObjectNode().put("openCases",row.getLong("open_count")).put("highPriorityCases",row.getLong("high_count"))
+            .put("awaitingReview",row.getLong("review_count")).put("resolvedCases",row.getLong("resolved_count")),where.args().toArray());
   }
   private boolean authorizedScope(Actor actor,JsonNode item){return scopes.getOrDefault(actor.tenantId(),List.of()).stream().anyMatch(s->s.branch.equals(item.path("orgBranch").asText())&&s.bank.equals(item.path("orgBank").asText()));}
   private Scope scope(Actor actor,String branch,String bank){return scopes.getOrDefault(actor.tenantId(),List.of()).stream().filter(s->s.branch.equals(branch)&&s.bank.equals(bank)).findFirst().orElseThrow(()->new ApiException(403,"DISCOVERY_SCOPE_FORBIDDEN","The selected bank and branch pair is not authorized for this tenant."));}

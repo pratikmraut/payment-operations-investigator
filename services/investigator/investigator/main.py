@@ -15,6 +15,7 @@ from .uat_answer import UatAnswerEngine, UatAnswerRequest, UatAnswerResponse
 from .case_answer import CaseAnswerEngine, CaseAnswerResponse
 from .case_rag import CaseRagEngine
 from .case_knowledge import CaseKnowledgeSearch, KnowledgeSearchRequest, KnowledgeSearchResponse, KnowledgeSearchTimeout
+from .case_jobs import CaseJobStore, CaseJobIdentity, CaseJobSubmission, CaseJobScope
 
 
 def create_app(settings: Settings | None = None, engine: InvestigatorEngine | None = None, uat_engine: UatAnswerEngine | None = None, case_engine: CaseAnswerEngine | None = None, knowledge_search: CaseKnowledgeSearch | None = None):
@@ -27,7 +28,9 @@ def create_app(settings: Settings | None = None, engine: InvestigatorEngine | No
         app.state.uat_engine = uat_engine or UatAnswerEngine(configuration, lock=app.state.engine.lock)
         app.state.case_engine = case_engine or CaseRagEngine(configuration, lock=app.state.engine.lock)
         app.state.knowledge_search = knowledge_search or CaseKnowledgeSearch(configuration, lock=app.state.engine.lock)
+        app.state.case_jobs = CaseJobStore(configuration.checkpoint_path.with_name("case-model-jobs.sqlite"), app.state.case_engine)
         yield
+        app.state.case_jobs.close()
         if engine is None:
             app.state.engine.close()
 
@@ -80,6 +83,26 @@ def create_app(settings: Settings | None = None, engine: InvestigatorEngine | No
     @app.post("/case/answer", response_model=CaseAnswerResponse, response_model_exclude_unset=True, dependencies=[Depends(service_auth)])
     def case_answer(body: UatAnswerRequest):
         return app.state.case_engine.run(body)
+
+    @app.post("/case/preflight", dependencies=[Depends(service_auth)])
+    def case_preflight(body: UatAnswerRequest):
+        return app.state.case_engine.preflight(body)
+
+    @app.post("/case/jobs/submit", dependencies=[Depends(service_auth)])
+    def submit_case_job(body: CaseJobSubmission):
+        return app.state.case_jobs.submit(body)
+
+    @app.post("/case/jobs/status", dependencies=[Depends(service_auth)])
+    def case_job_status(body: CaseJobIdentity):
+        return app.state.case_jobs.status(body)
+
+    @app.post("/case/jobs/cancel", dependencies=[Depends(service_auth)])
+    def cancel_case_job(body: CaseJobIdentity):
+        return app.state.case_jobs.cancel(body)
+
+    @app.post("/case/jobs/forget-case", dependencies=[Depends(service_auth)])
+    def forget_case_jobs(body: CaseJobScope):
+        return app.state.case_jobs.forget_case(body)
 
     @app.post("/retrieve", dependencies=[Depends(service_auth)])
     def retrieve(body: RetrieveRequest):

@@ -216,4 +216,38 @@ class CaseKnowledgeServiceTest {
     assertThat(controller.library(auth).path("items")).hasSize(90);
     verifyNoInteractions(worker);
   }
+  @Test void inventoriesAboveOneHundredRemainCurrentAndSelectOnlyScopedGuidance() throws Exception {
+    setup(true);
+    ObjectNode guide = read(guidanceFile);
+    ArrayNode docs = (ArrayNode) guide.path("documents");
+    for (int i=0; i<120; i++) docs.add(CaseStatusKnowledgeTest.document("SCALE-GUIDE-" + i, "Synthetic investigation procedure " + i));
+    write(guidanceFile, guide);
+    ObjectNode library = service.library(actor);
+    assertThat(library.path("items")).hasSize(210);
+    makeCurrent();
+    assertThat(service.library(actor).path("embedding").path("status").asText()).isEqualTo("CURRENT");
+    CaseKnowledgeService.Preview preview = service.preview(actor, payload(), "Explain CODSTATUS=991", new LinkedHashSet<>());
+    assertThat(preview.totalDocuments()).isEqualTo(210);
+    assertThat(preview.version()).isEqualTo(library.path("version").asText());
+    verifyNoInteractions(worker);
+    when(worker.searchCaseKnowledge(any())).thenReturn(CaseStatusKnowledgeTest.searchResponse("SCALE-GUIDE-119", "FIXTURE-MSGSTATUS-3", "FIXTURE-CODSTATUS-991"));
+    ArrayNode selected = service.select(actor, payload(), "Explain CODSTATUS=991", new LinkedHashSet<>());
+    assertThat(selected.size()).isLessThan(30);
+    assertThat(ids(selected)).contains("SCALE-GUIDE-119", "FIXTURE-CODSTATUS-991", "CASE-KNOWLEDGE-RETRIEVAL");
+    assertThat(find(selected, "SCALE-GUIDE-119")).isEqualTo(original(find(library.path("items"), "SCALE-GUIDE-119")));
+    verify(worker).searchCaseKnowledge(argThat(request -> request.path("entries").size() == 210));
+  }
+
+  @Test void localPreviewExposesStaleIndexWithoutCallingEmbeddingAndReservedIdsFail() throws Exception {
+    setup(true);
+    CaseKnowledgeService.Preview preview = service.preview(actor, payload(), "Explain payment", new LinkedHashSet<>());
+    assertThat(preview.embeddingStatus()).isEqualTo("MISSING");
+    verifyNoInteractions(worker);
+    ObjectNode guide = read(guidanceFile);
+    ((ArrayNode)guide.path("documents")).add(CaseStatusKnowledgeTest.document("CASE-EVIDENCE-SELECTION", "Reserved ID collision"));
+    write(guidanceFile, guide);
+    assertThatThrownBy(() -> service.library(actor)).isInstanceOf(ApiException.class);
+    verifyNoInteractions(worker);
+  }
+
 }

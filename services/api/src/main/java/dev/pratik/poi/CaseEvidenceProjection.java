@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.LinkedHashSet;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,7 +49,26 @@ public final class CaseEvidenceProjection {
   }
 
   public ObjectNode project(Actor actor, ObjectNode caseItem, ObjectNode snapshot, String question) {
+    return projectInternal(actor, caseItem, snapshot, question, false);
+  }
+
+  /** Input capacity and current index only: no embedding, model or bank call. */
+  public ObjectNode readiness(Actor actor, ObjectNode caseItem, ObjectNode snapshot, String question) {
+    ObjectNode projected = projectInternal(actor, caseItem, snapshot, question, true);
+    ObjectNode result = mapper.createObjectNode().put("ready", !projected.path("knowledgeIndexStatus").asText().matches("MISSING|STALE"))
+        .put("modelAvailabilityChecked", false).put("modelContextChecked", false);
+    for (String field : List.of("selection", "knowledgeVersion", "knowledgeIndexStatus", "knowledgeSelection", "warnings"))
+      if (projected.has(field)) result.set(field, projected.get(field).deepCopy());
+    result.put("meaning", "Local evidence and knowledge checks only. Exact configured model context and model availability are checked for an explicitly submitted question.");
+    return result;
+  }
+
+  private ObjectNode projectInternal(Actor actor, ObjectNode caseItem, ObjectNode snapshot, String question, boolean previewOnly) {
     CaseEvidenceService.verifyUpstream(mapper, snapshot);
+    if (!snapshot.path("evidenceHash").isTextual() || !snapshot.path("evidenceHash").asText().matches("[a-f0-9]{64}")
+        || !CaseEvidenceService.fingerprint(snapshot).equals(snapshot.path("evidenceHash").asText()))
+      throw new ApiException(503, "EVIDENCE_STORAGE_UNAVAILABLE", "The saved evidence fingerprint could not be verified.");
+    if (question != null && (question.isBlank() || question.length() > 2000)) throw invalid();
     ObjectNode payload = validatedPayload(caseItem, snapshot);
     String snapshotId = snapshot.path("id").asText();
     String source = "case-evidence/" + snapshotId + ".json";
@@ -116,25 +136,96 @@ public final class CaseEvidenceProjection {
       warnings.add("Source timezone is UNKNOWN; the laptop timezone does not establish the source timezone.");
     else warnings.add("The selected source timezone is recorded metadata; timestamp field semantics and cross-system clock agreement still require source verification.");
 
-    // Validate the complete raw evidence before any optional embedding call.
-    UatService.documentMap(documents, tooLarge());
+    // The source browser retains every original row. Model limits apply only
+    // to the separately selected question bundle, never the saved snapshot.
+    // Saved rows can be larger than one model document. They remain readable;
+    // the question selector rejects an oversized required row without clipping.
+    if (documents.size() > 5 + CaseEvidenceSchema.MAX_ROWS * 4
+        || payload.toString().getBytes(java.nio.charset.StandardCharsets.UTF_8).length > CaseEvidenceService.MAX_BYTES) throw invalid();
     ArrayNode guidance;
+    String knowledgeVersion;
+    String indexStatus = "DISABLED";
+    int inventoryDocuments;
+    ObjectNode selection = null;
     if (knowledge != null && knowledge.enabled()) {
-      guidance = knowledge.select(actor, payload, question, warnings, documents);
+      CaseKnowledgeService.Preview preparation = knowledge.preview(actor, payload, question, warnings);
+      knowledgeVersion = preparation.version();
+      inventoryDocuments = preparation.totalDocuments();
+      indexStatus = preparation.embeddingStatus();
+      if (question == null) guidance = preparation.documents();
+      else {
+        CaseEvidenceSelection.Selection chosen = new CaseEvidenceSelection(mapper).select(documents, preparation.reservation(), question);
+        documents = chosen.documents(); selection = chosen.metadata();
+        guidance = previewOnly ? preparation.reservation() : knowledge.select(actor, payload, question, warnings, documents);
+        if (!previewOnly) {
+          String selectedVersion = knowledgeSelectionVersion(guidance);
+          if (!knowledgeVersion.equals(selectedVersion)) throw new ApiException(409, "CASE_KNOWLEDGE_CHANGED", "Knowledge changed while preparing the question. Refresh readiness before submitting again.");
+        }
+      }
     } else {
-      guidance = guidanceSource.documents(actor, warnings);
-      ArrayNode provisional = documents.deepCopy().addAll(guidance);
-      UatService.documentMap(provisional, tooLarge());
-      guidance.addAll(statusKnowledge.select(actor, payload, question, warnings));
+      ArrayNode allGeneral = guidanceSource.documents(actor, warnings);
+      ArrayNode inventory = allGeneral.deepCopy().addAll(statusKnowledge.documents(actor, warnings));
+      CaseKnowledgeLimits.inventory(inventory, invalid());
+      knowledgeVersion = UatService.canonicalHash(inventory);
+      inventoryDocuments = inventory.size();
+      ArrayNode general = question == null ? allGeneral : selectGeneral(allGeneral, question);
+      guidance = general.deepCopy().addAll(statusKnowledge.selectExact(actor, payload, question, warnings));
+      if (question != null) {
+        ArrayNode reservation = general.deepCopy().addAll(statusKnowledge.reserve(actor, payload, question, warnings));
+        CaseEvidenceSelection.Selection chosen = new CaseEvidenceSelection(mapper).select(documents, reservation, question);
+        documents = chosen.documents(); selection = chosen.metadata();
+        if (!previewOnly) {
+          guidance = general.deepCopy().addAll(statusKnowledge.select(actor, payload, question, warnings));
+          ArrayNode currentInventory = guidanceSource.documents(actor, warnings).addAll(statusKnowledge.documents(actor, warnings));
+          if (!knowledgeVersion.equals(UatService.canonicalHash(currentInventory)))
+            throw new ApiException(409, "CASE_KNOWLEDGE_CHANGED", "Knowledge changed while preparing the question. Refresh readiness before submitting again.");
+        }
+      }
     }
     documents.addAll(guidance);
-    UatService.documentMap(documents, tooLarge());
+    if (question != null) UatService.documentMap(documents, tooLarge());
+    if (selection != null && selection.path("omittedRows").asInt() > 0)
+      warnings.add("This question uses " + selection.path("selectedRows").asInt() + " of " + selection.path("totalRows").asInt()
+          + " supplied rows. Omitted rows remain in the saved evidence and may contain relevant or conflicting facts; this is not a complete-source assessment.");
     ObjectNode result = mapper.createObjectNode();
     result.set("documents", documents);
+    if (selection != null) result.set("selection", selection);
+    result.put("knowledgeVersion", knowledgeVersion).put("knowledgeIndexStatus", indexStatus);
+    int selectedKnowledge = 0;
+    for (JsonNode document : guidance) if (!Set.of("CASE-KNOWLEDGE-RETRIEVAL", "FCR-ENUM-RETRIEVAL").contains(document.path("id").asText())) selectedKnowledge++;
+    result.putObject("knowledgeSelection").put("totalDocuments", inventoryDocuments)
+        .put("selectedDocuments", selectedKnowledge).put("omittedDocuments", Math.max(0, inventoryDocuments-selectedKnowledge))
+        .put("selectionBasis", previewOnly && knowledge != null && knowledge.enabled() ? "capacity-reservation" : "selected-original-documents");
     ArrayNode projectedTimeline = result.putArray("timeline"); timeline.forEach(row -> projectedTimeline.add(row.event));
     result.set("warnings", mapper.valueToTree(warnings));
     result.put("guidanceHash", UatService.canonicalHash(guidance));
     return result;
+  }
+
+  private ArrayNode selectGeneral(ArrayNode inventory, String question) {
+    ArrayNode result = mapper.createArrayNode();
+    List<JsonNode> optional = new ArrayList<>();
+    for (JsonNode document : inventory) {
+      String id = document.path("id").asText();
+      if (CaseKnowledgeService.PINNED.contains(id) || (id.equals("FCR-TABLE-REFERENCE-20260915") && CaseKnowledgeService.tableQuestion(question)))
+        result.add(document.deepCopy());
+      else optional.add(document);
+    }
+    Set<String> terms = new HashSet<>(List.of(question.toLowerCase(java.util.Locale.ROOT).split("[^a-z0-9_]+")));
+    optional.sort(Comparator.comparingLong((JsonNode document) -> {
+      Set<String> words = new HashSet<>(List.of((document.path("title").asText() + " " + document.path("content").asText()).toLowerCase(java.util.Locale.ROOT).split("[^a-z0-9_]+")));
+      return terms.stream().filter(term -> term.length() > 1 && words.contains(term)).count();
+    }).reversed().thenComparing(document -> document.path("id").asText()));
+    optional.stream().limit(3).forEach(document -> result.add(document.deepCopy()));
+    return result;
+  }
+
+  private String knowledgeSelectionVersion(ArrayNode documents) {
+    for (JsonNode document : documents) if (document.path("id").asText().equals("CASE-KNOWLEDGE-RETRIEVAL")) {
+      try { return mapper.readTree(document.path("content").asText()).path("knowledgeVersion").asText(); }
+      catch (Exception invalid) { throw invalid(); }
+    }
+    throw invalid();
   }
 
   private ObjectNode validatedPayload(ObjectNode item, ObjectNode snapshot) {
@@ -146,7 +237,7 @@ public final class CaseEvidenceProjection {
       if (!item.path(field).equals(payload.path("payment").path(field))) throw invalid();
     if (!payload.path("sections").isObject() || !snapshot.path("coverage").isObject()) throw invalid();
     for (String group : CaseEvidenceSchema.COLUMNS.keySet())
-      if (!payload.path("sections").path(group).path("rows").isArray() || !snapshot.path("coverage").path(group).isObject()) throw invalid();
+      if (!payload.path("sections").path(group).path("rows").isArray() || payload.path("sections").path(group).path("rows").size() > CaseEvidenceSchema.MAX_ROWS || !snapshot.path("coverage").path(group).isObject()) throw invalid();
     return payload;
   }
 
@@ -161,5 +252,5 @@ public final class CaseEvidenceProjection {
   }
   private record TimedRow(ObjectNode event, LocalDateTime time) { }
   private static ApiException invalid() { return new ApiException(422, "INVALID_CASE_PROJECTION", "The selected evidence version does not match this saved case or its four-group contract."); }
-  private static ApiException tooLarge() { return new ApiException(422, "CASE_INVESTIGATION_EVIDENCE_LIMIT", "Evidence and guidance must fit 100 source documents and 50,000 source characters with valid unique citations. Narrow the selected evidence or guidance; no source rows were truncated."); }
+  private static ApiException tooLarge() { return new ApiException(422, "CASE_INVESTIGATION_EVIDENCE_LIMIT", "Selected evidence and guidance must fit 100 source documents and 50,000 source characters with valid unique citations. Narrow the question or source export; original saved rows remain unchanged."); }
 }

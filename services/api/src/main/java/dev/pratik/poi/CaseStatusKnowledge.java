@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 /** Selects private, field-specific reference knowledge before an investigation input is frozen. */
 @Component
 public final class CaseStatusKnowledge {
-  static final int MAX_BYTES = 2 * 1024 * 1024;
+  static final int MAX_BYTES = CaseKnowledgeLimits.INDEX_BYTES;
   private static final String SCHEMA = "fcr-case-evidence-v1";
   private static final Set<String> FIELDS = Set.of("CODSTATUS", "ACCTSTATUS", "MSGSTATUS");
   private static final Pattern MENTION = Pattern.compile(
@@ -47,6 +47,24 @@ public final class CaseStatusKnowledge {
 
   ArrayNode select(Actor actor, ObjectNode payload, String question, Set<String> warnings) {
     return select(actor, payload, question, warnings, true);
+  }
+
+  ArrayNode reserve(Actor actor, ObjectNode payload, String question, Set<String> warnings) {
+    ArrayNode exact = selectExact(actor, payload, question, warnings);
+    if (exact.isEmpty() || question == null) return exact;
+    Set<String> ids = new HashSet<>(); exact.forEach(doc -> ids.add(doc.path("id").asText()));
+    ArrayNode all = documents(actor, warnings);
+    List<JsonNode> optional = new ArrayList<>();
+    all.forEach(doc -> { if (!ids.contains(doc.path("id").asText())) optional.add(doc); });
+    optional.sort(Comparator.comparingInt((JsonNode doc) -> doc.toString().getBytes(java.nio.charset.StandardCharsets.UTF_8).length).reversed());
+    optional.stream().limit(3).forEach(exact::add);
+    // The receipt carries two exact ID lists and three bounded matches. This
+    // placeholder is only capacity reservation, never frozen or model-visible.
+    ObjectNode receipt = mapper.createObjectNode().put("id", "FCR-ENUM-RETRIEVAL").put("kind", "knowledge")
+        .put("title", "Reserved status selection receipt").put("content", "x".repeat(2000 + ids.size() * 410));
+    receipt.putObject("source").put("file", "case-status-knowledge-selection-v1").put("locator", "Reserved selection receipt");
+    exact.add(receipt);
+    return exact;
   }
 
   private ArrayNode select(Actor actor, ObjectNode payload, String question, Set<String> warnings, boolean semantic) {
@@ -144,7 +162,7 @@ public final class CaseStatusKnowledge {
         || !text(embedding.path("digest"), 71) || !embedding.path("digest").textValue().matches("(?:sha256:)?[a-f0-9]{64}")
         || !embedding.path("dimensions").isIntegralNumber() || !embedding.path("dimensions").canConvertToInt()
         || embedding.path("dimensions").intValue() != 1024
-        || !root.path("entries").isArray() || root.path("entries").isEmpty() || root.path("entries").size() > 100) throw invalid();
+        || !root.path("entries").isArray() || root.path("entries").isEmpty() || root.path("entries").size() > CaseKnowledgeLimits.DOCUMENTS) throw invalid();
     ObjectNode overview = document(root.path("overview"));
     Map<String, Entry> byId = new LinkedHashMap<>(), byCode = new HashMap<>();
     for (JsonNode item : root.path("entries")) {
@@ -171,8 +189,7 @@ public final class CaseStatusKnowledge {
   private ObjectNode document(JsonNode doc) {
     if (!names(doc).equals(Set.of("id", "kind", "title", "content", "source"))
         || !text(doc.path("id"), 200) || !doc.path("id").textValue().matches("[A-Za-z0-9_-]+")
-        || doc.path("id").textValue().matches("(?:PAYMENT|HOST|HISTORY|STATUS)-(?:ROW-[0-9]+|COVERAGE)")
-        || Set.of("CASE-CONTEXT", "FCR-ENUM-RETRIEVAL").contains(doc.path("id").textValue()) || !"knowledge".equals(doc.path("kind").asText())
+        || CaseKnowledgeLimits.reserved(doc.path("id").textValue()) || !"knowledge".equals(doc.path("kind").asText())
         || !text(doc.path("title"), 500) || !text(doc.path("content"), 50000)
         || !doc.path("source").isObject() || !Set.of("file", "sheet", "range", "locator").containsAll(names(doc.path("source")))
         || !text(doc.path("source").path("file"), 1000)) throw invalid();

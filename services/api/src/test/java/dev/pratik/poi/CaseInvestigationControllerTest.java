@@ -128,4 +128,15 @@ class CaseInvestigationControllerTest {
     verify(service, times(3)).start(any(), eq(caseId), input.capture(), any());
     assertThat(input.getAllValues().get(2)).hasSize(16385);
   }
+  @Test void readinessAndCancellationEnforceCsrfScopeAndWriterRules() throws Exception {
+    when(service.readiness(any(),eq(caseId),any())).thenReturn(mapper.createObjectNode().put("ready",true));
+    when(service.cancel(any(),eq(caseId),eq("CIN-ORIGINAL-TEST"),any())).thenReturn(queued.deepCopy().put("status","RUNNING").put("phase","CANCELLING"));
+    mvc.perform(post(base+"/investigations/readiness").with(user("viewer")).contentType("application/json").content(command.toString())).andExpect(status().isForbidden());
+    mvc.perform(post(base+"/investigations/readiness").with(user("viewer")).with(csrf().asHeader()).contentType("application/json").content(command.toString())).andExpect(status().isOk()).andExpect(jsonPath("$.ready").value(true));
+    mvc.perform(post(base+"/investigations/CIN-ORIGINAL-TEST/cancel").with(user("viewer")).with(csrf().asHeader()).contentType("application/json").content("{}")).andExpect(status().isForbidden());
+    mvc.perform(post(base+"/investigations/CIN-ORIGINAL-TEST/cancel").with(user("other")).with(csrf().asHeader()).contentType("application/json").content("{}")).andExpect(status().isNotFound());
+    mvc.perform(post(base+"/investigations/CIN-ORIGINAL-TEST/cancel").with(user("reviewer")).with(csrf().asHeader()).contentType("application/json").content("{}")).andExpect(status().isOk()).andExpect(jsonPath("$.phase").value("CANCELLING"));
+    verify(service,times(1)).cancel(argThat(a->a.role().equals("REVIEWER")),eq(caseId),eq("CIN-ORIGINAL-TEST"),any());
+  }
+
 }

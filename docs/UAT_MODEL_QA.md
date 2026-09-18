@@ -96,6 +96,8 @@ These are prompts only; their answers are not stored in application code.
 
 ## Interpretation and limits
 
+This section describes the retained standalone export Q&A baseline. The visible saved payment-case flow uses [case RAG](CASE_RAG.md) and the [durable investigation queue](CASE_JOBS.md); its background jobs and cancellation behavior are separate from this synchronous export route.
+
 - A cited source identifier is checked against the exact supplied document. This proves citation membership, **not that the generated sentence logically follows from the source**. Model answers require review and can still contain errors.
 - Local source notes describe possible code paths, not evidence that a particular payment executed them. Their correspondence with deployed code and configuration must be established separately.
 - Unknown or missing evidence remains usable context for a generated explanation. Empty fields and empty exports do not become success/failure facts.

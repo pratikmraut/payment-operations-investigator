@@ -14,6 +14,17 @@ import {
 import { api, ApiError, human } from "./api";
 import { navigateLink } from "./routing";
 import { parseEvidenceJson } from "./evidenceJson";
+import { useUnsavedChanges } from "./unsavedChanges";
+import { DraftTextControls } from "./DraftTextControls";
+import type { User } from "./types";
+import "./CaseInvestigationQueue.css";
+import { CaseReadiness, SourceSelectionCoverage } from "./CaseReadiness";
+import {
+  HistoryMore,
+  historyMeta,
+  mergeHistory,
+  type HistoryPageMeta,
+} from "./caseHistory";
 import {
   InvestigationTimer,
   SavedInvestigationTiming,
@@ -71,7 +82,7 @@ type Job = {
   evidenceVersion: number;
   evidenceHash: string;
   question: string;
-  status: "QUEUED" | "RUNNING" | "COMPLETED" | "FAILED";
+  status: "QUEUED" | "RUNNING" | "COMPLETED" | "FAILED" | "CANCELLED";
   createdAt: string;
   createdBy: string;
   requestedAt?: string | null;
@@ -79,6 +90,11 @@ type Job = {
   startedAt?: string;
   finishedAt?: string;
   error?: { code: string; message: string };
+  selection?: unknown;
+  queueVersion?: string;
+  phase?: string;
+  cancellationRequested?: boolean;
+  waitingReason?: { code: string; message: string };
 };
 type RagReceipt = {
   pipeline: "case-evidence-rag-v1";
@@ -115,13 +131,32 @@ type Answer = {
   rag?: RagReceipt;
 };
 type JobDetail = Job & { documents: Document[]; answer?: Answer };
+function frozenSelection(job: JobDetail | null): unknown {
+  if (!job) return undefined;
+  if (job.selection !== undefined) return job.selection;
+  const receipt = job.documents.find(
+    (document) => document.id === "CASE-EVIDENCE-SELECTION",
+  );
+  if (!receipt) return undefined;
+  try {
+    return parseEvidenceJson(receipt.content);
+  } catch {
+    return receipt.content;
+  }
+}
 type Workbench = {
   caseId: string;
+  status?: string;
   lifecycleState?: "ACTIVE" | "ARCHIVED";
   lifecycleVersion?: number;
   evidence: Evidence[];
   latestEvidenceId: string | null;
   investigations: Job[];
+  evidencePage?: HistoryPageMeta;
+  investigationPage?: HistoryPageMeta;
+  activityPage?: HistoryPageMeta;
+  activeInvestigations?: Job[];
+  activeInvestigationPage?: HistoryPageMeta;
   audit: {
     id: string;
     action: string;
@@ -134,7 +169,9 @@ type Props = {
   caseId: string;
   caseNumber?: string;
   canWrite: boolean;
+  user?: Pick<User, "id" | "role">;
   archived?: boolean;
+  resolved?: boolean;
   evidenceRevision?: number;
   presentation?: "case" | "qa";
   requestedEvidenceId?: string;
@@ -175,6 +212,25 @@ const suggestedQuestions = [
 ] as const;
 const pending = (job: Job) =>
   job.status === "QUEUED" || job.status === "RUNNING";
+const phaseLabels: Record<string, string> = {
+  QUEUED: "Queued · waiting for a worker",
+  PREPARING: "Preparing evidence and guidance",
+  PREFLIGHT: "Checking model context",
+  SUBMITTING: "Submitting to the local model",
+  GENERATING: "Generating an answer",
+  WAITING: "Waiting for the local model worker",
+  CANCELLING: "Cancellation requested · waiting for acknowledgement",
+  COMPLETED: "Answer saved",
+  FAILED: "Investigation failed",
+  CANCELLED: "Investigation cancelled",
+};
+function jobPhase(job: Job) {
+  return job.cancellationRequested && pending(job)
+    ? phaseLabels.CANCELLING
+    : job.phase
+      ? phaseLabels[job.phase]
+      : undefined;
+}
 const string = (value: unknown): value is string => typeof value === "string";
 const strings = (value: unknown): value is string[] =>
   Array.isArray(value) && value.every(string);
@@ -223,12 +279,23 @@ function validateJob(job: Job, caseId: string) {
     ].every((value) => string(value) && !!value) ||
     !Number.isSafeInteger(job.evidenceVersion) ||
     job.evidenceVersion < 1 ||
-    !["QUEUED", "RUNNING", "COMPLETED", "FAILED"].includes(job.status) ||
+    !["QUEUED", "RUNNING", "COMPLETED", "FAILED", "CANCELLED"].includes(
+      job.status,
+    ) ||
     [job.startedAt, job.finishedAt].some(
       (value) => value !== undefined && !string(value),
     ) ||
     (job.requestedAt != null && !string(job.requestedAt)) ||
     (job.timing !== undefined && !validTiming(job.timing)) ||
+    (job.queueVersion !== undefined && !string(job.queueVersion)) ||
+    (job.phase !== undefined &&
+      (!string(job.phase) || !Object.hasOwn(phaseLabels, job.phase))) ||
+    (job.cancellationRequested !== undefined &&
+      typeof job.cancellationRequested !== "boolean") ||
+    (job.waitingReason !== undefined &&
+      (!record(job.waitingReason) ||
+        !string(job.waitingReason.code) ||
+        !string(job.waitingReason.message))) ||
     (job.error !== undefined &&
       (!string(job.error.code) || !string(job.error.message)))
   )
@@ -269,6 +336,46 @@ function validateWorkbench(value: Workbench, caseId: string) {
       "The case workbench could not be read. Refresh its saved records.",
     );
   value.investigations.forEach((job) => validateJob(job, caseId));
+  historyMeta(value.evidencePage, value.evidence.length);
+  historyMeta(value.investigationPage, value.investigations.length);
+  historyMeta(value.activityPage, value.audit.length);
+  if (value.activeInvestigations !== undefined) {
+    if (!Array.isArray(value.activeInvestigations))
+      throw new Error("Active investigations could not be read.");
+    value.activeInvestigations.forEach((job) => {
+      validateJob(job, caseId);
+      if (!pending(job))
+        throw new Error("Active investigation status is unreadable.");
+    });
+    historyMeta(
+      value.activeInvestigationPage,
+      value.activeInvestigations.length,
+    );
+  }
+}
+function validateEvidence(item: Evidence, caseId: string) {
+  if (
+    !item ||
+    item.caseId !== caseId ||
+    ![item.id, item.evidenceHash, item.sourceKind, item.createdAt].every(
+      string,
+    ) ||
+    !Number.isSafeInteger(item.version) ||
+    item.version < 1 ||
+    !strings(item.warnings)
+  )
+    throw new Error(
+      "The selected evidence summary is unreadable or belongs to another case.",
+    );
+}
+function validateActivity(item: Workbench["audit"][number]) {
+  if (
+    !item ||
+    ![item.id, item.action, item.occurredAt, item.actor, item.detail].every(
+      string,
+    )
+  )
+    throw new Error("The case activity record is unreadable.");
 }
 function validateContext(value: Context, evidence: Evidence) {
   if (
@@ -565,12 +672,31 @@ function mergeJobs(previous: Job[], incoming: Job[]) {
   const merged = incoming.map((job) =>
     prior.has(job.id) && !pending(prior.get(job.id)!) && pending(job)
       ? prior.get(job.id)!
-      : job,
+      : prior.get(job.id)?.cancellationRequested && pending(job)
+        ? { ...job, cancellationRequested: true, phase: "CANCELLING" }
+        : job,
   );
   return [
     ...merged,
     ...previous.filter((job) => !incoming.some((item) => item.id === job.id)),
-  ].sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+  ].sort((a, b) => {
+    const aTime = Date.parse(a.createdAt),
+      bTime = Date.parse(b.createdAt);
+    if (!Number.isFinite(aTime) || !Number.isFinite(bTime))
+      return b.createdAt.localeCompare(a.createdAt);
+    if (aTime !== bTime) return bTime - aTime;
+    // Java Instant retains nanoseconds; Date.parse rounds these down to milliseconds.
+    const remainder = (value: string) =>
+      Number(
+        (value.match(/\.(\d{1,9})(?:Z|[+-]\d{2}:\d{2})$/)?.[1] ?? "")
+          .padEnd(9, "0")
+          .slice(3),
+      );
+    return (
+      remainder(b.createdAt) - remainder(a.createdAt) ||
+      b.id.localeCompare(a.id)
+    );
+  });
 }
 export function CaseInvestigation(props: Props) {
   return <WorkbenchView key={props.caseId} {...props} />;
@@ -580,7 +706,9 @@ function WorkbenchView({
   caseId,
   caseNumber,
   canWrite: roleCanWrite,
+  user,
   archived = false,
+  resolved = false,
   evidenceRevision = 0,
   presentation = "case",
   requestedEvidenceId,
@@ -605,7 +733,23 @@ function WorkbenchView({
         : current,
     );
   }, [archived]);
-  const canWrite = roleCanWrite && !isArchived;
+  const resolvedProp = useRef(resolved);
+  const isResolved =
+    resolvedProp.current !== resolved
+      ? resolved
+      : workbench?.status
+        ? workbench.status === "RESOLVED"
+        : resolved;
+  useEffect(() => {
+    if (resolvedProp.current === resolved) return;
+    resolvedProp.current = resolved;
+    setWorkbench((current) =>
+      current
+        ? { ...current, status: resolved ? "RESOLVED" : "OPEN" }
+        : current,
+    );
+  }, [resolved]);
+  const canWrite = roleCanWrite && !isArchived && !isResolved;
   const [jobs, setJobs] = useState<Job[]>([]);
   const [localEvidence, setSelectedEvidence] = useState("");
   const selectedEvidence = requestedEvidenceId ?? localEvidence;
@@ -616,6 +760,11 @@ function WorkbenchView({
     presentation === "qa" ? "investigations" : "timeline",
   );
   const [question, setQuestion] = useState("");
+  const [submittedQuestion, setSubmittedQuestion] = useState("");
+  useUnsavedChanges(
+    !!question.trim() && question !== submittedQuestion,
+    "Investigation question",
+  );
   const [submitting, setSubmitting] = useState(false);
   const [browserRun, setBrowserRun] = useState<BrowserRun | null>(null);
   const [loading, setLoading] = useState(true);
@@ -631,6 +780,14 @@ function WorkbenchView({
   const [pollRevision, setPollRevision] = useState(0);
   const [detailRevision, setDetailRevision] = useState(0);
   const [focusedDoc, setFocusedDoc] = useState("");
+  const [pinLoading, setPinLoading] = useState(false);
+  const [pinError, setPinError] = useState<Error | null>(null);
+  const [cancelling, setCancelling] = useState<string | null>(null);
+  const [cancelError, setCancelError] = useState<{
+    jobId: string;
+    error: Error;
+  } | null>(null);
+  const cancelRequest = useRef<AbortController | null>(null);
   const submitRequest = useRef<AbortController | null>(null);
   const idempotency = useRef<{ signature: string; key: string } | null>(null);
   const cachedDetails = useRef(new Map<string, JobDetail>());
@@ -648,7 +805,8 @@ function WorkbenchView({
     loadedContext?.evidenceHash === evidence?.evidenceHash
       ? loadedContext
       : null;
-  const unavailableVersion = !!requestedEvidenceId && !!workbench && !evidence;
+  const unavailableVersion =
+    !!selectedEvidence && !!workbench && !evidence && !pinLoading;
   const currentJob = jobs.find((job) => job.id === selectedJob);
   const pendingIds = jobs
     .filter(pending)
@@ -663,7 +821,68 @@ function WorkbenchView({
       return current && job ? observeBrowserRun(current, job, now) : current;
     });
   }
-  useEffect(() => () => submitRequest.current?.abort(), []);
+  useEffect(
+    () => () => {
+      submitRequest.current?.abort();
+      cancelRequest.current?.abort();
+    },
+    [],
+  );
+  function canCancel(job: Job) {
+    const role = user?.role.toUpperCase();
+    return (
+      job.queueVersion === "case-job-v1" &&
+      pending(job) &&
+      (role === "REVIEWER" ||
+        (role === "ANALYST" && job.createdBy === user?.id))
+    );
+  }
+  async function cancel(job: Job) {
+    if (!canCancel(job) || cancelRequest.current || job.cancellationRequested)
+      return;
+    const controller = new AbortController();
+    cancelRequest.current = controller;
+    setCancelling(job.id);
+    setCancelError(null);
+    try {
+      const value = await request<Job>(
+        `${base}/investigations/${encodeURIComponent(job.id)}/cancel`,
+        controller.signal,
+        { method: "POST", body: "{}" },
+      );
+      if (controller.signal.aborted) return;
+      validateJob(value, caseId);
+      if (
+        [
+          "id",
+          "evidenceId",
+          "evidenceHash",
+          "evidenceVersion",
+          "question",
+          "createdBy",
+        ].some((key) => value[key as keyof Job] !== job[key as keyof Job])
+      )
+        throw new Error(
+          "The cancellation response does not match this saved question. Refresh its status before retrying.",
+        );
+      if (pending(value) && !value.cancellationRequested)
+        throw new Error(
+          "Cancellation has not been acknowledged. The investigation may still be running.",
+        );
+      observeTiming([value]);
+      setJobs((current) => mergeJobs(current, [value]));
+      // Status replies carry summaries. Fetch the preserved body through the normal detail/poll path.
+      cachedDetails.current.delete(value.id);
+      setPollRevision((current) => current + 1);
+      if (!pending(value)) setRevision((current) => current + 1);
+    } catch (failure) {
+      if (!controller.signal.aborted)
+        setCancelError({ jobId: job.id, error: failure as Error });
+    } finally {
+      if (!controller.signal.aborted) setCancelling(null);
+      if (cancelRequest.current === controller) cancelRequest.current = null;
+    }
+  }
   useEffect(() => {
     const controller = new AbortController();
     setLoading(true);
@@ -672,18 +891,27 @@ function WorkbenchView({
       .then((value) => {
         if (controller.signal.aborted) return;
         validateWorkbench(value, caseId);
-        observeTiming(value.investigations);
-        setWorkbench(value);
-        setJobs((current) => mergeJobs(current, value.investigations));
-        setSelectedEvidence((current) =>
-          value.evidence.some((item) => item.id === current)
-            ? current
-            : (value.latestEvidenceId ?? ""),
+        const returnedJobs = mergeJobs(
+          value.investigations,
+          value.activeInvestigations ?? [],
+        );
+        observeTiming(returnedJobs);
+        setWorkbench((current) => ({
+          ...value,
+          evidence: mergeHistory(
+            value.evidence,
+            current?.evidence.filter((item) => item.id === selectedEvidence) ??
+              [],
+          ),
+        }));
+        setJobs((current) => mergeJobs(current, returnedJobs));
+        setSelectedEvidence(
+          (current) => current || value.latestEvidenceId || "",
         );
         setSelectedJob(
           (current) =>
             current ||
-            value.investigations.find(pending)?.id ||
+            returnedJobs.find(pending)?.id ||
             value.investigations[0]?.id ||
             "",
         );
@@ -696,6 +924,42 @@ function WorkbenchView({
       });
     return () => controller.abort();
   }, [base, caseId, evidenceRevision, revision]);
+  useEffect(() => {
+    const controller = new AbortController();
+    setPinError(null);
+    if (!selectedEvidence || !workbench?.evidencePage || evidence) {
+      setPinLoading(false);
+      return () => controller.abort();
+    }
+    setPinLoading(true);
+    request<Evidence>(
+      `${base}/evidence/${encodeURIComponent(selectedEvidence)}/summary`,
+      controller.signal,
+    )
+      .then((value) => {
+        validateEvidence(value, caseId);
+        if (value.id !== selectedEvidence)
+          throw new Error(
+            "The selected evidence response changed its identity.",
+          );
+        if (!controller.signal.aborted)
+          setWorkbench((current) =>
+            current
+              ? {
+                  ...current,
+                  evidence: mergeHistory(current.evidence, [value]),
+                }
+              : current,
+          );
+      })
+      .catch((failure: Error) => {
+        if (!controller.signal.aborted) setPinError(failure);
+      })
+      .finally(() => {
+        if (!controller.signal.aborted) setPinLoading(false);
+      });
+    return () => controller.abort();
+  }, [base, caseId, selectedEvidence, !!workbench?.evidencePage, evidence?.id]);
   useEffect(() => {
     const controller = new AbortController();
     setContext(null);
@@ -891,6 +1155,7 @@ function WorkbenchView({
           "The saved investigation does not match the submitted question and evidence. Refresh its status before retrying.",
         );
       idempotency.current = null;
+      setSubmittedQuestion(question);
       const observedAt = performance.now();
       setBrowserRun((current) =>
         current ? observeBrowserRun(current, value, observedAt) : null,
@@ -989,6 +1254,24 @@ function WorkbenchView({
       )}
       {workbench && (
         <>
+          {workbench.activeInvestigationPage?.nextCursor && (
+            <div
+              className="notice neutral case-investigation-more-active"
+              role="note"
+            >
+              <p>
+                More active investigations are available. Open the investigation
+                list to load and follow them.
+              </p>
+              <button
+                type="button"
+                className="secondary"
+                onClick={() => setTab("investigations")}
+              >
+                View active investigations
+              </button>
+            </div>
+          )}
           <div className="panel case-investigation-version">
             <div>
               <label htmlFor="case-investigation-evidence">
@@ -1006,7 +1289,7 @@ function WorkbenchView({
                 }}
               >
                 {unavailableVersion && (
-                  <option value={requestedEvidenceId}>
+                  <option value={selectedEvidence}>
                     Requested evidence version unavailable
                   </option>
                 )}
@@ -1024,6 +1307,31 @@ function WorkbenchView({
                   <option value="">No saved evidence</option>
                 )}
               </select>
+              <HistoryMore<Evidence>
+                caseId={caseId}
+                path={`${base}/evidence`}
+                page={workbench.evidencePage}
+                loaded={workbench.evidence.length}
+                label="evidence versions"
+                disabled={active || loading}
+                validate={(item) => validateEvidence(item, caseId)}
+                onPage={(page) =>
+                  setWorkbench((current) =>
+                    current
+                      ? {
+                          ...current,
+                          evidence: mergeHistory(current.evidence, page.items),
+                          evidencePage: page,
+                        }
+                      : current,
+                  )
+                }
+                onRefresh={() => setRevision((current) => current + 1)}
+              />
+              {pinLoading && (
+                <p role="status">Loading selected evidence version…</p>
+              )}
+              {pinError && <Failure error={pinError} />}
             </div>
             <span className="badge">
               {context
@@ -1272,6 +1580,7 @@ function WorkbenchView({
                             <small>
                               {job.createdBy} · {job.id}
                             </small>
+                            {jobPhase(job) && <small>{jobPhase(job)}</small>}
                             <SavedInvestigationTiming job={job} />
                           </button>
                         ))}
@@ -1281,6 +1590,52 @@ function WorkbenchView({
                         No investigations have been requested for this case.
                       </p>
                     )}
+                    <HistoryMore<Job>
+                      caseId={caseId}
+                      path={`${base}/investigations`}
+                      page={workbench.investigationPage}
+                      loaded={jobs.length}
+                      label="investigations"
+                      disabled={loading}
+                      validate={(item) => validateJob(item, caseId)}
+                      onPage={(page) => {
+                        setJobs((current) => mergeJobs(current, page.items));
+                        setWorkbench((current) =>
+                          current
+                            ? { ...current, investigationPage: page }
+                            : current,
+                        );
+                      }}
+                      onRefresh={() => setRevision((current) => current + 1)}
+                    />
+                    <HistoryMore<Job>
+                      caseId={caseId}
+                      path={`${base}/investigations?status=ACTIVE`}
+                      page={
+                        workbench.activeInvestigationPage?.nextCursor
+                          ? workbench.activeInvestigationPage
+                          : undefined
+                      }
+                      loaded={jobs.filter(pending).length}
+                      label="active investigations"
+                      disabled={loading}
+                      validate={(item) => {
+                        validateJob(item, caseId);
+                        if (!pending(item))
+                          throw new Error(
+                            "Active investigation status is unreadable.",
+                          );
+                      }}
+                      onPage={(page) => {
+                        setJobs((current) => mergeJobs(current, page.items));
+                        setWorkbench((current) =>
+                          current
+                            ? { ...current, activeInvestigationPage: page }
+                            : current,
+                        );
+                      }}
+                      onRefresh={() => setRevision((current) => current + 1)}
+                    />
                   </>
                 )}
                 {tab === "audit" && (
@@ -1307,6 +1662,27 @@ function WorkbenchView({
                     ) : (
                       <p>No audit records were returned.</p>
                     )}
+                    <HistoryMore<Workbench["audit"][number]>
+                      caseId={caseId}
+                      path={`${base}/activity`}
+                      page={workbench.activityPage}
+                      loaded={workbench.audit.length}
+                      label="activity records"
+                      disabled={loading}
+                      validate={validateActivity}
+                      onPage={(page) =>
+                        setWorkbench((current) =>
+                          current
+                            ? {
+                                ...current,
+                                audit: mergeHistory(current.audit, page.items),
+                                activityPage: page,
+                              }
+                            : current,
+                        )
+                      }
+                      onRefresh={() => setRevision((current) => current + 1)}
+                    />
                   </>
                 )}
               </div>
@@ -1376,6 +1752,31 @@ function WorkbenchView({
                   }}
                   placeholder="Ask what the recorded fields explain and which evidence is still needed."
                 />
+                {canWrite && (
+                  <DraftTextControls
+                    scope={`${caseId}:investigation-question`}
+                    value={question}
+                    onRestore={(value) => {
+                      setQuestion(value);
+                      setSubmitError(null);
+                    }}
+                    maxLength={2000}
+                    disabled={active}
+                  />
+                )}
+                {canWrite && (
+                  <CaseReadiness
+                    caseId={caseId}
+                    evidence={evidence}
+                    question={question}
+                    disabled={
+                      active ||
+                      contextLoading ||
+                      !context ||
+                      context.nonEmptyRows === 0
+                    }
+                  />
+                )}
                 <div className="case-investigation-submit">
                   <small>{question.length.toLocaleString()} / 2,000</small>
                   {canWrite ? (
@@ -1404,7 +1805,9 @@ function WorkbenchView({
                     <p className="muted">
                       {isArchived
                         ? "This case is archived. Saved investigations remain available. Restore it to submit a new question."
-                        : "Your role can read saved investigations. An analyst or reviewer can submit questions."}
+                        : isResolved
+                          ? "This case is resolved. Reopen it in Case management before submitting a new question."
+                          : "Your role can read saved investigations. An analyst or reviewer can submit questions."}
                     </p>
                   )}
                 </div>
@@ -1483,6 +1886,72 @@ function WorkbenchView({
                   <SavedInvestigationTiming
                     job={rendered ?? currentJob}
                     breakdown
+                  />
+                  {jobPhase(currentJob) && (
+                    <p className="case-investigation-phase" role="status">
+                      {jobPhase(currentJob)}
+                    </p>
+                  )}
+                  {pending(currentJob) && currentJob.waitingReason && (
+                    <p className="notice neutral">
+                      {currentJob.waitingReason.message}
+                    </p>
+                  )}
+                  {canCancel(currentJob) && (
+                    <div className="case-investigation-cancel">
+                      <button
+                        type="button"
+                        className="secondary"
+                        disabled={
+                          !!cancelling || currentJob.cancellationRequested
+                        }
+                        onClick={() => void cancel(currentJob)}
+                      >
+                        {cancelling === currentJob.id
+                          ? "Requesting cancellation…"
+                          : currentJob.cancellationRequested
+                            ? "Cancellation requested"
+                            : cancelError?.jobId === currentJob.id
+                              ? "Retry cancellation"
+                              : "Cancel investigation"}
+                      </button>
+                      <small>
+                        {currentJob.cancellationRequested
+                          ? "Status updates continue until the worker acknowledges cancellation. No completed answer will be attached to a cancelled question."
+                          : "Cancel this saved question. Its question and evidence history stay available."}
+                      </small>
+                    </div>
+                  )}
+                  {pending(currentJob) &&
+                    cancelError?.jobId === currentJob.id && (
+                      <div className="case-investigation-cancel-error">
+                        <Failure error={cancelError.error} />
+                        <p>
+                          Cancellation is unconfirmed. Refresh status or retry
+                          cancellation for this same job.
+                        </p>
+                        <button
+                          type="button"
+                          className="secondary"
+                          onClick={() => setPollRevision((value) => value + 1)}
+                        >
+                          Refresh cancellation status
+                        </button>
+                      </div>
+                    )}
+                  {currentJob.status === "CANCELLED" && (
+                    <p className="notice neutral">
+                      This investigation was cancelled. Its question and saved
+                      evidence remain available; no completed answer is
+                      attached.
+                    </p>
+                  )}
+                  <SourceSelectionCoverage
+                    selection={
+                      rendered
+                        ? frozenSelection(rendered)
+                        : currentJob.selection
+                    }
                   />
                   {currentJob.evidenceId !== workbench.latestEvidenceId && (
                     <p className="notice neutral">

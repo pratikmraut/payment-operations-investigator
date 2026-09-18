@@ -1,3 +1,4 @@
+import { casePageFixture } from "./testCasePage";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   act,
@@ -101,11 +102,8 @@ function mockApi(options: Options = {}) {
         options.create?.(request, ++creates) ??
         reply({ caseId: saved.id, status: "CREATED", item: saved })
       );
-    if (url === "/api/payment-cases")
-      return reply({
-        items: options.records ?? [],
-        total: options.records?.length ?? 0,
-      });
+    if (url.startsWith("/api/payment-cases?"))
+      return reply(casePageFixture(url, options.records ?? []));
     if (url === "/api/payment-cases/dashboard")
       return reply({
         openCases: options.records?.length ?? 0,
@@ -425,6 +423,7 @@ describe("private payment discovery", () => {
       target: { value: "Assigned high" },
     });
     const region = screen.getByRole("region", { name: "Saved payment cases" });
+    await within(region).findByText("Showing 1–10 of 11 matching cases");
     expect(within(region).getAllByRole("row")).toHaveLength(11);
     expect(
       within(region).getByText("Showing 1–10 of 11 matching cases"),
@@ -436,7 +435,7 @@ describe("private payment discovery", () => {
     fireEvent.change(screen.getByLabelText("Search saved payment cases"), {
       target: { value: "Other low" },
     });
-    expect(within(region).getByText("Owner: Other owner")).toBeVisible();
+    expect(await within(region).findByText("Owner: Other owner")).toBeVisible();
     expect(within(region).getAllByRole("row")).toHaveLength(2);
   });
   it("places management after selected payment and opens a case-scoped report panel on demand", async () => {
@@ -454,7 +453,7 @@ describe("private payment discovery", () => {
       selected.compareDocumentPosition(management) &
         Node.DOCUMENT_POSITION_FOLLOWING,
     ).toBeTruthy();
-    const intake = screen.getByRole("region", { name: "Case evidence" });
+    const intake = await screen.findByRole("region", { name: "Case evidence" });
     expect(
       management.compareDocumentPosition(intake) &
         Node.DOCUMENT_POSITION_FOLLOWING,
@@ -1004,7 +1003,9 @@ describe("private payment discovery", () => {
     );
     await waitFor(() =>
       expect(
-        fetcher.mock.calls.filter(([url]) => url === "/api/payment-cases"),
+        fetcher.mock.calls.filter(([url]) =>
+          url.startsWith("/api/payment-cases?"),
+        ),
       ).toHaveLength(2),
     );
     expect(screen.getByLabelText("Authorized bank")).toHaveValue("808");
@@ -1448,13 +1449,36 @@ describe("private payment discovery", () => {
       screen.queryByRole("button", { name: "Demo cases" }),
     ).not.toBeInTheDocument();
   });
+  it("renders the selected payment with evidence currency while retaining its original amount", async () => {
+    mockApi({
+      caseDetail: {
+        ...saved,
+        evidenceCurrency: {
+          currency: "INR",
+          evidenceId: "EVD-DETAIL",
+          version: 1,
+          sourceKind: "JSON",
+        },
+      },
+    });
+    render(<PaymentCaseDetail caseId={saved.id} onBack={vi.fn()} />);
+    expect(
+      await screen.findByText(`${saved.amount} INR · from evidence v1`),
+    ).toBeVisible();
+    expect(
+      screen.getByText(`${saved.amount} INR · from evidence v1`),
+    ).toHaveAttribute(
+      "title",
+      expect.stringContaining("original discovery amount is unchanged"),
+    );
+  });
   it("shows the saved case and evidence intake without fabricating an assessment", async () => {
     const fetcher = mockApi();
     render(<PaymentCaseDetail caseId={saved.id} onBack={vi.fn()} />);
     await screen.findByRole("heading", { name: "Payment investigation" });
     expect(screen.getByText(saved.reason)).toBeVisible();
     expect(
-      screen.getByText(`${saved.amount} (currency not supplied)`),
+      screen.getByText(`${saved.amount} · Currency not supplied`),
     ).toBeVisible();
     await screen.findByText(
       "No evidence versions have been saved for this case.",

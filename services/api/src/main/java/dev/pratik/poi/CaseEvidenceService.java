@@ -51,6 +51,17 @@ public class CaseEvidenceService {
         (rs,n)->stored(rs.getString(1)),actor.tenantId(),caseId)));
     return result;
   }
+  ObjectNode latest(Actor actor,String caseId) {
+    cases.caseDetail(actor,caseId);
+    var items=db.query("SELECT summary FROM fcr_case_evidence WHERE tenant_id=? AND case_id=? ORDER BY version DESC LIMIT 1",(rs,n)->stored(rs.getString(1)),actor.tenantId(),caseId);
+    return items.isEmpty()?null:items.get(0);
+  }
+  ObjectNode history(Actor actor,String caseId,Map<String,String[]> query) {
+    return new CaseHistoryService(mapper,db,tx,cases).evidence(actor,caseId,query);
+  }
+  ObjectNode summary(Actor actor,String caseId,String snapshotId) {
+    return new CaseHistoryService(mapper,db,tx,cases).evidenceSummary(actor,caseId,snapshotId);
+  }
   ObjectNode detail(Actor actor,String caseId,String snapshotId) {
     cases.caseDetail(actor,caseId);
     List<ObjectNode> found=db.query("SELECT body FROM fcr_case_evidence WHERE tenant_id=? AND case_id=? AND id=?",
@@ -133,11 +144,13 @@ public class CaseEvidenceService {
       ObjectNode summary=snapshot.deepCopy();summary.remove(List.of("payload","upstream"));
       db.update("INSERT INTO fcr_case_evidence(id,tenant_id,case_id,version,created_at,summary,body) VALUES(?,?,?,?,?,?,?)",
           id,actor.tenantId(),caseId,version,now,summary.toString(),snapshot.toString());
+      CaseHistoryIndex.recordEvidence(mapper,db,actor.tenantId(),summary);
       db.update("INSERT INTO fcr_case_evidence_command(tenant_id,actor_id,case_id,idempotency_key,request_hash,snapshot_id) VALUES(?,?,?,?,?,?)",
           actor.tenantId(),actor.id(),caseId,key,requestHash,id);
       boolean any=CaseEvidenceSchema.COLUMNS.keySet().stream().anyMatch(group->normalized.path("sections").path(group).path("rows").size()>0);
       latestCase.put("evidenceStatus",any?"EVIDENCE_ATTACHED":"EMPTY_EVIDENCE_ATTACHED").put("updatedAt",now);
       db.update("UPDATE fcr_payment_case SET body=? WHERE tenant_id=? AND id=?",latestCase.toString(),actor.tenantId(),caseId);
+      cases.refreshSearch(actor.tenantId(),caseId);
       return snapshot;
     });
   }

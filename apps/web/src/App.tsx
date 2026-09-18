@@ -64,6 +64,11 @@ import { CaseKnowledgePage } from "./CaseKnowledgePage";
 import { EvidenceWorkspace } from "./EvidenceWorkspace";
 import { PaymentCaseDetail, PaymentCasesPage } from "./PaymentDiscovery";
 import {
+  confirmUnsavedChanges,
+  installNavigationProtection,
+  writeNavigationHistory,
+} from "./unsavedChanges";
+import {
   canonicalizeWorkspace,
   currentRoute,
   navigateLink,
@@ -325,6 +330,7 @@ export function Login({ onLogin }: { onLogin: (session: Session) => void }) {
 }
 
 export default function App() {
+  useEffect(installNavigationProtection, []);
   const [session, setSession] = useState<Session | null>(null);
   const [booting, setBooting] = useState(true);
   const [bootError, setBootError] = useState<Error | null>(null);
@@ -365,7 +371,7 @@ export default function App() {
         if (window.location.hash || window.location.pathname !== "/") {
           returnDestination.current = workspaceDestination();
         }
-        window.history.replaceState(null, "", "/");
+        writeNavigationHistory("replace", "/", null);
       } else {
         canonicalizeWorkspace();
       }
@@ -391,20 +397,21 @@ export default function App() {
     };
   }, []);
   function login(value: Session) {
-    window.history.replaceState(
-      null,
-      "",
+    writeNavigationHistory(
+      "replace",
       returnDestination.current ?? "/cases",
+      null,
     );
     returnDestination.current = null;
     setRoute(currentRoute());
     setSession(value);
   }
   async function logout() {
+    if (!confirmUnsavedChanges()) return;
     try {
       await api("/auth/logout", { method: "POST" });
       returnDestination.current = null;
-      window.history.replaceState(null, "", "/");
+      writeNavigationHistory("replace", "/", null);
       setRoute(currentRoute());
       setCsrfToken(null);
       setSession(null);
@@ -482,7 +489,6 @@ export default function App() {
           >
             <FolderKanban size={19} />
             Case queue
-            <span className="nav-current" />
           </a>
           <a
             className={route.page === "evidences" ? "active" : ""}

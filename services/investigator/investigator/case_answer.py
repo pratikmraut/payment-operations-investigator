@@ -249,7 +249,8 @@ class CaseAnswerEngine(UatAnswerEngine):
     def _schema(self, documents):
         return case_schema([d.id for d in documents], [d.id for d in documents if d.kind == "evidence" and ROW_ID.fullmatch(d.id)])
 
-    def _generate(self, state):
+    def _generation_request(self, state):
+        """Pure serialization shared by generation and the case readiness check."""
         request = state["request"]
         documents = state["documents"]
         payload = {"snapshotId": request.snapshotId, "evidenceHash": request.evidenceHash,
@@ -262,7 +263,11 @@ class CaseAnswerEngine(UatAnswerEngine):
         complete = json.dumps({"messages": [{"role": "system", "content": system_prompt},
                                               {"role": "user", "content": serialized}], "format": schema},
                               ensure_ascii=False, separators=(",", ":"))
-        if len(complete.encode("utf-8")) + self.settings.uat_output_tokens + 512 > self.settings.uat_context_tokens:
+        return system_prompt, schema, serialized, len(complete.encode("utf-8"))
+
+    def _generate(self, state):
+        system_prompt, schema, serialized, input_bytes = self._generation_request(state)
+        if input_bytes + self.settings.uat_output_tokens + 512 > self.settings.uat_context_tokens:
             raise InvalidModelResult("The selected case exceeds the conservative model context budget. No rows were dropped and no model call was made.")
         started = perf_counter()
         try:

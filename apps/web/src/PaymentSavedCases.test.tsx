@@ -8,6 +8,7 @@ import {
 } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { PaymentCasesPage, type PaymentCase } from "./PaymentDiscovery";
+import { casePageFixture } from "./testCasePage";
 import type { User } from "./types";
 
 const user: User = {
@@ -53,14 +54,7 @@ function mockSavedCases(initialRecords = fixtures) {
       url === "/api/payment-cases" ||
       url.startsWith("/api/payment-cases?lifecycle=")
     ) {
-      const state =
-        new URL(url, "http://localhost").searchParams.get("lifecycle") ??
-        "ACTIVE";
-      const matching = records.filter(
-        (item) =>
-          state === "ALL" || (item.lifecycleState ?? "ACTIVE") === state,
-      );
-      payload = { items: matching, total: matching.length };
+      payload = casePageFixture(url, records, user.id);
     } else if (url === "/api/payment-cases/dashboard") {
       payload = {
         openCases: records.length,
@@ -120,6 +114,94 @@ afterEach(() => {
 });
 
 describe("saved payment case search and pagination", () => {
+  it("shows validated evidence currency beside the saved amount without fetching evidence payloads", async () => {
+    const { fetcher } = mockSavedCases([
+      {
+        ...fixtures[0],
+        evidenceCurrency: {
+          currency: "INR",
+          evidenceId: "EVD-QUEUE",
+          version: 2,
+          sourceKind: "EXCEL",
+        },
+      },
+      { ...fixtures[1], evidenceCurrency: { currency: "USD", version: "2" } },
+    ]);
+    render(<PaymentCasesPage user={user} onOpen={vi.fn()} />);
+    const currency = await savedRegion().findByText("INR · from evidence v2");
+    expect(currency.closest("td")).toHaveTextContent(fixtures[0].amount);
+    expect(savedRegion().getByText("Currency not supplied")).toBeVisible();
+    expect(
+      fetcher.mock.calls.some(([url]) => /\/evidence(?:\/|$)/.test(url)),
+    ).toBe(false);
+  });
+  it("requests server sorting and resets the page while preserving search and filters", async () => {
+    const items = fixtures.map((item, index) => ({
+      ...item,
+      caseNumber: `20260917${String(index + 1).padStart(5, "0")}`,
+      priority: index === 22 ? ("CRITICAL" as const) : ("LOW" as const),
+    }));
+    const { fetcher } = mockSavedCases(items);
+    await ready();
+    await userEvent.click(screen.getByRole("button", { name: "Go to page 2" }));
+    await screen.findByText("Page 2 of 3 · 10 per page");
+    fireEvent.change(screen.getByLabelText("Sort cases"), {
+      target: { value: "PRIORITY_DESC" },
+    });
+    await screen.findByText("Page 1 of 3 · 10 per page");
+    expect(savedRegion().getAllByRole("row")[1]).toHaveTextContent(
+      items[22].reference,
+    );
+    const request = new URL(
+      fetcher.mock.calls.at(-1)![0],
+      "http://fixture.test",
+    ).searchParams;
+    expect(request.get("sort")).toBe("PRIORITY_DESC");
+    expect(request.get("page")).toBe("1");
+    expect(request.get("pageSize")).toBe("10");
+    search("pending");
+    await savedRegion().findByText("Showing 1–1 of 1 matching cases");
+    fireEvent.change(screen.getByLabelText("Case visibility"), {
+      target: { value: "ALL" },
+    });
+    await savedRegion().findByText("Showing 1–1 of 1 matching cases");
+    expect(fetcher.mock.calls.at(-1)![0]).toContain("sort=PRIORITY_DESC");
+    expect(fetcher.mock.calls.at(-1)![0]).toContain("search=pending");
+  });
+  it("filters assigned work and operational status together with case search", async () => {
+    mockSavedCases([
+      {
+        ...fixtures[0],
+        owner: { id: user.id, name: user.name },
+        status: "INVESTIGATING",
+      },
+      {
+        ...fixtures[1],
+        owner: { id: "reviewer", name: "Reviewer" },
+        status: "AWAITING_REVIEW",
+      },
+      { ...fixtures[2], status: "RESOLVED" },
+    ]);
+    render(<PaymentCasesPage user={user} onOpen={vi.fn()} />);
+    await savedRegion().findByText(fixtures[0].reference);
+    fireEvent.change(screen.getByLabelText("Work view"), {
+      target: { value: "MINE" },
+    });
+    await waitFor(() => expect(shownCaseIds()).toEqual([fixtures[0].id]));
+    fireEvent.change(screen.getByLabelText("Work view"), {
+      target: { value: "AWAITING_REVIEW" },
+    });
+    await waitFor(() => expect(shownCaseIds()).toEqual([fixtures[1].id]));
+    search("resolved");
+    expect(shownCaseIds()).toEqual([]);
+    fireEvent.change(screen.getByLabelText("Work view"), {
+      target: { value: "RESOLVED" },
+    });
+    await waitFor(() => expect(shownCaseIds()).toEqual([fixtures[2].id]));
+    expect(
+      savedRegion().getByText("Page 1 of 1 · 10 per page"),
+    ).toBeInTheDocument();
+  });
   it("switches active, archived and all cases without losing the search", async () => {
     const archived = { ...fixtures[1], lifecycleState: "ARCHIVED" as const };
     const { fetcher } = mockSavedCases([fixtures[0], archived]);
@@ -139,7 +221,8 @@ describe("saved payment case search and pagination", () => {
     ).toHaveValue("supplied");
     expect(
       fetcher.mock.calls.some(
-        ([url]) => url === "/api/payment-cases?lifecycle=ARCHIVED",
+        ([url]) =>
+          url.includes("lifecycle=ARCHIVED") && url.includes("search=supplied"),
       ),
     ).toBe(true);
     fireEvent.change(screen.getByLabelText("Case visibility"), {
@@ -154,6 +237,7 @@ describe("saved payment case search and pagination", () => {
     render(<PaymentCasesPage user={user} onOpen={vi.fn()} />);
     await savedRegion().findByText(numbered.caseNumber);
     search(numbered.caseNumber);
+    await savedRegion().findByText("Showing 1–1 of 1 matching cases");
     expect(
       savedRegion().getByRole("link", { name: `Open ${numbered.caseNumber}` }),
     ).toHaveAttribute("href", `/payment-cases/${numbered.caseNumber}`);
@@ -171,39 +255,44 @@ describe("saved payment case search and pagination", () => {
   it("presents 23 cases in pages of 10, 10 and 3 with no missing or duplicate records", async () => {
     mockSavedCases();
     await ready();
-    const navigation = within(
-      screen.getByRole("navigation", { name: "Saved cases pagination" }),
-    );
+    const navigation = () =>
+      within(
+        screen.getByRole("navigation", { name: "Saved cases pagination" }),
+      );
     expect(
-      navigation.getByRole("button", { name: "Previous page" }),
+      navigation().getByRole("button", { name: "Previous page" }),
     ).toBeDisabled();
     const firstPage = shownCaseIds();
     expect(firstPage).toEqual(fixtures.slice(0, 10).map((item) => item.id));
 
     await userEvent.click(
-      navigation.getByRole("button", { name: "Next page" }),
+      navigation().getByRole("button", { name: "Next page" }),
     );
-    expect(savedRegion().getByText("Showing 11–20 of 23 cases")).toBeVisible();
+    expect(
+      await savedRegion().findByText("Showing 11–20 of 23 cases"),
+    ).toBeVisible();
     const secondPage = shownCaseIds();
     expect(secondPage).toEqual(fixtures.slice(10, 20).map((item) => item.id));
 
     await userEvent.click(
-      navigation.getByRole("button", { name: "Go to page 3" }),
+      navigation().getByRole("button", { name: "Go to page 3" }),
     );
-    expect(savedRegion().getByText("Showing 21–23 of 23 cases")).toBeVisible();
+    expect(
+      await savedRegion().findByText("Showing 21–23 of 23 cases"),
+    ).toBeVisible();
     const thirdPage = shownCaseIds();
     expect(thirdPage).toEqual(fixtures.slice(20).map((item) => item.id));
     expect(
-      navigation.getByRole("button", { name: "Next page" }),
+      navigation().getByRole("button", { name: "Next page" }),
     ).toBeDisabled();
     const allIds = [...firstPage, ...secondPage, ...thirdPage];
     expect(allIds).toHaveLength(23);
     expect(new Set(allIds).size).toBe(23);
 
     await userEvent.click(
-      navigation.getByRole("button", { name: "Previous page" }),
+      navigation().getByRole("button", { name: "Previous page" }),
     );
-    expect(shownCaseIds()).toEqual(secondPage);
+    await waitFor(() => expect(shownCaseIds()).toEqual(secondPage));
   });
 
   it.each([
@@ -222,9 +311,15 @@ describe("saved payment case search and pagination", () => {
       await ready();
       const requestsBeforeSearch = fetcher.mock.calls.length;
       search(query);
-      expect(shownCaseIds()).toEqual([expectedId]);
-      expect(savedRegion().getByText("23 cases")).toBeVisible();
-      expect(fetcher.mock.calls).toHaveLength(requestsBeforeSearch);
+      await waitFor(() => expect(shownCaseIds()).toEqual([expectedId]));
+      expect(savedRegion().getByText("1 cases")).toBeVisible();
+      expect(fetcher.mock.calls).toHaveLength(requestsBeforeSearch + 1);
+      const querySent = new URL(
+        fetcher.mock.calls.at(-1)![0],
+        "http://fixture.test",
+      ).searchParams;
+      expect(querySent.get("search")).toBe(query.trim());
+      expect(querySent.get("pageSize")).toBe("10");
     },
   );
 
@@ -240,10 +335,12 @@ describe("saved payment case search and pagination", () => {
     ]) {
       search(query);
       expect(
-        savedRegion().getByRole("heading", { name: "No matching cases" }),
+        await savedRegion().findByRole("heading", {
+          name: "No matching cases",
+        }),
       ).toBeVisible();
       expect(shownCaseIds()).toEqual([]);
-      expect(savedRegion().getByText("23 cases")).toBeVisible();
+      expect(savedRegion().getByText("0 cases")).toBeVisible();
     }
     await userEvent.click(
       savedRegion().getByRole("button", { name: "Clear search" }),
@@ -251,10 +348,14 @@ describe("saved payment case search and pagination", () => {
     expect(
       screen.getByRole("searchbox", { name: "Search saved payment cases" }),
     ).toHaveValue("");
-    expect(shownCaseIds()).toEqual(
-      fixtures.slice(0, 10).map((item) => item.id),
+    await waitFor(() =>
+      expect(shownCaseIds()).toEqual(
+        fixtures.slice(0, 10).map((item) => item.id),
+      ),
     );
-    expect(savedRegion().getByText("Showing 1–10 of 23 cases")).toBeVisible();
+    expect(
+      await savedRegion().findByText("Showing 1–10 of 23 cases"),
+    ).toBeVisible();
   });
 
   it("resets to the first page when the query changes or is cleared", async () => {
@@ -263,19 +364,25 @@ describe("saved payment case search and pagination", () => {
     await userEvent.click(screen.getByRole("button", { name: "Go to page 3" }));
     search("review");
     expect(
-      savedRegion().getByText("Showing 1–10 of 22 matching cases"),
+      await savedRegion().findByText("Showing 1–10 of 22 matching cases"),
     ).toBeVisible();
-    expect(shownCaseIds()).toEqual(
-      fixtures.slice(0, 10).map((item) => item.id),
+    await waitFor(() =>
+      expect(shownCaseIds()).toEqual(
+        fixtures.slice(0, 10).map((item) => item.id),
+      ),
     );
 
     await userEvent.click(screen.getByRole("button", { name: "Go to page 2" }));
     await userEvent.click(
       savedRegion().getByRole("button", { name: "Clear search" }),
     );
-    expect(savedRegion().getByText("Showing 1–10 of 23 cases")).toBeVisible();
-    expect(shownCaseIds()).toEqual(
-      fixtures.slice(0, 10).map((item) => item.id),
+    expect(
+      await savedRegion().findByText("Showing 1–10 of 23 cases"),
+    ).toBeVisible();
+    await waitFor(() =>
+      expect(shownCaseIds()).toEqual(
+        fixtures.slice(0, 10).map((item) => item.id),
+      ),
     );
   });
 

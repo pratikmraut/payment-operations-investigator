@@ -19,6 +19,14 @@ import { api, ApiError, date, human } from "./api";
 import { navigateLink } from "./routing";
 import { paymentCaseNumber, paymentCasePath } from "./paymentCaseIdentity";
 import { PaymentWorkflow } from "./PaymentWorkflow";
+import { PaymentAmount } from "./PaymentAmount";
+import {
+  HistoryMore,
+  mergeHistory,
+  validateHistoryPage,
+  type HistoryPage,
+  type HistoryPageMeta,
+} from "./caseHistory";
 import type { User } from "./types";
 import {
   EvidenceProvenance,
@@ -69,6 +77,7 @@ type Item = {
   reason: string;
   amount: string;
   currency: string | null;
+  evidenceCurrency?: unknown;
   updatedAt: string;
   versionCount: number;
   coverageState: CoverageState;
@@ -669,7 +678,7 @@ function LibraryView({ user }: { user: User }) {
                           <summary>Case context</summary>
                           <p>{item.reason}</p>
                           <p>
-                            Source amount: {item.amount} {known(item.currency)}
+                            Source amount: <PaymentAmount item={item} />
                           </p>
                         </details>
                       </td>
@@ -900,6 +909,9 @@ function EvidenceInspector({
 }) {
   const base = `/payment-cases/${encodeURIComponent(item.caseId)}/evidence`;
   const [versions, setVersions] = useState<Summary[]>([]);
+  const [versionPage, setVersionPage] = useState<HistoryPageMeta>();
+  const [latestId, setLatestId] = useState<string | null>(null);
+  const selectedRef = useRef("");
   const [selected, setSelected] = useState("");
   const [snapshot, setSnapshot] = useState<Snapshot | null>(null);
   const [group, setGroup] = useState<Group>("PAYMENT");
@@ -911,23 +923,41 @@ function EvidenceInspector({
   const [snapshotError, setSnapshotError] = useState<Error | null>(null);
   const [revision, setRevision] = useState(0);
   const [snapshotRevision, setSnapshotRevision] = useState(0);
+  selectedRef.current = selected;
   useEffect(() => {
     const controller = new AbortController();
     setLoading(true);
     setError(null);
     setSnapshot(null);
-    read<{ items: Summary[] }>(base, controller.signal)
-      .then((result) => {
+    read<HistoryPage<Summary>>(base, controller.signal)
+      .then(async (result) => {
         if (controller.signal.aborted) return;
-        if (!Array.isArray(result?.items))
-          throw new Error("The saved evidence versions could not be read.");
-        result.items.forEach((value) => validateSummary(value, item.caseId));
-        setVersions(result.items);
-        setSelected(
-          result.items.some((value) => value.id === item.latestEvidence?.id)
-            ? item.latestEvidence!.id
-            : (result.items[0]?.id ?? ""),
+        validateHistoryPage(result, item.caseId, (value) =>
+          validateSummary(value, item.caseId),
         );
+        const desired =
+          selectedRef.current ||
+          item.latestEvidence?.id ||
+          result.items[0]?.id ||
+          "";
+        let listed = result.items;
+        if (desired && !listed.some((value) => value.id === desired)) {
+          const pinned = await read<Summary>(
+            `${base}/${encodeURIComponent(desired)}/summary`,
+            controller.signal,
+          );
+          validateSummary(pinned, item.caseId);
+          if (pinned.id !== desired)
+            throw new Error(
+              "The selected evidence summary belongs to another version.",
+            );
+          listed = [...listed, pinned].sort((a, b) => b.version - a.version);
+        }
+        if (controller.signal.aborted) return;
+        setVersions(listed);
+        setVersionPage(result);
+        setLatestId(result.items[0]?.id ?? null);
+        setSelected(desired);
       })
       .catch((failure: Error) => {
         if (!controller.signal.aborted) setError(failure);
@@ -937,6 +967,7 @@ function EvidenceInspector({
       });
     return () => controller.abort();
   }, [base, item.caseId, revision]);
+  const expected = versions.find((version) => version.id === selected);
   useEffect(() => {
     const controller = new AbortController();
     setSnapshot(null);
@@ -944,7 +975,6 @@ function EvidenceInspector({
     setGroup("PAYMENT");
     setRowIndex(0);
     setFieldSearch("");
-    const expected = versions.find((version) => version.id === selected);
     if (!expected) {
       setSnapshotLoading(false);
       return () => controller.abort();
@@ -963,7 +993,7 @@ function EvidenceInspector({
         if (!controller.signal.aborted) setSnapshotLoading(false);
       });
     return () => controller.abort();
-  }, [base, item.caseId, selected, versions, snapshotRevision]);
+  }, [base, item.caseId, selected, expected, snapshotRevision]);
   const rows = snapshot?.payload.sections[group].rows ?? [];
   const fields = Object.entries(rows[rowIndex] ?? {});
   const matchingFields = fields.filter(([key, value]) =>
@@ -1035,6 +1065,24 @@ function EvidenceInspector({
               </option>
             ))}
           </select>
+          <HistoryMore<Summary>
+            key={`${base}:${revision}`}
+            caseId={item.caseId}
+            path={base}
+            page={versionPage}
+            loaded={versions.length}
+            label="evidence versions"
+            validate={(value) => validateSummary(value, item.caseId)}
+            onPage={(value) => {
+              setVersions((previous) =>
+                mergeHistory(previous, value.items).sort(
+                  (a, b) => b.version - a.version,
+                ),
+              );
+              setVersionPage(value);
+            }}
+            onRefresh={() => setRevision((value) => value + 1)}
+          />
           {snapshotLoading && (
             <p role="status">
               <LoaderCircle className="spin" size={16} /> Loading selected
@@ -1097,7 +1145,7 @@ function EvidenceInspector({
                   <dd>{snapshot.payload.sourceTimezone}</dd>
                 </div>
               </dl>
-              {snapshot.id !== versions[0]?.id && (
+              {snapshot.id !== latestId && (
                 <p className="notice neutral">
                   You are inspecting an earlier immutable version. Its records
                   are preserved separately from the latest version.

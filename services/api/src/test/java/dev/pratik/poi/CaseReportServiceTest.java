@@ -327,4 +327,90 @@ class CaseReportServiceTest {
       assertThat(count()).isEqualTo(1);
     } finally { pool.shutdownNow(); }
   }
+
+  @Test void historyReturnsBoundedFrozenMetadataAndLegacyDetailedModeWithoutSourceBodies() {
+    ObjectNode first = preview(true);
+    // Simulate a historical report from before case numbers and reportMode were added.
+    assertThat(first.path("case").has("caseNumber")).isFalse();
+    caseItem.put("caseNumber", "2026091600001");
+    managed.put("priority", "HIGH");
+    job.put("question", "A later question must not rewrite an earlier report.");
+    ObjectNode second = service.preview(viewer, caseId, bytes(selection(false).put("reportMode", "SUMMARY")), "newer-history-report");
+    String tiedTime = "2026-09-16T10:00:00Z";
+    db.update("UPDATE fcr_case_report SET created_at=?", tiedTime);
+    List<ObjectNode> ordered = new ArrayList<>(List.of(first, second));
+    ordered.sort(Comparator.comparing((ObjectNode report) -> report.path("reportId").asText()).reversed());
+    clearInvocations(evidence, investigations, management, pdf);
+    ObjectNode page = service.history(viewer, caseId, 1, null);
+    assertThat(page.path("schemaVersion").asText()).isEqualTo("payment-case-report-history-v1");
+    assertThat(page.path("caseId").asText()).isEqualTo(caseId);
+    assertThat(page.path("items")).hasSize(1);
+    assertThat(page.path("items").get(0).path("reportId")).isEqualTo(ordered.get(0).path("reportId"));
+    assertThat(page.path("nextCursor")).isEqualTo(ordered.get(0).path("reportId"));
+    ObjectNode next = service.history(viewer, caseId, 1, page.path("nextCursor").asText());
+    assertThat(next.path("items")).hasSize(1);
+    assertThat(next.path("items").get(0).path("reportId")).isEqualTo(ordered.get(1).path("reportId"));
+    assertThat(next.path("nextCursor").isNull()).isTrue();
+    ObjectNode all = service.history(viewer, caseId, 25, null);
+    JsonNode original = all.path("items").findParents("reportId").stream()
+        .filter(item -> item.path("reportId").equals(first.path("reportId"))).findFirst().orElseThrow();
+    assertThat(original.path("reportMode").asText()).isEqualTo("DETAILED");
+    assertThat(original.path("caseNumber").isNull()).isTrue();
+    assertThat(original.path("generatedBy")).isEqualTo(first.path("generatedBy"));
+    assertThat(original.path("investigations").get(0).path("question").asText()).isEqualTo("What does the amount show?");
+    assertThat(original.path("reviewStatus").asText()).isEqualTo("PENDING");
+    assertThat(original.path("includeEvidenceRows").asBoolean()).isTrue();
+    assertThat(original.path("evidence").path("version").asInt()).isEqualTo(1);
+    assertThat(all.toString()).doesNotContain("citations", "NUMAMOUNT_4038", "management", "payload", "answer", "evidenceHash");
+    assertThat(service.frozen(viewer, caseId, bytes(download(first)))).isEqualTo(first);
+    verifyNoInteractions(evidence, investigations, management, pdf);
+    assertThat(count()).isEqualTo(2);
+  }
+
+  @Test void historyScopeLimitsCursorAndDeletedCaseAreCheckedButArchivedReportsRemainReadable() {
+    ObjectNode report = preview(false);
+    status(404, () -> service.history(other, caseId, 10, null));
+    status(404, () -> service.history(viewer, "FCR-OTHER", 10, null));
+    status(404, () -> service.history(viewer, caseId, 10, "RPT-NONEXISTENT"));
+    status(422, () -> service.history(viewer, caseId, 0, null));
+    status(422, () -> service.history(viewer, caseId, 26, null));
+    status(422, () -> service.history(viewer, caseId, 10, "invalid cursor"));
+    caseItem.putObject("lifecycle").put("state", "ARCHIVED");
+    assertThat(service.history(viewer, caseId, 10, null).path("items")).hasSize(1);
+    assertThat(service.frozen(viewer, caseId, bytes(download(report)))).isEqualTo(report);
+    when(cases.caseDetail(eq(viewer), eq(caseId))).thenThrow(ApiException.notFound());
+    status(404, () -> service.history(viewer, caseId, 10, null));
+    status(404, () -> service.frozen(viewer, caseId, bytes(download(report))));
+  }
+
+  @Test void historyOrdersInstantsChronologicallyAcrossDifferentFractionalPrecision() {
+    ObjectNode first = preview(false);
+    ObjectNode second = service.preview(viewer, caseId, bytes(selection(false)), "fractional-history-report");
+    db.update("UPDATE fcr_case_report SET created_at=? WHERE id=?", "2026-09-16T10:00:00Z", first.path("reportId").asText());
+    db.update("UPDATE fcr_case_report SET created_at=? WHERE id=?", "2026-09-16T10:00:00.001Z", second.path("reportId").asText());
+    ObjectNode page = service.history(viewer, caseId, 1, null);
+    assertThat(page.path("items").get(0).path("reportId")).isEqualTo(second.path("reportId"));
+    assertThat(service.history(viewer, caseId, 1, page.path("nextCursor").asText()).path("items").get(0).path("reportId"))
+        .isEqualTo(first.path("reportId"));
+  }
+
+  @Test void historyVerifiesStoredIntegrityRatherThanExposingAlteredMetadata() {
+    ObjectNode report = preview(false);
+    report.put("generatedAt", "2020-01-01T00:00:00Z");
+    db.update("UPDATE fcr_case_report SET body=?", report.toString());
+    status(503, () -> service.history(viewer, caseId, 10, null));
+  }
+
+  @Test void evidenceOnlyReviewMatchesOnlyTheExactEmptyQuestionSelection() {
+    ObjectNode conclusion = managed.withArray("reviewerConclusions").addObject().put("id", "REV-EVIDENCE-ONLY")
+        .put("status", "RECORDED").put("evidenceId", snapshot.path("id").asText())
+        .put("evidenceHash", snapshot.path("evidenceHash").asText()).put("createdAt", "2026-09-16T10:00:00Z")
+        .put("conclusion", "Reviewed source records directly; no AI answer was required.");
+    conclusion.putArray("investigationIds");
+    ObjectNode request = selection(false); request.withArray("investigationIds").removeAll();
+    ObjectNode report = service.preview(viewer, caseId, bytes(request), "evidence-only-review-report");
+    assertThat(report.path("review").path("status").asText()).isEqualTo("RECORDED");
+    assertThat(report.path("review").path("conclusion")).isEqualTo(conclusion);
+    assertThat(preview(false).path("review").path("status").asText()).isEqualTo("PENDING");
+  }
 }

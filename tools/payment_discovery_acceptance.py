@@ -151,8 +151,10 @@ def main():
     passed("API lookup does not substitute loaded Excel; concurrent selected-row creation reuses one case")
 
     listed = analyst.request("GET", "/api/payment-cases")
-    assert opened["caseId"] in {c["id"] for c in listed["items"]}
-    assert opened_parallel[0]["caseId"] in {c["id"] for c in listed["items"]}
+    assert listed["pageSize"] == 10 and len(listed["items"]) <= 10
+    for case_id in (opened["caseId"], opened_parallel[0]["caseId"]):
+        found = analyst.request("GET", "/api/payment-cases?search=" + case_id)
+        assert found["total"] == 1 and found["items"][0]["id"] == case_id
     original_cases = analyst.request("GET", "/api/cases")["items"]
     assert opened["caseId"] not in {c["id"] for c in original_cases}
     passed("new payment cases persist separately from original demo cases")

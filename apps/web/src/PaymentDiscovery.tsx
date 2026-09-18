@@ -27,6 +27,19 @@ import { CaseEvidence } from "./CaseEvidence";
 import { CaseInvestigation } from "./CaseInvestigation";
 import { CaseManagement } from "./CaseManagement";
 import { CaseReport } from "./CaseReport";
+import { PaymentAmount } from "./PaymentAmount";
+import {
+  CASE_SORTS,
+  caseListPath,
+  isRecord,
+  isSavedPaymentCase,
+  validateCasePage,
+  useCaseRead,
+  useCaseSearch,
+  type CaseSort,
+  type CaseWork,
+} from "./paymentCaseList";
+import { EvidenceRequestQueue } from "./EvidenceRequestQueue";
 import { CasePageNavigation } from "./CasePageNavigation";
 import { navigateLink, navigateTo, replaceDestination } from "./routing";
 import { paymentCaseNumber, paymentCasePath } from "./paymentCaseIdentity";
@@ -71,12 +84,18 @@ export type DiscoveryBatch = {
   warnings: string[];
 };
 export type PaymentCase = PaymentCandidate & {
+  evidenceCurrency?: unknown;
   id: string;
   caseNumber?: string;
   lifecycleState?: CaseLifecycleState;
   lifecycleVersion?: number;
   reason: string;
-  status: "OPEN";
+  status:
+    | "OPEN"
+    | "INVESTIGATING"
+    | "AWAITING_EVIDENCE"
+    | "AWAITING_REVIEW"
+    | "RESOLVED";
   priority: "LOW" | "MEDIUM" | "HIGH" | "CRITICAL";
   owner?: { id: string; name: string } | null;
   managementVersion?: number;
@@ -194,6 +213,28 @@ function Provenance({
   );
 }
 
+function validateSavedCasePage(value: unknown) {
+  return validateCasePage<PaymentCase>(
+    value,
+    (item): item is PaymentCase =>
+      isRecord(item) &&
+      [
+        "priority",
+        "status",
+        "createdAt",
+        "updatedAt",
+        "sourceKind",
+        "dataClassification",
+      ].every((key) => typeof item[key] === "string") &&
+      (item.owner === undefined ||
+        item.owner === null ||
+        (isRecord(item.owner) &&
+          typeof item.owner.id === "string" &&
+          typeof item.owner.name === "string")) &&
+      isSavedPaymentCase(item),
+  );
+}
+
 export function PaymentCasesPage({
   user,
   onOpen,
@@ -203,49 +244,36 @@ export function PaymentCasesPage({
 }) {
   const [revision, setRevision] = useState(0);
   const [search, setSearch] = useState("");
+  const [workView, setWorkView] = useState<CaseWork>("ALL");
+  const [sort, setSort] = useState<CaseSort>("CREATED_DESC");
   const [page, setPage] = useState(1);
   const [lifecycle, setLifecycle] = useState<CaseLifecycleState | "ALL">(
     "ACTIVE",
   );
-  const records = useRead<{ items: PaymentCase[]; total: number }>(
-    lifecycle === "ACTIVE"
-      ? "/payment-cases"
-      : `/payment-cases?lifecycle=${lifecycle}`,
+  const { debounced, pending } = useCaseSearch(search);
+  const records = useCaseRead(
+    caseListPath({
+      lifecycle,
+      search: debounced,
+      work: workView,
+      page,
+      pageSize: SAVED_CASES_PAGE_SIZE,
+      sort,
+    }),
+    validateSavedCasePage,
     revision,
+    !pending,
   );
   const dashboard = useRead<Counts>("/payment-cases/dashboard", revision);
   const refresh = () => {
     setPage(1);
     setRevision((value) => value + 1);
   };
-  const filteredCases = useMemo(() => {
-    const terms = search.trim().toLowerCase().split(/\s+/).filter(Boolean);
-    return (records.data?.items ?? []).filter((item) => {
-      const fields = [
-        item.id,
-        item.caseNumber ?? "",
-        item.reference,
-        item.utr ?? "",
-        item.reason,
-        item.owner?.name ?? "",
-        item.owner?.id ?? "",
-        item.priority,
-      ].map((value) => value.toLowerCase());
-      return terms.every((term) =>
-        fields.some((value) => value.includes(term)),
-      );
-    });
-  }, [records.data, search]);
-  const pageCount = Math.max(
-    1,
-    Math.ceil(filteredCases.length / SAVED_CASES_PAGE_SIZE),
-  );
-  const currentPage = Math.min(page, pageCount);
+  const total = records.data?.total ?? 0;
+  const pageCount = records.data?.totalPages ?? 1;
+  const currentPage = records.data?.page ?? page;
   const offset = (currentPage - 1) * SAVED_CASES_PAGE_SIZE;
-  const visibleCases = filteredCases.slice(
-    offset,
-    offset + SAVED_CASES_PAGE_SIZE,
-  );
+  const visibleCases = records.data?.items ?? [];
   const firstPageButton = Math.max(1, Math.min(currentPage - 2, pageCount - 4));
   const pageButtons = Array.from(
     { length: Math.min(5, pageCount) },
@@ -340,6 +368,24 @@ export function PaymentCasesPage({
         </p>
         <div className="payment-saved-toolbar">
           <label className="payment-lifecycle-filter">
+            Work view
+            <select
+              value={workView}
+              onChange={(event) => {
+                setWorkView(event.target.value as CaseWork);
+                setPage(1);
+              }}
+            >
+              <option value="ALL">All saved cases</option>
+              <option value="MINE">Assigned to me</option>
+              <option value="OPEN">Open</option>
+              <option value="INVESTIGATING">Investigating</option>
+              <option value="AWAITING_EVIDENCE">Awaiting evidence</option>
+              <option value="AWAITING_REVIEW">Awaiting review</option>
+              <option value="RESOLVED">Resolved</option>
+            </select>
+          </label>
+          <label className="payment-lifecycle-filter">
             Case visibility
             <select
               value={lifecycle}
@@ -353,6 +399,22 @@ export function PaymentCasesPage({
               <option value="ALL">All cases</option>
             </select>
           </label>
+          <label className="payment-lifecycle-filter">
+            Sort cases
+            <select
+              value={sort}
+              onChange={(event) => {
+                setSort(event.target.value as CaseSort);
+                setPage(1);
+              }}
+            >
+              {Object.entries(CASE_SORTS).map(([value, label]) => (
+                <option key={value} value={value}>
+                  {label}
+                </option>
+              ))}
+            </select>
+          </label>
           <div className="payment-saved-search">
             <label htmlFor="saved-case-search">
               Search saved payment cases
@@ -362,6 +424,7 @@ export function PaymentCasesPage({
               <input
                 id="saved-case-search"
                 type="search"
+                maxLength={200}
                 placeholder="Case number, payment reference, reason or owner…"
                 value={search}
                 onChange={(event) => changeSearch(event.target.value)}
@@ -379,13 +442,13 @@ export function PaymentCasesPage({
             </div>
             <small id="saved-case-search-help">
               Matches case number, payment reference, UTR, investigation reason,
-              owner or priority.
+              owner, priority or case status.
             </small>
           </div>
           {records.data && !records.error && (
             <p className="payment-saved-count" role="status" aria-live="polite">
-              {filteredCases.length
-                ? `Showing ${offset + 1}–${Math.min(offset + SAVED_CASES_PAGE_SIZE, filteredCases.length)} of ${filteredCases.length} ${search.trim() ? "matching cases" : "cases"}`
+              {total
+                ? `Showing ${offset + 1}–${Math.min(offset + SAVED_CASES_PAGE_SIZE, total)} of ${total} ${search.trim() ? "matching cases" : "cases"}`
                 : search.trim()
                   ? "0 matching cases"
                   : "0 cases"}
@@ -396,7 +459,7 @@ export function PaymentCasesPage({
           <Failure error={records.error} retry={refresh} />
         ) : records.loading ? (
           <Pending>Loading saved payment cases…</Pending>
-        ) : !records.data?.items.length ? (
+        ) : !total && !search.trim() && workView === "ALL" ? (
           <div className="empty">
             <Database size={28} />
             <h3>
@@ -412,7 +475,7 @@ export function PaymentCasesPage({
                 : "Use Find payment above, select a result and provide an investigation reason to open a case. Select Archived cases to find a case to restore."}
             </p>
           </div>
-        ) : !filteredCases.length ? (
+        ) : !total ? (
           <div className="empty">
             <Search size={28} />
             <h3>No matching cases</h3>
@@ -423,7 +486,10 @@ export function PaymentCasesPage({
             <button
               className="secondary"
               type="button"
-              onClick={() => changeSearch("")}
+              onClick={() => {
+                changeSearch("");
+                setWorkView("ALL");
+              }}
             >
               Show all cases
             </button>
@@ -472,7 +538,7 @@ export function PaymentCasesPage({
                         <small>Branch {item.orgBranch}</small>
                       </td>
                       <td className="amount" data-label="Source amount">
-                        <Amount item={item} />
+                        <PaymentAmount item={item} stacked />
                       </td>
                       <td
                         className="payment-reason-cell"
@@ -597,6 +663,7 @@ export function PaymentCasesPage({
           </>
         )}
       </section>
+      <EvidenceRequestQueue revision={revision} />
     </div>
   );
 }
@@ -1489,10 +1556,7 @@ export function PaymentCaseDetail({
                 ["UTR", item.utr || "Not supplied"],
                 ["Organization bank", item.orgBank],
                 ["Organization branch", item.orgBranch],
-                [
-                  "Source amount",
-                  `${item.amount} ${item.currency || "(currency not supplied)"}`,
-                ],
+                ["Source amount", <PaymentAmount item={item} />],
                 ["Initiated at (as supplied)", item.initiatedAt],
                 [
                   "Host subsequences",
@@ -1508,7 +1572,7 @@ export function PaymentCaseDetail({
                 ["Case owner", item.owner?.name ?? "Unassigned"],
                 ["Evidence availability", human(item.evidenceStatus)],
               ].map(([label, value]) => (
-                <div key={label}>
+                <div key={String(label)}>
                   <dt>{label}</dt>
                   <dd>{value}</dd>
                 </div>
@@ -1531,8 +1595,9 @@ export function PaymentCaseDetail({
           />
           <CaseEvidence
             caseId={item.id}
-            canWrite={canWrite && !archived}
+            canWrite={canWrite && !archived && item.status !== "RESOLVED"}
             archived={archived}
+            resolved={item.status === "RESOLVED"}
             onSaved={() => {
               setRevision((value) => value + 1);
               setEvidenceRevision((value) => value + 1);
@@ -1540,9 +1605,11 @@ export function PaymentCaseDetail({
           />
           <CaseInvestigation
             caseId={item.id}
+            user={user}
             caseNumber={item.caseNumber}
-            canWrite={canWrite && !archived}
+            canWrite={canWrite && !archived && item.status !== "RESOLVED"}
             archived={archived}
+            resolved={item.status === "RESOLVED"}
             evidenceRevision={evidenceRevision}
           />
         </>

@@ -1,5 +1,11 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import {
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within,
+} from "@testing-library/react";
 import { CaseReport } from "./CaseReport";
 import { setCsrfToken } from "./api";
 
@@ -79,10 +85,21 @@ function mock(
     work?: unknown;
     generate?: (scope: Scope, request: RequestInit) => Promise<Response>;
     pdf?: () => Promise<Response>;
+    history?: (url: string) => Promise<Response>;
   } = {},
 ) {
   const fetcher = vi.fn((url: string, request: RequestInit) => {
     if (url.endsWith("/workbench")) return json(options.work ?? workbench);
+    if (url.includes("/reports?"))
+      return (
+        options.history?.(url) ??
+        json({
+          schemaVersion: "payment-case-report-history-v1",
+          caseId: "PC-1",
+          items: [],
+          nextCursor: null,
+        })
+      );
     if (url.endsWith("/report-preview")) {
       const scope = JSON.parse(request.body as string);
       return options.generate?.(scope, request) ?? json(preview(scope));
@@ -116,6 +133,143 @@ afterEach(() => {
 });
 
 describe("frozen payment case reports", () => {
+  const saved = (id = "RPT-OLD") => ({
+    reportId: id,
+    reportHash: "a".repeat(64),
+    generatedAt: "2026-09-14T09:00:00Z",
+    generatedBy: {
+      id: "reviewer",
+      name: "Independent reviewer",
+      role: "REVIEWER",
+    },
+    caseNumber: null,
+    reportMode: "DETAILED",
+    includeEvidenceRows: true,
+    reviewStatus: "RECORDED",
+    evidence: { id: "EV-1", version: 1, sourceKind: "JSON" },
+    investigations: [
+      {
+        id: "JOB-OLD",
+        question: "Original frozen question",
+        status: "COMPLETED",
+        evidenceVersion: 1,
+      },
+    ],
+  });
+  const history = (items = [saved()], nextCursor: string | null = null) => ({
+    schemaVersion: "payment-case-report-history-v1",
+    caseId: "PC-1",
+    items,
+    nextCursor,
+  });
+  it("lists frozen report metadata and downloads its saved fingerprint without creating a new preview", async () => {
+    const fetcher = mock({ history: () => json(history()) });
+    vi.stubGlobal("URL", {
+      createObjectURL: vi.fn(() => "blob:saved-report"),
+      revokeObjectURL: vi.fn(),
+    });
+    const click = vi
+      .spyOn(HTMLAnchorElement.prototype, "click")
+      .mockImplementation(() => {});
+    await page();
+    const card = await screen.findByRole("article", {
+      name: "Saved report RPT-OLD",
+    });
+    expect(within(card).getByText(/Independent reviewer/)).toBeVisible();
+    expect(within(card).getByText(/Evidence version 1 · Json/)).toBeVisible();
+    expect(within(card).getByText(/Recorded for this snapshot/)).toBeVisible();
+    fireEvent.click(within(card).getByText("1 saved question"));
+    expect(within(card).getByText("Original frozen question")).toBeVisible();
+    fireEvent.click(
+      within(card).getByRole("button", {
+        name: "Download saved report RPT-OLD",
+      }),
+    );
+    await waitFor(() => expect(click).toHaveBeenCalledOnce());
+    expect(
+      JSON.parse(requests(fetcher, "/report.pdf")[0][1].body as string),
+    ).toEqual({ reportId: "RPT-OLD", reportHash: "a".repeat(64) });
+    expect(requests(fetcher, "/report-preview")).toHaveLength(0);
+  });
+  it("loads additional metadata pages and refreshes history without resetting report choices", async () => {
+    const fetcher = mock({
+      history: (url) =>
+        json(
+          url.includes("cursor=RPT-OLD")
+            ? history([saved("RPT-OLDER")])
+            : history([saved()], "RPT-OLD"),
+        ),
+    });
+    await page();
+    fireEvent.change(screen.getByLabelText("Report evidence version"), {
+      target: { value: "EV-1" },
+    });
+    fireEvent.click(
+      await screen.findByRole("button", { name: "Load more saved reports" }),
+    );
+    expect(
+      await screen.findByRole("article", { name: "Saved report RPT-OLDER" }),
+    ).toBeVisible();
+    expect(screen.getAllByRole("article")).toHaveLength(2);
+    expect(
+      screen.queryByRole("button", { name: "Load more saved reports" }),
+    ).not.toBeInTheDocument();
+    fireEvent.click(
+      screen.getByRole("button", { name: "Refresh saved reports" }),
+    );
+    await waitFor(() => expect(screen.getAllByRole("article")).toHaveLength(1));
+    expect(screen.getByLabelText("Report evidence version")).toHaveValue(
+      "EV-1",
+    );
+    expect(
+      fetcher.mock.calls
+        .filter(([url]) => url.includes("/reports?"))
+        .map(([url]) => url),
+    ).toEqual([
+      "/api/payment-cases/PC-1/reports?limit=10",
+      "/api/payment-cases/PC-1/reports?limit=10&cursor=RPT-OLD",
+      "/api/payment-cases/PC-1/reports?limit=10",
+    ]);
+  });
+  it("rejects mismatched history without exposing it and can retry without blocking a new report", async () => {
+    let failed = true;
+    mock({
+      history: () =>
+        json({ ...history(), caseId: failed ? "ANOTHER-CASE" : "PC-1" }),
+    });
+    await page();
+    expect(
+      await screen.findByText(/Saved report history could not be read/),
+    ).toBeVisible();
+    expect(screen.queryByRole("article")).not.toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Preview report" }),
+    ).toBeEnabled();
+    failed = false;
+    fireEvent.click(
+      screen.getByRole("button", { name: "Refresh saved reports" }),
+    );
+    expect(
+      await screen.findByRole("article", { name: "Saved report RPT-OLD" }),
+    ).toBeVisible();
+  });
+  it("refreshes saved reports after an explicit preview has been saved", async () => {
+    let created = false;
+    const fetcher = mock({
+      history: () => json(history(created ? [saved("RPT-1")] : [])),
+      generate: (scope) => {
+        created = true;
+        return json(preview(scope));
+      },
+    });
+    await page();
+    expect(await screen.findByText(/No saved reports yet/)).toBeVisible();
+    fireEvent.click(screen.getByRole("button", { name: "Preview report" }));
+    expect(
+      await screen.findByRole("article", { name: "Saved report RPT-1" }),
+    ).toBeVisible();
+    expect(requests(fetcher, "/report-preview")).toHaveLength(1);
+  });
   it("shows the frozen case number while validating the internal case identity", async () => {
     mock({
       generate: (scope) => {

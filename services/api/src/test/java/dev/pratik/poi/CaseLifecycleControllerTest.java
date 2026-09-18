@@ -96,7 +96,7 @@ class CaseLifecycleControllerTest {
         .contentType("application/json").content(bytes(request(0)))).andExpect(status().isForbidden());
     mvc.perform(post(base+"/archive").with(user("other")).with(csrf().asHeader()).header("Idempotency-Key","other-archive-key")
         .contentType("application/json").content(bytes(request(0)))).andExpect(status().isNotFound());
-    mvc.perform(get("/api/payment-cases?lifecycle=DELETED").with(user("analyst"))).andExpect(status().isUnprocessableEntity());
+    mvc.perform(get("/api/payment-cases?lifecycle=DELETED").with(user("analyst"))).andExpect(status().isBadRequest());
     mvc.perform(get(base+"/lifecycle").with(user("analyst"))).andExpect(status().isOk())
         .andExpect(jsonPath("$.state").value("ACTIVE")).andExpect(jsonPath("$.version").value(0));
   }

@@ -248,6 +248,7 @@ class PaymentDiscoveryServiceTest {
     var result=service.createCase(analyst,bytes(command(candidate,"Review")),"dashboard");
     ObjectNode item=(ObjectNode)result.path("item");item.put("status","AWAITING_REVIEW").put("priority","HIGH");
     db.update("UPDATE fcr_payment_case SET body=? WHERE id=?",item.toString(),item.path("id").asText());
+    service.rebuildSearch(); // Explicit fixture repair; public reads do not reconcile stored records.
     JsonNode dashboard=service.dashboard(analyst);assertThat(dashboard.path("openCases").asInt()).isEqualTo(1);assertThat(dashboard.path("awaitingReview").asInt()).isEqualTo(1);assertThat(dashboard.path("highPriorityCases").asInt()).isEqualTo(1);
     assertThat(service.dashboard(other).path("awaitingReview").asInt()).isZero();
   }

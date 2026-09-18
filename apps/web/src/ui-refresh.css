@@ -419,10 +419,6 @@ summary:focus-visible {
 .sidebar button:focus-visible {
   outline-color: #9ac7ff;
 }
-.sidebar .nav-current {
-  margin-left: auto;
-  background: #9ec8ff;
-}
 .environment-card {
   background: #162b46;
   border: 1px solid #304665;
@@ -933,8 +929,7 @@ summary:focus-visible {
       .workspace-label,
       .workspace-switch,
       .nav-label,
-      .environment-card,
-      .nav-current
+      .environment-card
     ) {
     display: none;
   }

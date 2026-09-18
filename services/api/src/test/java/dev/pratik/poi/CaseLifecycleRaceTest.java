@@ -107,11 +107,11 @@ class CaseLifecycleRaceTest {
     }finally{release.countDown();pool.shutdownNow();}
   }
 
-  @Test void questionPreparationMustRecheckArchiveBeforeInsertingAJob()throws Exception {
+  @Test void questionReadinessMustRecheckArchiveBeforeInsertingAJob()throws Exception {
     var prepared=new CountDownLatch(1);var release=new CountDownLatch(1);var pool=Executors.newSingleThreadExecutor();
     var projection=spy(new CaseEvidenceProjection(mapper,""));var worker=mock(UatWorkerClient.class);var queue=new HoldingExecutor();
     doAnswer(call->{ObjectNode projected=(ObjectNode)call.callRealMethod();prepared.countDown();await(release);return projected;})
-        .when(projection).project(any(Actor.class),any(ObjectNode.class),any(ObjectNode.class),anyString());
+        .when(projection).readiness(any(Actor.class),any(ObjectNode.class),any(ObjectNode.class),anyString());
     try(var investigation=new CaseInvestigationService(mapper,db,tx,cases,evidence,projection,worker,queue)) {
       Future<?> start=pool.submit(()->investigation.start(analyst,caseId,bytes(question()),"race-question-prepare"));
       await(prepared);archive();release.countDown();failed(start,409);

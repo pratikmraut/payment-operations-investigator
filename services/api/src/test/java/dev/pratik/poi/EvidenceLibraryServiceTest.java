@@ -12,7 +12,6 @@ import java.util.function.Consumer;
 import org.junit.jupiter.api.*;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
@@ -24,7 +23,7 @@ class EvidenceLibraryServiceTest {
   final Actor analyst = new Actor("analyst", "Analyst", "ANALYST", "northstar");
   final Actor viewer = new Actor("viewer", "Viewer", "VIEWER", "northstar");
   final Actor other = new Actor("other", "Other", "ANALYST", "silverline");
-  JdbcTemplate db; PaymentDiscoveryService cases; EvidenceLibraryService service;
+  JdbcTemplate db; PaymentDiscoveryService cases; EvidenceLibraryService service; TransactionTemplate transactions;
 
   @BeforeEach void setup() {
     var source = new DriverManagerDataSource("jdbc:h2:mem:evidence-library-" + UUID.randomUUID()
@@ -33,7 +32,8 @@ class EvidenceLibraryServiceTest {
     db = spy(new JdbcTemplate(source));
     var discovery = new PaymentDiscoveryClient(mapper, "DISABLED", false, "", "TEST", 1,
         (u,b,t) -> { throw new AssertionError("Evidence library cannot call discovery API"); });
-    cases = spy(new PaymentDiscoveryService(mapper, db, new TransactionTemplate(new DataSourceTransactionManager(source)), discovery,
+    transactions = new TransactionTemplate(new DataSourceTransactionManager(source));
+    cases = spy(new PaymentDiscoveryService(mapper, db, transactions, discovery,
         "northstar:1352:760,northstar:2468:760,northstar:1352:761,silverline:9999:999"));
     service = new EvidenceLibraryService(mapper, db, cases);
   }
@@ -50,10 +50,15 @@ class EvidenceLibraryServiceTest {
         .put("status", "OPEN").put("priority", "MEDIUM").put("createdBy", "analyst").put("evidenceStatus", "DISCOVERY_ONLY");
     db.update("INSERT INTO fcr_payment_case(id,tenant_id,identity_hash,created_at,body) VALUES(?,?,?,?,?)",
         id, tenant, PaymentDiscoveryService.hash(id), at, item.toString());
+    refresh(tenant, id);
     return item;
   }
   ObjectNode savedCase(String id) { return savedCase(id, "760", "1352", "northstar", "2026-09-14T01:00:00Z"); }
-  void replaceCase(ObjectNode item) { db.update("UPDATE fcr_payment_case SET body=? WHERE id=?", item.toString(), item.path("id").asText()); }
+  void refresh(String tenant, String id) { transactions.executeWithoutResult(status -> cases.searchIndex().refresh(tenant, id)); }
+  void replaceCase(ObjectNode item) {
+    db.update("UPDATE fcr_payment_case SET body=? WHERE id=?", item.toString(), item.path("id").asText());
+    refresh("northstar", item.path("id").asText());
+  }
   ObjectNode evidence(String caseId, String tenant, int version, String kind, String at, int... counts) {
     String id = "EVD-" + caseId + "-" + version;
     ObjectNode summary = mapper.createObjectNode().put("id", id).put("caseId", caseId).put("version", version)
@@ -65,6 +70,7 @@ class EvidenceLibraryServiceTest {
     summary.putArray("warnings").add("Original synthetic metadata; group presence does not establish payment outcome.");
     db.update("INSERT INTO fcr_case_evidence(id,tenant_id,case_id,version,created_at,summary,body) VALUES(?,?,?,?,?,?,?)",
         id, tenant, caseId, version, at, summary.toString(), "{\"payload\":\"SOURCE-PAYLOAD-MUST-NOT-LEAK\"}");
+    refresh(tenant, caseId);
     return summary;
   }
   ObjectNode evidence(String id, int version, String kind, int... counts) {
@@ -80,16 +86,15 @@ class EvidenceLibraryServiceTest {
     assertThat(result.path("page").asInt()).isEqualTo(1); assertThat(result.path("pageSize").asInt()).isEqualTo(10);
     assertThat(result.path("total").asInt()).isZero(); assertThat(result.path("totalPages").asInt()).isEqualTo(1);
     assertThat(result.path("items")).isEmpty(); assertThat(result.path("scopes").size()).isEqualTo(3);
-    assertThat(result.path("summary")).isEqualTo(mapper.createObjectNode().put("caseCount",0).put("casesWithRows",0).put("casesWithoutRows",0).put("evidenceVersions",0));
+    assertThat(result.path("summary")).isEqualTo(mapper.createObjectNode().put("caseCount",0L).put("casesWithRows",0L).put("casesWithoutRows",0L).put("evidenceVersions",0L));
     assertThat(Instant.parse(result.path("generatedAt").asText())).isBeforeOrEqualTo(Instant.now());
   }
 
   @Test void exposesAndSearchesCaseNumberWithoutReplacingInternalIdentity() {
     ObjectNode record = savedCase("NUMBERED");
-    record.put("caseNumber", "2026091600001");
-    ObjectNode list = mapper.createObjectNode().put("total", 1);
-    list.putArray("items").add(record);
-    doReturn(list).when(cases).cases(analyst,"ALL");
+    db.update("INSERT INTO fcr_case_number(case_id,tenant_id,case_number,number_date,sequence_no) VALUES(?,?,?,?,?)",
+        "NUMBERED", "northstar", "2026091600001", "20260916", 1);
+    refresh("northstar", "NUMBERED");
     JsonNode result = index("search", "2026091600001");
     assertThat(ids(result)).containsExactly("NUMBERED");
     assertThat(result.path("items").get(0).path("caseNumber").asText()).isEqualTo("2026091600001");
@@ -111,7 +116,7 @@ class EvidenceLibraryServiceTest {
     assertThat(rows.get("PARTIAL").path("coverageState").asText()).isEqualTo("PARTIAL");
     assertThat(rows.get("ALL").path("coverageState").asText()).isEqualTo("ALL_GROUPS");
     assertThat(rows.get("ALL").path("latestEvidence")).isEqualTo(all);
-    assertThat(result.path("summary")).isEqualTo(mapper.createObjectNode().put("caseCount",4).put("casesWithRows",2).put("casesWithoutRows",2).put("evidenceVersions",3));
+    assertThat(result.path("summary")).isEqualTo(mapper.createObjectNode().put("caseCount",4L).put("casesWithRows",2L).put("casesWithoutRows",2L).put("evidenceVersions",3L));
     assertThat(result.toString()).doesNotContain("SOURCE-PAYLOAD-MUST-NOT-LEAK", "\"payload\"", "RESOLVED");
     assertThat(rows.get("PARTIAL").path("amount").asText()).isEqualTo("900719925474099312345.007");
     assertThat(rows.get("PARTIAL").path("utr").isNull()).isTrue(); assertThat(rows.get("PARTIAL").path("currency").isNull()).isTrue();
@@ -137,6 +142,7 @@ class EvidenceLibraryServiceTest {
     savedCase("DISALLOWED-BRANCH", "760", "9999", "northstar", "2026-09-14T06:00:00Z");
     ObjectNode hidden = evidence("DISALLOWED-BRANCH", 1, "JSON", 1,1,1,1);
     db.update("UPDATE fcr_case_evidence SET summary=? WHERE id=?", "not even valid JSON", hidden.path("id").asText());
+    refresh("northstar", "DISALLOWED-BRANCH");
     ObjectNode result = service.index(viewer, Map.of());
     assertThat(ids(result)).containsExactly("VISIBLE"); assertThat(result.path("summary").path("caseCount").asInt()).isEqualTo(1);
     assertThat(result.path("summary").path("evidenceVersions").asInt()).isEqualTo(1);
@@ -221,21 +227,46 @@ class EvidenceLibraryServiceTest {
         s -> ((ObjectNode)s.path("coverage").path("HOST")).put("rowCount", 0.5))) {
       ObjectNode changed = original.deepCopy(); mutation.accept(changed);
       db.update("UPDATE fcr_case_evidence SET summary=? WHERE id=?", changed.toString(), original.path("id").asText());
+      refresh("northstar", "BAD");
       status(503, () -> index());
     }
   }
 
-  @Test void metadataBatchAvoidsNPlusOneAndIndexDoesNotMutateAnyStoredRecords() {
+  @Test void sqlPageIsBoundedWithoutHydratingTheCollectionAndDoesNotMutateStoredRecords() {
     for(int i = 0; i < 12; i++) { savedCase("READ-ONLY-" + i); evidence("READ-ONLY-" + i, 1, "JSON", 1,0,0,0); }
     List<Map<String,Object>> beforeCases = db.queryForList("SELECT * FROM fcr_payment_case ORDER BY id");
     List<Map<String,Object>> beforeEvidence = db.queryForList("SELECT * FROM fcr_case_evidence ORDER BY id");
     clearInvocations(db, cases); ObjectNode result = service.index(viewer, query("page", "2"));
     assertThat(result.path("items").size()).isEqualTo(2);
-    verify(cases, times(1)).cases(viewer,"ALL"); verify(cases, times(1)).config(viewer);
+    verify(cases, never()).cases(any(),anyString()); verify(cases, times(1)).config(viewer);
     verify(cases, never()).caseDetail(any(), anyString());
-    verify(db, times(1)).query(eq("SELECT id,case_id,version,summary FROM fcr_case_evidence WHERE tenant_id=?"), any(RowCallbackHandler.class), eq("northstar"));
+    List<String> sql = mockingDetails(db).getInvocations().stream().filter(call -> call.getArguments().length > 0)
+        .map(call -> call.getArguments()[0]).filter(String.class::isInstance).map(String.class::cast).toList();
+    // JdbcTemplate delegates through several overloads; inspect distinct statements.
+    assertThat(sql.stream().filter(query -> query.startsWith("SELECT c.body")).distinct()).hasSize(1)
+        .allMatch(query -> query.contains("LIMIT ? OFFSET ?") && query.contains("e.summary AS evidence_summary"));
+    assertThat(sql).noneMatch(query -> query.startsWith("UPDATE ") || query.startsWith("INSERT ") || query.startsWith("DELETE "));
     assertThat(db.queryForList("SELECT * FROM fcr_payment_case ORDER BY id")).isEqualTo(beforeCases);
     assertThat(db.queryForList("SELECT * FROM fcr_case_evidence ORDER BY id")).isEqualTo(beforeEvidence);
     assertThat(db.queryForObject("SELECT COUNT(*) FROM fcr_case_investigation", Integer.class)).isZero();
+  }
+
+  @Test void literalWildcardSearchAndNanosecondOrderingRemainPreciseInSql() {
+    ObjectNode literal = savedCase("LITERAL"); literal.put("reason", "Review 25% fee_code! explicitly"); replaceCase(literal);
+    savedCase("ORDINARY");
+    assertThat(ids(index("search", "25% fee_code!"))).containsExactly("LITERAL");
+    assertThat(ids(index("search", "%"))).containsExactly("LITERAL");
+    evidence("LITERAL", "northstar", 1, "JSON", "2026-09-14T08:00:00.123456788+05:30", 1,0,0,0);
+    evidence("ORDINARY", "northstar", 1, "JSON", "2026-09-14T02:30:00.123456789Z", 1,0,0,0);
+    assertThat(ids(index())).containsExactly("ORDINARY", "LITERAL");
+  }
+
+  @Test void corruptOlderAuthorizedSummaryFailsEvenWhenItsCaseIsOffPageOrFilteredOut() {
+    for(int i=0;i<12;i++)savedCase("PAGE-" + i);
+    ObjectNode old = evidence("PAGE-9", 1, "JSON", 1,0,0,0);
+    evidence("PAGE-9", 2, "EXCEL", 1,1,0,0);
+    db.update("UPDATE fcr_case_evidence SET summary=? WHERE id=?", "invalid", old.path("id").asText());
+    refresh("northstar", "PAGE-9");
+    status(503, () -> index("search", "PAGE-0"));
   }
 }

@@ -39,11 +39,13 @@ jobs:
           python-version: "3.12.14"
       - name: Verify committed fixtures, guidance, labels, and manifest
         run: python tools/generate_data.py --check
+      - name: Audit reviewed source release boundaries
+        run: python tools/package_release.py --check
 
   java:
-    name: Java 17 business API
+    name: Java 17 API and payment-case browser flow
     runs-on: ubuntu-24.04
-    timeout-minutes: 15
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -51,7 +53,8 @@ jobs:
       - uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
         with:
           distribution: temurin
-          java-version: "17.0.20.1+1"
+          # Use the supported Java 17 range; setup-java records the resolved JDK below.
+          java-version: "17"
           cache: maven
           cache-dependency-path: services/api/pom.xml
       - name: Record Java and Maven versions
@@ -61,6 +64,31 @@ jobs:
       - name: Compile and test authentication, exact amounts, persistence, and review
         working-directory: services/api
         run: mvn --batch-mode --no-transfer-progress clean verify
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: "22.19.0"
+          cache: npm
+          cache-dependency-path: apps/web/package-lock.json
+      - name: Install browser acceptance dependencies
+        working-directory: apps/web
+        run: |
+          npm ci
+          npx playwright install --with-deps chromium
+      - name: Exercise the saved payment-case workflow in Chromium
+        # Dedicated ports + H2 memory DB + an explicit provider test double.
+        # No bank credentials, local case data, Ollama server or model downloads.
+        working-directory: apps/web
+        run: npm run test:e2e
+      - name: Preserve synthetic browser acceptance diagnostics
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: payment-case-browser-tests
+          path: |
+            apps/web/playwright-report/
+            apps/web/test-results/
+          if-no-files-found: ignore
+          retention-days: 7
       - name: Preserve Java test reports
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
@@ -99,6 +127,8 @@ jobs:
           cache-dependency-path: services/investigator/requirements.txt
       - name: Install the pinned worker and test dependencies
         run: python -m pip install --requirement services/investigator/requirements.txt
+      - name: Test source packaging privacy and archive verification
+        run: python -m pytest tools/tests/test_package_release.py -q
       - name: Bootstrap pgvector with the CI admin and create the restricted worker role
         env:
           POSTGRES_CONTAINER: ${{ job.services.postgres.id }}

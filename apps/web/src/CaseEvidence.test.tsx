@@ -1,3 +1,4 @@
+import { casePageFixture } from "./testCasePage";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import {
   act,
@@ -9,6 +10,7 @@ import {
 } from "@testing-library/react";
 import { CaseEvidence } from "./CaseEvidence";
 import { setCsrfToken } from "./api";
+import { confirmUnsavedChanges } from "./unsavedChanges";
 
 const groups = ["PAYMENT", "HOST", "HISTORY", "STATUS"] as const;
 type Group = (typeof groups)[number];
@@ -193,6 +195,7 @@ type Options = {
   hold?: boolean;
   holdDetail?: string;
   detailFailures?: number;
+  pageSize?: number;
 };
 function mockApi(options: Options = {}) {
   let items = options.history ?? [];
@@ -204,8 +207,8 @@ function mockApi(options: Options = {}) {
   let pendingDetail: (() => void) | undefined;
   let pendingHistory: (() => void) | undefined;
   const fetcher = vi.fn((url: string, request: RequestInit) => {
-    if (url === "/api/payment-cases")
-      return reply({ items: options.matches ?? [] });
+    if (url.startsWith("/api/payment-cases?"))
+      return reply(casePageFixture(url, options.matches ?? []));
     const path =
       /^\/api\/payment-cases\/(CASE-ORIGINAL-[AB])\/evidence(.*)$/.exec(url);
     if (!path) throw new Error(`Unexpected endpoint ${url}`);
@@ -268,6 +271,24 @@ function mockApi(options: Options = {}) {
         });
       }
     }
+    if (options.pageSize && (suffix === "" || suffix.startsWith("?"))) {
+      const scoped = items
+        .filter((item) => item.caseId === caseId)
+        .map(summary);
+      const cursor = new URLSearchParams(suffix.slice(1)).get("cursor");
+      const start = cursor
+        ? scoped.findIndex((item) => item.id === cursor) + 1
+        : 0;
+      const selected = scoped.slice(start, start + options.pageSize);
+      return reply({
+        caseId,
+        items: selected,
+        total: scoped.length,
+        limit: options.pageSize,
+        nextCursor:
+          start + selected.length < scoped.length ? selected.at(-1)?.id : null,
+      });
+    }
     if (suffix === "")
       return reply({
         items: items.filter((item) => item.caseId === caseId).map(summary),
@@ -306,6 +327,30 @@ async function openPage(canWrite = true, onSaved = vi.fn()) {
 }
 const posts = (fetcher: ReturnType<typeof mockApi>["fetcher"]) =>
   fetcher.mock.calls.filter(([, request]) => request.method === "POST");
+it("loads evidence summaries only on demand without clearing a manual draft or automatically saving", async () => {
+  const { fetcher } = mockApi({
+    history: [snapshot(2), snapshot(1)],
+    pageSize: 1,
+  });
+  await openPage();
+  await screen.findByRole("button", { name: "Load more evidence versions" });
+  expect(
+    screen.queryByRole("option", { name: /Version 1/ }),
+  ).not.toBeInTheDocument();
+  fireEvent.click(screen.getByRole("tab", { name: "Manual + JSON" }));
+  fireEvent.change(screen.getByLabelText("PAYMENT source note"), {
+    target: { value: "Keep this unsaved source note" },
+  });
+  fireEvent.click(
+    screen.getByRole("button", { name: "Load more evidence versions" }),
+  );
+  await screen.findByRole("option", { name: /Version 1/ });
+  expect(screen.getByLabelText("PAYMENT source note")).toHaveValue(
+    "Keep this unsaved source note",
+  );
+  expect(screen.getByLabelText("Evidence version")).toHaveValue(snapshot(2).id);
+  expect(posts(fetcher)).toHaveLength(0);
+});
 async function uploadJson(value: unknown) {
   fireEvent.click(screen.getByRole("tab", { name: "Manual + JSON" }));
   fireEvent.change(screen.getByLabelText("Upload JSON to fill the form"), {
@@ -328,6 +373,113 @@ afterEach(() => {
   vi.unstubAllGlobals();
   vi.restoreAllMocks();
   setCsrfToken(null);
+});
+
+describe("evidence draft protection", () => {
+  it("keeps dirty evidence after failed saves and clears the warning after the successful retry", async () => {
+    mockApi({ failures: 1 });
+    setCsrfToken("fixture-csrf");
+    await openPage();
+    const confirm = vi.spyOn(window, "confirm").mockReturnValue(false);
+    expect(confirmUnsavedChanges()).toBe(true);
+    await uploadJson(payload());
+    expect(confirmUnsavedChanges()).toBe(false);
+    fireEvent.click(
+      screen.getByRole("button", { name: "Save new evidence version" }),
+    );
+    await screen.findByText("Fixture transport failed.");
+    expect(confirmUnsavedChanges()).toBe(false);
+    fireEvent.click(
+      screen.getByRole("button", { name: "Save new evidence version" }),
+    );
+    await screen.findByText(/Evidence version 1 saved/);
+    expect(confirmUnsavedChanges()).toBe(true);
+    expect(confirm).toHaveBeenCalledTimes(2);
+  });
+  it("downloads the current incomplete form and restores it as an unsaved manual draft without a POST", async () => {
+    let contents: Blob | undefined;
+    const browserUrl = URL;
+    vi.stubGlobal(
+      "URL",
+      class extends browserUrl {
+        static createObjectURL(value: Blob) {
+          contents = value;
+          return "blob:draft-fixture";
+        }
+        static revokeObjectURL() {}
+      },
+    );
+    vi.spyOn(HTMLAnchorElement.prototype, "click").mockImplementation(() => {});
+    const { fetcher } = mockApi();
+    const view = await openPage();
+    await uploadJson(payload());
+    fireEvent.change(screen.getByLabelText("Source timezone"), {
+      target: { value: "" },
+    });
+    fireEvent.click(
+      screen.getByRole("button", { name: "Download form draft" }),
+    );
+    const text = await new Promise<string>((resolve) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(String(reader.result));
+      reader.readAsText(contents!);
+    });
+    const draft = JSON.parse(text);
+    expect(draft.draftVersion).toBe("case-evidence-draft-v1");
+    expect(draft.payload.sections.PAYMENT.rows[0].AMOUNT).toBe(
+      "123456789012345678901.0007",
+    );
+    expect(draft.payload.sourceTimezone).toBe("");
+    view.unmount();
+    await openPage();
+    await uploadJson(draft);
+    expect(screen.getByLabelText("Source timezone")).toHaveValue("");
+    expect(screen.getByLabelText("PAYMENT row 1 AMOUNT")).toHaveValue(
+      "123456789012345678901.0007",
+    );
+    expect(screen.getByText(/Saving records manual provenance/)).toBeVisible();
+    expect(posts(fetcher)).toHaveLength(0);
+    vi.spyOn(window, "confirm").mockReturnValue(false);
+    expect(confirmUnsavedChanges()).toBe(false);
+  });
+  it("rejects another case's draft and allows canceling replacement of an existing form", async () => {
+    const { fetcher } = mockApi();
+    await openPage();
+    await uploadJson(payload());
+    const foreign = {
+      draftVersion: "case-evidence-draft-v1",
+      caseId: "CASE-ORIGINAL-B",
+      payload: payload(),
+    };
+    await uploadJson(foreign);
+    expect(
+      await screen.findByText(/This draft belongs to a different case/),
+    ).toBeVisible();
+    const confirm = vi.spyOn(window, "confirm").mockReturnValue(false);
+    const replacement = payload();
+    replacement.sections.PAYMENT.rows[0].AMOUNT = "5";
+    await uploadJson(replacement);
+    expect(confirm).toHaveBeenCalledOnce();
+    expect(screen.getByLabelText("PAYMENT row 1 AMOUNT")).toHaveValue(
+      "123456789012345678901.0007",
+    );
+    expect(posts(fetcher)).toHaveLength(0);
+  });
+  it("preserves manual dirty state when another evidence method is saved", async () => {
+    const configured = config();
+    configured.api = { enabled: true, mode: "BANK_API" };
+    mockApi({ configured });
+    setCsrfToken("fixture-csrf");
+    await openPage();
+    await uploadJson(payload());
+    fireEvent.click(screen.getByRole("tab", { name: "Inquiry API" }));
+    fireEvent.click(
+      screen.getByRole("button", { name: "Fetch and save evidence" }),
+    );
+    await screen.findByText(/Evidence version 1 saved/);
+    vi.spyOn(window, "confirm").mockReturnValue(false);
+    expect(confirmUnsavedChanges()).toBe(false);
+  });
 });
 
 describe("case evidence collection", () => {
@@ -383,6 +535,47 @@ describe("case evidence collection", () => {
     );
     expect(posts(fetcher)).toHaveLength(0);
     expect(screen.getByText(/upload this file again/)).toBeVisible();
+    const lookup = fetcher.mock.calls.find(([url]) =>
+      url.startsWith("/api/payment-cases?"),
+    )!;
+    expect(
+      Object.fromEntries(
+        new URL(lookup[0], "http://fixture.test").searchParams,
+      ),
+    ).toMatchObject({
+      reference: imported.payment.reference,
+      bank: imported.payment.orgBank,
+      branch: imported.payment.orgBranch,
+      lifecycle: "ACTIVE",
+      page: "1",
+      pageSize: "10",
+    });
+  });
+
+  it("bounds matching-case suggestions and links to the queue when there are more matches", async () => {
+    const imported = payload("ORIGINAL-FIXTURE-002");
+    const { fetcher } = mockApi({
+      matches: Array.from({ length: 12 }, (_, index) => ({
+        id: `MATCH-${index}`,
+        ...imported.payment,
+      })),
+    });
+    await openPage();
+    await uploadJson(imported);
+    expect(
+      await screen.findByText(/Showing the first 10 matching cases/),
+    ).toBeVisible();
+    expect(
+      screen.getAllByRole("link", { name: /Open matching case/ }),
+    ).toHaveLength(10);
+    expect(
+      screen.getByRole("link", { name: "Open Case queue" }),
+    ).toHaveAttribute("href", "/cases");
+    expect(
+      fetcher.mock.calls.filter(([url]) =>
+        url.startsWith("/api/payment-cases?"),
+      ),
+    ).toHaveLength(1);
   });
 
   it("identifies the precise missing column or non-text value and permits selecting the corrected file again", async () => {

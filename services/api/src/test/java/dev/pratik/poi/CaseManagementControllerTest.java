@@ -31,7 +31,7 @@ class CaseManagementControllerTest {
     verify(service).detail(argThat(a->a.role().equals("VIEWER")&&a.tenantId().equals("northstar")),eq(caseId));
   }
   @Test void allWritesRequireCsrfWriterAndScopeBeforeServiceDispatch()throws Exception {
-    for(String path:new String[]{"/management","/notes","/evidence-requests","/evidence-requests/REQ-ONE","/reviewer-conclusions"}) {
+    for(String path:new String[]{"/management","/notes","/evidence-requests","/evidence-requests/REQ-ONE","/reviewer-conclusions","/workflow"}) {
       mvc.perform(post(base+path).with(user("analyst")).contentType("application/json").content("{}")).andExpect(status().isForbidden());
       mvc.perform(post(base+path).with(user("viewer")).with(csrf().asHeader()).contentType("application/json").content("{}")).andExpect(status().isForbidden());
       mvc.perform(post(base+path).with(user("other")).with(csrf().asHeader()).contentType("application/json").content("{}")).andExpect(status().isNotFound());
@@ -41,6 +41,8 @@ class CaseManagementControllerTest {
   @Test void managementRoutesCarryActorExactResourceBodyAndIdempotencyKey()throws Exception {
     String command="{\"expectedVersion\":0,\"text\":\"Human note\"}";
     mvc.perform(post(base+"/management").with(user("analyst")).with(csrf().asHeader()).header("Idempotency-Key","http-command-key").contentType("application/json").content(command)).andExpect(status().isOk());
+    mvc.perform(post(base+"/workflow").with(user("analyst")).with(csrf().asHeader()).header("Idempotency-Key","http-command-key").contentType("application/json").content(command)).andExpect(status().isOk());
+    verify(service).transition(any(),eq(caseId),aryEq(command.getBytes(java.nio.charset.StandardCharsets.UTF_8)),eq("http-command-key"));
     mvc.perform(post(base+"/notes").with(user("analyst")).with(csrf().asHeader()).header("Idempotency-Key","http-command-key").contentType("application/json").content(command)).andExpect(status().isOk());
     mvc.perform(post(base+"/evidence-requests").with(user("analyst")).with(csrf().asHeader()).header("Idempotency-Key","http-command-key").contentType("application/json").content(command)).andExpect(status().isOk());
     mvc.perform(post(base+"/evidence-requests/REQ-ONE").with(user("analyst")).with(csrf().asHeader()).header("Idempotency-Key","http-command-key").contentType("application/json").content(command)).andExpect(status().isOk());

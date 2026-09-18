@@ -20,6 +20,8 @@ public class UatWorkerClient {
   private final URI endpoint;
   private final URI caseEndpoint;
   private final URI knowledgeEndpoint;
+  private final URI preflightEndpoint;
+  private final URI caseJobsEndpoint;
   private final String serviceKey;
   private final long seconds;
   private final HttpClient client;
@@ -31,6 +33,8 @@ public class UatWorkerClient {
     this.endpoint = URI.create(baseUrl.replaceAll("/+$", "") + "/uat/answer");
     this.caseEndpoint = URI.create(baseUrl.replaceAll("/+$", "") + "/case/answer");
     this.knowledgeEndpoint = URI.create(baseUrl.replaceAll("/+$", "") + "/case/knowledge-search");
+    this.preflightEndpoint = URI.create(baseUrl.replaceAll("/+$", "") + "/case/preflight");
+    this.caseJobsEndpoint = URI.create(baseUrl.replaceAll("/+$", "") + "/case/jobs/");
     this.serviceKey = serviceKey;
     this.seconds = Math.max(1, Math.min(930, seconds));
     this.client = HttpClient.newBuilder().version(HttpClient.Version.HTTP_1_1)
@@ -49,8 +53,29 @@ public class UatWorkerClient {
     return answerAt(knowledgeEndpoint, input);
   }
 
+  public ObjectNode preflightCase(ObjectNode input) {
+    return answerAt(preflightEndpoint, input);
+  }
+
+  public ObjectNode submitCaseJob(ObjectNode envelope) {
+    return answerAt(caseJobsEndpoint.resolve("submit"), envelope);
+  }
+
+  public ObjectNode caseJobStatus(ObjectNode identity) {
+    return answerAt(caseJobsEndpoint.resolve("status"), identity);
+  }
+
+  public ObjectNode cancelCaseJob(ObjectNode identity) {
+    return answerAt(caseJobsEndpoint.resolve("cancel"), identity);
+  }
+
+  public ObjectNode forgetCaseJobs(ObjectNode scope) {
+    return answerAt(caseJobsEndpoint.resolve("forget-case"), scope);
+  }
+
   private ObjectNode answerAt(URI target, ObjectNode input) {
-    long requestSeconds = target.equals(knowledgeEndpoint) ? 150 : seconds;
+    boolean jobRequest = target.toString().startsWith(caseJobsEndpoint.toString());
+    long requestSeconds = target.equals(preflightEndpoint) || jobRequest ? 10 : target.equals(knowledgeEndpoint) ? 150 : seconds;
     HttpRequest request = HttpRequest.newBuilder(target).timeout(Duration.ofSeconds(requestSeconds))
         .header("Content-Type", "application/json").header("Accept", "application/json")
         .header("X-Service-Key", serviceKey)
@@ -58,6 +83,12 @@ public class UatWorkerClient {
     CompletableFuture<HttpResponse<byte[]>> pending = client.sendAsync(request, info -> new LimitedBody());
     try {
       HttpResponse<byte[]> response = pending.get(requestSeconds, TimeUnit.SECONDS);
+      if (jobRequest && response.statusCode() == 404 && workerCode(response).equals("CASE_WORKER_JOB_NOT_FOUND"))
+        throw new ApiException(404, "CASE_WORKER_JOB_NOT_FOUND", "No model receipt exists for this investigation.");
+      if (jobRequest && response.statusCode() == 409)
+        throw new ApiException(409, "CASE_WORKER_JOB_CONFLICT", "The saved model request identity conflicts with its original receipt.");
+      if (jobRequest && response.statusCode() == 429)
+        throw new ApiException(429, "CASE_WORKER_QUEUE_FULL", "The local model queue is full. The saved question is waiting for capacity.");
       if (response.statusCode() == 422) throw UatService.invalidWorker();
       if (response.statusCode() == 504) throw timedOut();
       if (response.statusCode() == 503 && workerCode(response).equals("UAT_MODEL_BUSY"))
@@ -87,7 +118,8 @@ public class UatWorkerClient {
     if (!type.equalsIgnoreCase("application/json")) return "";
     try {
       // Only a known machine code is used; never expose source-bearing provider messages.
-      return UatService.parseObject(mapper, response.body(), UatService.invalidWorker()).path("code").asText("");
+      ObjectNode body = UatService.parseObject(mapper, response.body(), UatService.invalidWorker());
+      return body.has("code") ? body.path("code").asText("") : body.path("detail").path("code").asText("");
     } catch (ApiException failure) {
       return "";
     }

@@ -46,7 +46,7 @@ For a case without selected evidence use `evidenceId: null`, an empty investigat
 
 `POST /api/payment-cases/{caseId}/report.pdf` accepts only `reportId` and `reportHash` from that preview and returns an attachment with `application/pdf`, `Cache-Control: no-store` and `X-Content-Type-Options: nosniff`. Errors remain structured JSON even when the client requests PDF. A lost preview response can be retried with the same key and body. Reusing a key with other choices returns a conflict.
 
-Limits: two investigations/three pages for Summary; twenty investigations/200 pages for Detailed; 8 KiB selection request, 8 MiB saved report bundle and two concurrent PDF renders per API process. Oversized reports return an actionable error; select fewer investigations or another format. There is no report-retention scheduler or report-history UI yet.
+Limits: two investigations/three pages for Summary; twenty investigations/200 pages for Detailed; 8 KiB selection request, 8 MiB saved report bundle and two concurrent PDF renders per API process. Oversized reports return an actionable error; select fewer investigations or another format. [Saved report history](REPORT_HISTORY.md) now lists authorized frozen snapshots and supports downloading an earlier snapshot without preparing another preview. There is no report-retention scheduler.
 
 The renderer uses [Apache PDFBox](https://pdfbox.apache.org/) inside Java with an embedded, licensed DejaVu Sans font. It performs no network fetch, browser rendering, active document scripting or model generation.
 

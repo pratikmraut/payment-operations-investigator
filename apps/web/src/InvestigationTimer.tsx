@@ -63,14 +63,16 @@ export function InvestigationTimer({
       ? "Preparing and saving request…"
       : run?.phase === "completed"
         ? "Completed · status received"
-        : run?.phase === "rejected"
-          ? "Request rejected"
-          : run?.phase === "failed"
-            ? "Failed · no completed answer"
-            : run?.phase === "queued" ||
-                (!run && pendingJob?.status === "QUEUED")
-              ? "Queued · waiting to start"
-              : "Running investigation…";
+        : run?.phase === "cancelled"
+          ? "Cancelled · no completed answer"
+          : run?.phase === "rejected"
+            ? "Request rejected"
+            : run?.phase === "failed"
+              ? "Failed · no completed answer"
+              : run?.phase === "queued" ||
+                  (!run && pendingJob?.status === "QUEUED")
+                ? "Queued · waiting to start"
+                : "Running investigation…";
   return (
     <div
       className="case-investigation-timer"
@@ -148,7 +150,7 @@ export function SavedInvestigationTiming({
         <>
           <small>
             {timing.totalBasis === "request-received"
-              ? "From server request receipt to the saved completion or failure."
+              ? "From server request receipt to the saved completion, failure or cancellation."
               : "Request preparation was not recorded for this job."}
           </small>
           {stages.some(([, value]) => value !== null) && (
