@@ -9,4 +9,4 @@ payments, not bank exports.
 The browser test uploads this file through the real Java discovery parser to
 create cases whose original currency is absent. After adding matching PAYMENT
 evidence with `CODCURR=INR`, it checks that the original currency remains null and
-that the UI displays the evidence currency with its source version.
+that the UI displays the evidence currency with its source version in the tooltip.

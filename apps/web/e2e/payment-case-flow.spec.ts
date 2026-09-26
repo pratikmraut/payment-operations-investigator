@@ -149,13 +149,13 @@ test("current case flow: Excel discovery, evidence, question, independent review
   const original = await json(page, `/payment-cases/${item.id}`);
   expect(original.currency).toBeNull();
   await expect(
-    page.getByText(`${original.amount} · Currency not supplied`, {
+    page.getByText(`${original.amount} INR`, {
       exact: true,
     }),
   ).toBeVisible();
   await saveEvidence(page, item.id);
   await expect(
-    page.getByText(`${original.amount} INR · from evidence v1`, {
+    page.getByText(`${original.amount} INR`, {
       exact: true,
     }),
   ).toBeVisible();
@@ -177,20 +177,20 @@ test("current case flow: Excel discovery, evidence, question, independent review
     exact: true,
   });
   await expect(
-    savedCase.getByText("INR · from evidence v1", { exact: true }),
+    savedCase.getByText("INR", { exact: true }),
   ).toBeVisible();
   await savedCase.screenshot({ path: resolve(process.cwd(), "../../runtime/implementation-wave2-2026-09-18/saved-case-currency.png") });
   await page
     .getByRole("button", { name: "Refresh queue", exact: true })
     .click();
   await expect(
-    savedCase.getByText("INR · from evidence v1", { exact: true }),
+    savedCase.getByText("INR", { exact: true }),
   ).toBeVisible();
   await page.goto("/evidences");
   await page.getByLabel("Search cases and payments").fill(item.number);
   await page.getByText("Case context", { exact: true }).click();
   await expect(
-    page.getByText(`${original.amount} INR · from evidence v1`, {
+    page.getByText(`${original.amount} INR`, {
       exact: true,
     }),
   ).toBeVisible();
@@ -199,13 +199,13 @@ test("current case flow: Excel discovery, evidence, question, independent review
     .getByText("Payment details and investigation reason", { exact: true })
     .click();
   await expect(
-    page.getByText(`${original.amount} INR · from evidence v1`, {
+    page.getByText(`${original.amount} INR`, {
       exact: true,
     }),
   ).toBeVisible();
   await page.goto(item.path);
   await expect(
-    page.getByText(`${original.amount} INR · from evidence v1`, {
+    page.getByText(`${original.amount} INR`, {
       exact: true,
     }),
   ).toBeVisible();

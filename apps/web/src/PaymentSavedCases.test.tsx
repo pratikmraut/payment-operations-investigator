@@ -128,9 +128,14 @@ describe("saved payment case search and pagination", () => {
       { ...fixtures[1], evidenceCurrency: { currency: "USD", version: "2" } },
     ]);
     render(<PaymentCasesPage user={user} onOpen={vi.fn()} />);
-    const currency = await savedRegion().findByText("INR · from evidence v2");
+    const currency = await savedRegion().findByTitle(
+      /Currency from EXCEL PAYMENT evidence EVD-QUEUE, version 2/,
+    );
+    expect(currency).toHaveTextContent(/^INR$/);
     expect(currency.closest("td")).toHaveTextContent(fixtures[0].amount);
-    expect(savedRegion().getByText("Currency not supplied")).toBeVisible();
+    expect(savedRegion().getByTitle(/display default/)).toHaveTextContent(
+      /^INR$/,
+    );
     expect(
       fetcher.mock.calls.some(([url]) => /\/evidence(?:\/|$)/.test(url)),
     ).toBe(false);

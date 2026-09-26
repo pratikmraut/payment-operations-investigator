@@ -34,9 +34,7 @@ export function paymentCurrency(item: PaymentAmountSource) {
     return { label: item.currency, evidence: null };
   const evidence = validateEvidenceCurrency(item.evidenceCurrency);
   return {
-    label: evidence
-      ? `${evidence.currency} · from evidence v${evidence.version}`
-      : null,
+    label: evidence?.currency ?? "INR",
     evidence,
   };
 }
@@ -51,18 +49,20 @@ export function PaymentAmount({
   const { label, evidence } = paymentCurrency(item);
   const title = evidence
     ? `Currency from ${evidence.sourceKind} PAYMENT evidence ${evidence.evidenceId}, version ${evidence.version}. The original discovery amount is unchanged.`
-    : undefined;
+    : typeof item.currency !== "string" || !item.currency.trim()
+      ? "Indian rupees (INR): this project's display default when currency is not supplied."
+      : undefined;
   if (stacked)
     return (
       <>
         <span className="payment-source-value">{item.amount}</span>
-        <small title={title}>{label ?? "Currency not supplied"}</small>
+        <small title={title}>{label}</small>
       </>
     );
   return (
     <span title={title}>
       {item.amount}
-      {label ? ` ${label}` : " · Currency not supplied"}
+      {` ${label}`}
     </span>
   );
 }

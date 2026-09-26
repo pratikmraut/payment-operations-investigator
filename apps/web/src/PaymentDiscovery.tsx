@@ -183,18 +183,6 @@ function Pending({ children }: { children: string }) {
     </div>
   );
 }
-function Amount({
-  item,
-}: {
-  item: Pick<PaymentCandidate, "amount" | "currency">;
-}) {
-  return (
-    <>
-      <span className="payment-source-value">{item.amount}</span>
-      <small>{item.currency || "Currency not supplied"}</small>
-    </>
-  );
-}
 function classificationLabel(classification: string) {
   return classification === "PRIVATE_UAT" ? "Private evidence" : classification;
 }
@@ -1353,7 +1341,7 @@ export function FindPayment({
                           {candidate.initiatedAt}
                         </td>
                         <td className="amount" data-label="Source amount">
-                          <Amount item={candidate} />
+                          <PaymentAmount item={candidate} stacked />
                         </td>
                         <td data-label="Source">
                           <Provenance item={candidate} />

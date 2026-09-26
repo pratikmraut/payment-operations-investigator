@@ -21,9 +21,7 @@ const source = {
 describe("saved payment amount currency provenance", () => {
   it("preserves the exact source amount and identifies the supporting evidence version", () => {
     render(<PaymentAmount item={source} />);
-    expect(
-      screen.getByText("123456789012345678901.0007 INR · from evidence v1"),
-    ).toHaveAttribute(
+    expect(screen.getByText("123456789012345678901.0007 INR")).toHaveAttribute(
       "title",
       "Currency from JSON PAYMENT evidence EVD-CURRENCY-FIXTURE, version 1. The original discovery amount is unchanged.",
     );
@@ -46,7 +44,7 @@ describe("saved payment amount currency provenance", () => {
       />,
     );
     expect(screen.getByText(source.amount)).toBeVisible();
-    expect(screen.getByText("USD · from evidence v3")).toHaveAttribute(
+    expect(screen.getByText("USD")).toHaveAttribute(
       "title",
       expect.stringContaining("BANK_API PAYMENT evidence"),
     );
@@ -78,14 +76,30 @@ describe("saved payment amount currency provenance", () => {
     { ...hint, sourceKind: "UNKNOWN" },
     { ...hint, sourceKind: ["JSON"] },
   ])(
-    "ignores an absent or malformed optional hint without inventing currency: %j",
+    "uses the INR display default when no valid source currency is available: %j",
     (evidenceCurrency) => {
       expect(validateEvidenceCurrency(evidenceCurrency)).toBeNull();
-      render(<PaymentAmount item={{ ...source, evidenceCurrency }} />);
-      expect(
-        screen.getByText(`${source.amount} · Currency not supplied`),
-      ).toBeVisible();
-      expect(screen.queryByText(/INR|from evidence/)).not.toBeInTheDocument();
+      const item = Object.freeze({ ...source, evidenceCurrency });
+      render(<PaymentAmount item={item} />);
+      expect(screen.getByText(`${source.amount} INR`)).toHaveAttribute(
+        "title",
+        expect.stringContaining("display default"),
+      );
+      expect(screen.queryByText(/from evidence/)).not.toBeInTheDocument();
+      expect(item.currency).toBeNull();
+    },
+  );
+  it.each([null, "", "   "])(
+    "shows Indian rupees for missing currency in stacked discovery results: %j",
+    (currency) => {
+      render(
+        <PaymentAmount item={{ amount: "2000.0000", currency }} stacked />,
+      );
+      expect(screen.getByText("2000.0000")).toBeVisible();
+      expect(screen.getByText("INR")).toHaveAttribute(
+        "title",
+        expect.stringContaining("Indian rupees"),
+      );
     },
   );
 });

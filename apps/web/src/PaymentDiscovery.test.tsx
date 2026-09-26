@@ -567,7 +567,10 @@ describe("private payment discovery", () => {
     const radio = await screen.findByRole("radio");
     expect(radio).not.toBeChecked();
     expect(screen.getByText(candidate.amount)).toBeVisible();
-    expect(screen.getByText("Currency not supplied")).toBeVisible();
+    expect(screen.getByText("INR")).toHaveAttribute(
+      "title",
+      expect.stringContaining("display default"),
+    );
     expect(screen.getByText("MOCK inquiry source")).toBeVisible();
     expect(
       screen.getByText(
@@ -1462,12 +1465,8 @@ describe("private payment discovery", () => {
       },
     });
     render(<PaymentCaseDetail caseId={saved.id} onBack={vi.fn()} />);
-    expect(
-      await screen.findByText(`${saved.amount} INR · from evidence v1`),
-    ).toBeVisible();
-    expect(
-      screen.getByText(`${saved.amount} INR · from evidence v1`),
-    ).toHaveAttribute(
+    expect(await screen.findByText(`${saved.amount} INR`)).toBeVisible();
+    expect(screen.getByText(`${saved.amount} INR`)).toHaveAttribute(
       "title",
       expect.stringContaining("original discovery amount is unchanged"),
     );
@@ -1477,9 +1476,7 @@ describe("private payment discovery", () => {
     render(<PaymentCaseDetail caseId={saved.id} onBack={vi.fn()} />);
     await screen.findByRole("heading", { name: "Payment investigation" });
     expect(screen.getByText(saved.reason)).toBeVisible();
-    expect(
-      screen.getByText(`${saved.amount} · Currency not supplied`),
-    ).toBeVisible();
+    expect(screen.getByText(`${saved.amount} INR`)).toBeVisible();
     await screen.findByText(
       "No evidence versions have been saved for this case.",
     );

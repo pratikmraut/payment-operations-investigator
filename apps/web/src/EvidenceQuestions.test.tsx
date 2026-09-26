@@ -102,7 +102,7 @@ describe("Evidence questions case selection", () => {
     fireEvent.click(
       screen.getByText("Payment details and investigation reason"),
     );
-    expect(screen.getByText("5234.4000 INR · from evidence v1")).toBeVisible();
+    expect(screen.getByText("5234.4000 INR")).toBeVisible();
   });
   it("loads a deep-selected case outside the first page and keeps its draft while paging, filtering and list failure", async () => {
     const items = Array.from({ length: 23 }, (_, index) =>
@@ -249,7 +249,7 @@ describe("Evidence questions case selection", () => {
     fireEvent.click(
       screen.getByText("Payment details and investigation reason"),
     );
-    expect(screen.getByText("5234.4000 · Currency not supplied")).toBeVisible();
+    expect(screen.getByText("5234.4000 INR")).toBeVisible();
     for (const term of [
       "000123",
       "original-utr",

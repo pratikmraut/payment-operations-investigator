@@ -204,9 +204,7 @@ describe("Evidence library", () => {
     );
     render(<EvidenceLibraryPage user={user} />);
     fireEvent.click(await screen.findByText("Case context"));
-    expect(
-      screen.getByText(`${selected.amount} INR · from evidence v2`),
-    ).toBeVisible();
+    expect(screen.getByText(`${selected.amount} INR`)).toBeVisible();
     expect(
       fetcher.mock.calls.every(([url]) => url.startsWith("/api/evidences?")),
     ).toBe(true);
