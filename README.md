@@ -12,11 +12,11 @@ See [Source privacy](docs/SOURCE_PRIVACY.md) for the publication boundary and ch
 
 ## Project walkthrough
 
-[Watch or download the 15-minute HQ demo](https://github.com/pratikmraut/payment-operations-investigator/releases/tag/project-demo-2026-09-26) with English narration and captions. It covers Analyst, Reviewer, Viewer and Administrator workflows, from discovery and investigation through review, reports, knowledge and system health.
+Play the 15-minute HQ demo below, directly on GitHub, with English narration and captions. It covers Analyst, Reviewer, Viewer and Administrator workflows, from discovery and investigation through review, reports, knowledge and system health. Use the player's fullscreen control for readable application details.
 
-[![Project walkthrough preview](docs/demo/demo-preview.png)](https://github.com/pratikmraut/payment-operations-investigator/releases/tag/project-demo-2026-09-26)
+https://github.com/user-attachments/assets/6a92babf-ffc4-4f52-bbff-a0b36cc867f7
 
-Recorded in September 2026; edited waits and masked identifiers. See the [video notes and transcript](docs/demo/README.md) for scope and recording limitations.
+Recorded in September 2026; edited waits and masked identifiers. See the [video notes and transcript](docs/demo/README.md) for scope and recording limitations, or the [release](https://github.com/pratikmraut/payment-operations-investigator/releases/tag/project-demo-2026-09-26) for optional downloads and subtitles.
 
 ## What you can do
 

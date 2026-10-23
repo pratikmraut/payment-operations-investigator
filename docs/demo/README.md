@@ -1,8 +1,10 @@
 # Project video
 
-[Download the 15-minute HQ walkthrough](https://github.com/pratikmraut/payment-operations-investigator/releases/download/project-demo-2026-09-26/Payment-Operations-Investigator-Demo.mp4) · [Release and supporting files](https://github.com/pratikmraut/payment-operations-investigator/releases/tag/project-demo-2026-09-26) · [Transcript](Transcript.md)
+Press play below to watch the full 15-minute HQ walkthrough directly on GitHub. English narration and captions are included; use fullscreen to inspect the application details. No download is required.
 
-[![Payment Operations Investigator walkthrough preview](demo-preview.png)](https://github.com/pratikmraut/payment-operations-investigator/releases/tag/project-demo-2026-09-26)
+https://github.com/user-attachments/assets/6a92babf-ffc4-4f52-bbff-a0b36cc867f7
+
+[Transcript](Transcript.md) · [Release and subtitles](https://github.com/pratikmraut/payment-operations-investigator/releases/tag/project-demo-2026-09-26) · [Optional MP4 download](https://github.com/pratikmraut/payment-operations-investigator/releases/download/project-demo-2026-09-26/Payment-Operations-Investigator-Demo.mp4)
 
 Recorded on 26 September 2026. The completed HQ edition has English synthetic narration, visible captions, and 14 chapters covering the Analyst, Reviewer, Viewer and Administrator workflows. The release also includes editable subtitles and a transcript.
 
