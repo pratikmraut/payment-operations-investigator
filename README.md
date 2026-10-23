@@ -6,7 +6,7 @@ A local workbench for finding payment records, collecting supporting evidence, a
 
 The current workflow is **Find payment → Open case → Collect evidence → Investigate → Review and export**. The application supports configurable read-only inquiry APIs and file imports. It never initiates payments or changes bank transaction records.
 
-This repository contains application source, tests, and original synthetic fixtures. Bank endpoints, credentials, source exports, private guidance, embeddings, saved cases, generated answers, and model files are local configuration/data and are not included.
+This repository contains application source, tests, original synthetic fixtures, and the [FLEXCUBE PO01/PO02 extension source bundle](services/flexcube-api/README.md). Bank endpoints, credentials, source data exports, private guidance, embeddings, saved cases, generated answers, and model files are local configuration/data and are not included.
 
 See [Source privacy](docs/SOURCE_PRIVACY.md) for the publication boundary and checks before sharing changes.
 
@@ -83,6 +83,7 @@ The Windows `tools/start.ps1` launcher defaults to the separately prepared nativ
 | --- | --- |
 | `apps/web/src` | Payment workspace, evidence review and report UI |
 | `services/api/src` | Java API, persistence, inquiry adapters, permissions and PDF rendering |
+| `services/flexcube-api` | 23 bank-side PO01/PO02 Java and SQL extension files with their original FLEXCUBE paths; requires the existing platform build |
 | `services/investigator/investigator` | Local-model requests, source retrieval and answer validation |
 | `data` | Original synthetic fixtures, legacy test guidance and isolated evaluation labels |
 | `tools` | Setup, validation and optional private knowledge-index helpers |

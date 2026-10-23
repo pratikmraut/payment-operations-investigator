@@ -1,5 +1,7 @@
 # FLEXCUBE inquiry integration
 
+The bank-side PO01/PO02 implementations are available in [`services/flexcube-api`](../services/flexcube-api/README.md): 23 Java/SQL source files with their original `FC-CORE/Retail/...` paths. That source bundle requires the existing FLEXCUBE platform build and is separate from the application-side adapters described below. Copying it into this repository does not deploy the bank services or change local connection settings.
+
 The application supports the supplied PO01 payment discovery and PO02 evidence services through an optional `FLEXCUBE` wire adapter. Java builds their `args0`/`args1` envelopes, validates the response and preserves the original source values. Browser requests and saved-case workflows remain unchanged. This is an application-side adapter; it does not modify or deploy FLEXCUBE source, execute payment commands or automatically run the model.
 
 Source review and local adapter tests do not establish live bank connectivity. New installations retain discovery `MOCK` and evidence acquisition disabled until the deployment inputs below are confirmed and explicitly activated. The native profile was activated for the user's supplied UAT endpoints on 15 September 2026; consult its dated validation receipt for connection results. The earlier flat contract remains available as `CANONICAL`, the default wire format for compatibility.
