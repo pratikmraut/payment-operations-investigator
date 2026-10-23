@@ -10,6 +10,14 @@ This repository contains application source, tests, original synthetic fixtures,
 
 See [Source privacy](docs/SOURCE_PRIVACY.md) for the publication boundary and checks before sharing changes.
 
+## Project walkthrough
+
+[Watch or download the 15-minute HQ demo](https://github.com/pratikmraut/payment-operations-investigator/releases/tag/project-demo-2026-09-26) with English narration and captions. It covers Analyst, Reviewer, Viewer and Administrator workflows, from discovery and investigation through review, reports, knowledge and system health.
+
+[![Project walkthrough preview](docs/demo/demo-preview.png)](https://github.com/pratikmraut/payment-operations-investigator/releases/tag/project-demo-2026-09-26)
+
+Recorded in September 2026; edited waits and masked identifiers. See the [video notes and transcript](docs/demo/README.md) for scope and recording limitations.
+
 ## What you can do
 
 - **Find a payment:** search an exact reference/UTR, search by date and authorized scope through the configured inquiry API, or import a transaction list from Excel.
